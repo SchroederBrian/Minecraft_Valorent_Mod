@@ -37,7 +37,10 @@
   "gui.valorant.role": "Role: %s",
   
   "key.valorant.open_agent_menu": "Open Agent Menu",
+  "key.valorant.use_ability_1": "Use Ability 1",
   "category.valorant.valorant": "Valorant",
+
+  "commands.valorant.curveball.charges.set": "Set curveball charges to %s for %s player(s)",
   
   "agent.valorant.jett": "Jett",
   "agent.valorant.reyna": "Reyna",

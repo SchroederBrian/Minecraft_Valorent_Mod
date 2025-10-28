@@ -70,6 +70,11 @@ public class CurveballItem extends Item {
         player.swing(hand, true);
         player.getCooldowns().addCooldown(stack, Config.COMMON.curveballThrowCooldownTicks.get());
         level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.CURVEBALL_THROW.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+
+        if (!player.isCreative()) {
+            stack.shrink(1);
+        }
+        
         return true;
     }
 

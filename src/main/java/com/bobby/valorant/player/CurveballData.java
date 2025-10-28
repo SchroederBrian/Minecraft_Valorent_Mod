@@ -1,10 +1,13 @@
 package com.bobby.valorant.player;
 
 import com.bobby.valorant.Config;
+import com.bobby.valorant.Valorant;
+import com.bobby.valorant.network.SyncCurveballChargesPacket;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class CurveballData {
     private static final String ROOT = "ValorantCurveball";
@@ -18,7 +21,14 @@ public final class CurveballData {
     }
 
     public static void setCharges(Player player, int charges) {
-        root(player).putInt(CHARGES, Math.max(0, charges));
+        int actualCharges = Math.max(0, charges);
+        root(player).putInt(CHARGES, actualCharges);
+        
+        // Sync to client if on server (don't sync when being called from client packet handler)
+        if (player instanceof ServerPlayer serverPlayer && !player.level().isClientSide) {
+            Valorant.LOGGER.info("[CHARGE SYNC] Sending sync packet to client with {} charges", actualCharges);
+            PacketDistributor.sendToPlayer(serverPlayer, new SyncCurveballChargesPacket(actualCharges));
+        }
     }
 
     public static boolean ensureInitialized(Player player) {
