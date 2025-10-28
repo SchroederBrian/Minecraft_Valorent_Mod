@@ -1,0 +1,25 @@
+{
+  "curveball_throw": {
+    "subtitle": "sound.valorant.curveball_throw",
+    "sounds": [
+      {
+        "name": "minecraft:item.spyglass.use",
+        "type": "event",
+        "pitch": 1.4,
+        "volume": 0.8
+      }
+    ]
+  },
+  "curveball_detonate": {
+    "subtitle": "sound.valorant.curveball_detonate",
+    "sounds": [
+      {
+        "name": "minecraft:block.amethyst_block.resonate",
+        "type": "event",
+        "pitch": 1.1,
+        "volume": 0.9
+      }
+    ]
+  }
+}
+

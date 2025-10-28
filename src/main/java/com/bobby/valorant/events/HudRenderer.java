@@ -1,0 +1,28 @@
+package com.bobby.valorant.events;
+
+import com.bobby.valorant.Config;
+import com.bobby.valorant.Valorant;
+import com.bobby.valorant.client.hud.HudOverlay;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+
+@EventBusSubscriber(modid = Valorant.MODID, value = Dist.CLIENT)
+public final class HudRenderer {
+    private HudRenderer() {}
+
+    @SubscribeEvent
+    public static void onPostHotbar(RenderGuiLayerEvent.Post event) {
+        if (!Config.COMMON.showValorantHud.get()) {
+            return;
+        }
+        String name = String.valueOf(event.getLayer()).toLowerCase(java.util.Locale.ROOT);
+        if (name.endsWith("hotbar") || name.contains(":hotbar")) {
+            HudOverlay.render(event.getGuiGraphics());
+        }
+    }
+}
+
+
