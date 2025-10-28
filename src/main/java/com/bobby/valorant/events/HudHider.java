@@ -17,8 +17,14 @@ public final class HudHider {
         if (!Config.COMMON.hideVanillaHotbar.get()) {
             return;
         }
-        String name = String.valueOf(event.getLayer()).toLowerCase(java.util.Locale.ROOT);
-        if (name.endsWith("hotbar") || name.contains(":hotbar")) {
+        if (
+                event.getLayer().equals(VanillaGuiLayers.HOTBAR)
+                || event.getLayer().equals(VanillaGuiLayers.SELECTED_ITEM_NAME)
+                || String.valueOf(event.getLayer()).contains("hotbar")
+                || String.valueOf(event.getLayer()).contains("experience_bar")
+                || String.valueOf(event.getLayer()).contains("jump")
+                || String.valueOf(event.getLayer()).contains("offhand")
+        ) {
             event.setCanceled(true);
         }
     }
