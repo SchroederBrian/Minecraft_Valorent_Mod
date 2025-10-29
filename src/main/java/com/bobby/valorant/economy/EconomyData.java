@@ -77,7 +77,7 @@ public final class EconomyData {
 
     private static boolean slotFreeOrReplace(ServerPlayer sp, ShopItem item) {
         return switch (item.slot) {
-            case SECONDARY -> !hasAny(sp, ShopItem.Slot.SECONDARY);
+            case SECONDARY -> !hasSecondaryNonDefault(sp); // allow replacing default pistol
             case PRIMARY -> !hasAny(sp, ShopItem.Slot.PRIMARY);
             case ARMOR -> true; // replaces, we handle in grantItem
             default -> true;
@@ -108,8 +108,35 @@ public final class EconomyData {
         if (item == ShopItem.ARMOR_HEAVY) {
             removeItem(sp, ShopItem.ARMOR_LIGHT);
         }
+        if (item.slot == ShopItem.Slot.SECONDARY) {
+            // Replace default pistol if present
+            removeDefaultSecondary(sp);
+        }
         sp.getInventory().add(item.giveStack());
         sp.containerMenu.broadcastChanges();
+    }
+
+    private static boolean hasSecondaryNonDefault(ServerPlayer sp) {
+        int size = sp.getInventory().getContainerSize();
+        for (int i = 0; i < size; i++) {
+            ItemStack s = sp.getInventory().getItem(i);
+            if (s.isEmpty()) continue;
+            // default pistol is STONE_SWORD; anything else that counts as secondary blocks
+            if (s.is(net.minecraft.world.item.Items.STONE_SWORD)) continue;
+            if (matchesSlot(s, ShopItem.Slot.SECONDARY)) return true;
+        }
+        return false;
+    }
+
+    private static void removeDefaultSecondary(ServerPlayer sp) {
+        int size = sp.getInventory().getContainerSize();
+        for (int i = 0; i < size; i++) {
+            ItemStack s = sp.getInventory().getItem(i);
+            if (s.is(net.minecraft.world.item.Items.STONE_SWORD)) {
+                sp.getInventory().setItem(i, ItemStack.EMPTY);
+                return;
+            }
+        }
     }
 
     private static void removeItem(ServerPlayer sp, ShopItem item) {

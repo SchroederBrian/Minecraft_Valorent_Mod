@@ -54,9 +54,12 @@ public final class RoundController {
                 sp.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_CHESTPLATE));
             }
             ensureDefaultPistol(sp);
+            ensureKnife(sp);
         }
         syncNow();
     }
+
+    public int getCurrentRoundId() { return roundCounter; }
 
     public void stopRound() {
         phase = Phase.IDLE;
@@ -178,6 +181,12 @@ public final class RoundController {
         }
         if (!hasSecondary) {
             sp.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.STONE_SWORD));
+        }
+    }
+
+    private static void ensureKnife(ServerPlayer sp) {
+        if (!sp.getInventory().contains(com.bobby.valorant.registry.ModItems.KNIFE.get().getDefaultInstance())) {
+            sp.getInventory().add(com.bobby.valorant.registry.ModItems.KNIFE.get().getDefaultInstance());
         }
     }
 

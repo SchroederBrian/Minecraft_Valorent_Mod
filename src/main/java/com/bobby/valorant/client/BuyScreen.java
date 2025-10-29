@@ -16,6 +16,8 @@ public class BuyScreen extends Screen {
     private ShopItem.Category selectedCategory = ShopItem.Category.SIDEARM;
     private ShopItem selectedItem = ShopItem.SIDEARM_P200;
     private final List<ShopItem> filtered = new ArrayList<>();
+    private long lastClickTimeMs = 0L;
+    private int lastClickedItemIndex = -1;
 
     public BuyScreen() { super(Component.literal("Shop")); }
 
@@ -61,7 +63,17 @@ public class BuyScreen extends Screen {
             int gx = gridX + (i % cols) * (cellW + 12);
             int gy = gridY + (i / cols) * (cellH + 12);
             if (mx >= gx && mx <= gx + cellW && my >= gy && my <= gy + cellH) {
-                selectedItem = filtered.get(i);
+                long now = System.currentTimeMillis();
+                if (i == lastClickedItemIndex && (now - lastClickTimeMs) <= 350) {
+                    // Double-click detected: buy immediately
+                    sendBuy(filtered.get(i), false);
+                    lastClickedItemIndex = -1;
+                    lastClickTimeMs = 0L;
+                } else {
+                    selectedItem = filtered.get(i);
+                    lastClickedItemIndex = i;
+                    lastClickTimeMs = now;
+                }
                 return true;
             }
         }

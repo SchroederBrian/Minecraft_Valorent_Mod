@@ -29,11 +29,12 @@ public record BuyRequestPacket(String itemName, boolean sell) implements CustomP
             ShopItem item;
             try { item = ShopItem.valueOf(packet.itemName()); } catch (IllegalArgumentException e) { return; }
             RoundController rc = RoundController.get((net.minecraft.server.level.ServerLevel) player.level());
-            boolean isBuy = rc.phase() == RoundController.Phase.BUY;
+            boolean isBuy = rc.phase() == RoundController.Phase.BUY && rc.isInSpawn(player);
+            int roundId = rc.getCurrentRoundId();
             if (packet.sell()) {
-                EconomyData.trySell(player, item, 1, isBuy);
+                EconomyData.trySell(player, item, roundId, isBuy);
             } else {
-                EconomyData.tryBuy(player, item, 1, isBuy);
+                EconomyData.tryBuy(player, item, roundId, isBuy);
             }
         });
     }

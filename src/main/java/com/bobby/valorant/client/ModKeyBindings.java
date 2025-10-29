@@ -12,6 +12,9 @@ public class ModKeyBindings {
     public static KeyMapping OPEN_AGENT_MENU;
     public static KeyMapping USE_ABILITY_1;
     public static KeyMapping OPEN_SHOP;
+    public static KeyMapping SELECT_RIFLE;
+    public static KeyMapping SELECT_PISTOL;
+    public static KeyMapping SELECT_KNIFE;
     
     @SubscribeEvent
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
@@ -38,6 +41,30 @@ public class ModKeyBindings {
                 "category.valorant.valorant"
         );
         event.register(OPEN_SHOP);
+
+        SELECT_RIFLE = new KeyMapping(
+                "key.valorant.select_rifle",
+                com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
+                com.mojang.blaze3d.platform.InputConstants.KEY_1,
+                "category.valorant.valorant"
+        );
+        event.register(SELECT_RIFLE);
+
+        SELECT_PISTOL = new KeyMapping(
+                "key.valorant.select_pistol",
+                com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
+                com.mojang.blaze3d.platform.InputConstants.KEY_2,
+                "category.valorant.valorant"
+        );
+        event.register(SELECT_PISTOL);
+
+        SELECT_KNIFE = new KeyMapping(
+                "key.valorant.select_knife",
+                com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
+                com.mojang.blaze3d.platform.InputConstants.KEY_3,
+                "category.valorant.valorant"
+        );
+        event.register(SELECT_KNIFE);
     }
 }
 

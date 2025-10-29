@@ -118,7 +118,19 @@ public final class ValorantCommand {
                                                     com.bobby.valorant.economy.ShopItem item;
                                                     try { item = com.bobby.valorant.economy.ShopItem.valueOf(id); } catch (IllegalArgumentException ex) { ctx.getSource().sendFailure(Component.literal("Unknown item")); return 0; }
                                                     RoundController rc = RoundController.get(ctx.getSource().getLevel());
-                                                    boolean ok = com.bobby.valorant.economy.EconomyData.tryBuy(sp, item, 1, rc.phase() == RoundController.Phase.BUY && rc.isInSpawn(sp));
+                                                    boolean inPhase = rc.phase() == RoundController.Phase.BUY;
+                                                    boolean inSpawn = rc.isInSpawn(sp);
+                                                    if (!inPhase) { ctx.getSource().sendFailure(Component.literal("Buy failed: not in Buy Phase")); return 0; }
+                                                    if (!inSpawn) { ctx.getSource().sendFailure(Component.literal("Buy failed: left spawn area")); return 0; }
+                                                    int credits = com.bobby.valorant.economy.EconomyData.getCredits(sp);
+                                                    if (credits < item.price) { ctx.getSource().sendFailure(Component.literal("Buy failed: insufficient credits")); return 0; }
+                                                    // Slot rule quick check for secondary upgrades
+                                                    if (item.slot == com.bobby.valorant.economy.ShopItem.Slot.SECONDARY) {
+                                                        // block only if a non-default secondary exists
+                                                        boolean hasNonDefault = hasSecondaryNonDefault(sp);
+                                                        if (hasNonDefault) { ctx.getSource().sendFailure(Component.literal("Buy failed: already have a sidearm")); return 0; }
+                                                    }
+                                                    boolean ok = com.bobby.valorant.economy.EconomyData.tryBuy(sp, item, rc.getCurrentRoundId(), true);
                                                     if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Bought " + id), false); else ctx.getSource().sendFailure(Component.literal("Buy failed"));
                                                     return ok ? 1 : 0;
                                                 })))
@@ -129,12 +141,26 @@ public final class ValorantCommand {
                                                     String id = StringArgumentType.getString(ctx, "item").toUpperCase();
                                                     com.bobby.valorant.economy.ShopItem item;
                                                     try { item = com.bobby.valorant.economy.ShopItem.valueOf(id); } catch (IllegalArgumentException ex) { ctx.getSource().sendFailure(Component.literal("Unknown item")); return 0; }
-                                                    boolean ok = com.bobby.valorant.economy.EconomyData.trySell(sp, item, 1, RoundController.get(ctx.getSource().getLevel()).phase() == RoundController.Phase.BUY);
+                                                    RoundController rc = RoundController.get(ctx.getSource().getLevel());
+                                                    boolean inPhase = rc.phase() == RoundController.Phase.BUY;
+                                                    if (!inPhase) { ctx.getSource().sendFailure(Component.literal("Sell failed: not in Buy Phase")); return 0; }
+                                                    boolean ok = com.bobby.valorant.economy.EconomyData.trySell(sp, item, rc.getCurrentRoundId(), true);
                                                     if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Sold " + id), false); else ctx.getSource().sendFailure(Component.literal("Sell failed"));
                                                     return ok ? 1 : 0;
                                                 })))
                         )
         );
+    }
+
+    private static boolean hasSecondaryNonDefault(ServerPlayer sp) {
+        int size = sp.getInventory().getContainerSize();
+        for (int i = 0; i < size; i++) {
+            var s = sp.getInventory().getItem(i);
+            if (s.isEmpty()) continue;
+            if (s.is(net.minecraft.world.item.Items.STONE_SWORD)) continue;
+            if (s.is(net.minecraft.world.item.Items.IRON_SWORD) || s.is(com.bobby.valorant.registry.ModItems.GHOST.get())) return true;
+        }
+        return false;
     }
 
     private static int setCharges(CommandSourceStack source, Collection<ServerPlayer> players, int amount) {
