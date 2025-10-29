@@ -41,6 +41,54 @@ public final class ValorantCommand {
                                         )
                                 )
                         )
+                        .then(Commands.literal("credits").requires(s -> s.hasPermission(2))
+                                .then(Commands.literal("set")
+                                        .then(Commands.argument("amount", IntegerArgumentType.integer(0))
+                                                .executes(ctx -> {
+                                                    ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                                    int amt = IntegerArgumentType.getInteger(ctx, "amount");
+                                                    com.bobby.valorant.economy.EconomyData.setCredits(sp, amt);
+                                                    com.bobby.valorant.economy.EconomyData.syncCredits(sp);
+                                                    ctx.getSource().sendSuccess(() -> Component.literal("Credits set to " + amt + " for " + sp.getGameProfile().getName()), false);
+                                                    return 1;
+                                                })
+                                                .then(Commands.argument("players", EntityArgument.players())
+                                                        .executes(ctx -> {
+                                                            Collection<ServerPlayer> players = EntityArgument.getPlayers(ctx, "players");
+                                                            int amt = IntegerArgumentType.getInteger(ctx, "amount");
+                                                            for (ServerPlayer sp : players) {
+                                                                com.bobby.valorant.economy.EconomyData.setCredits(sp, amt);
+                                                                com.bobby.valorant.economy.EconomyData.syncCredits(sp);
+                                                            }
+                                                            ctx.getSource().sendSuccess(() -> Component.literal("Credits set to " + amt + " for " + players.size() + " player(s)"), false);
+                                                            return players.size();
+                                                        })))
+                                )
+                                .then(Commands.literal("add")
+                                        .then(Commands.argument("amount", IntegerArgumentType.integer(Integer.MIN_VALUE))
+                                                .executes(ctx -> {
+                                                    ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                                    int delta = IntegerArgumentType.getInteger(ctx, "amount");
+                                                    int newVal = Math.max(0, com.bobby.valorant.economy.EconomyData.getCredits(sp) + delta);
+                                                    com.bobby.valorant.economy.EconomyData.setCredits(sp, newVal);
+                                                    com.bobby.valorant.economy.EconomyData.syncCredits(sp);
+                                                    ctx.getSource().sendSuccess(() -> Component.literal("Credits changed by " + delta + " -> " + newVal + " for " + sp.getGameProfile().getName()), false);
+                                                    return 1;
+                                                })
+                                                .then(Commands.argument("players", EntityArgument.players())
+                                                        .executes(ctx -> {
+                                                            Collection<ServerPlayer> players = EntityArgument.getPlayers(ctx, "players");
+                                                            int delta = IntegerArgumentType.getInteger(ctx, "amount");
+                                                            for (ServerPlayer sp : players) {
+                                                                int newVal = Math.max(0, com.bobby.valorant.economy.EconomyData.getCredits(sp) + delta);
+                                                                com.bobby.valorant.economy.EconomyData.setCredits(sp, newVal);
+                                                                com.bobby.valorant.economy.EconomyData.syncCredits(sp);
+                                                            }
+                                                            ctx.getSource().sendSuccess(() -> Component.literal("Credits changed by " + delta + " for " + players.size() + " player(s)"), false);
+                                                            return players.size();
+                                                        })))
+                                )
+                        )
                         .then(Commands.literal("team")
                                 .then(Commands.literal("join")
                                         .then(Commands.argument("side", StringArgumentType.word())

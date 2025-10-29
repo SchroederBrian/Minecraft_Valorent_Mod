@@ -2,6 +2,7 @@ package com.bobby.valorant.events.client;
 
 import com.bobby.valorant.Config;
 import com.bobby.valorant.Valorant;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

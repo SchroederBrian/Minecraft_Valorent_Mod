@@ -95,10 +95,10 @@ public final class HudOverlay {
 
 	private static void renderAbilities(GuiGraphics g, Player player, int sw, int sh) {
 		int baseX = sw / 2 - 96;   // tighter width overall
-		int baseY = sh - 56;       // slightly closer to bottom
-		int slotW = 36;            // shrink slot width
-		int slotH = 28;            // shrink slot height
-		int gap = 8;               // tighter gap
+		int baseY = sh - 30;       // slightly closer to bottom
+		int slotW = 32;            // shrink slot width
+		int slotH = 24;            // shrink slot height
+		int gap = 6;               // tighter gap
 
 		// Panel background (tighter padding)
 		g.fill(baseX - 8, baseY - 6, baseX + 4 * (slotW + gap) - gap + 8, baseY + slotH + 16, 0x40000000);

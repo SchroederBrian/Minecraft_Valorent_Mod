@@ -50,6 +50,7 @@ public final class RoundController {
             sp.setHealth(sp.getMaxHealth());
             if (overtimeBudget > 0) {
                 com.bobby.valorant.economy.EconomyData.setCredits(sp, overtimeBudget);
+                com.bobby.valorant.economy.EconomyData.syncCredits(sp);
                 // Give heavy armor baseline in OT
                 sp.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_CHESTPLATE));
             }

@@ -5,6 +5,7 @@ import com.bobby.valorant.network.GiveCurveballPacket;
 import com.bobby.valorant.network.RemoveCurveballPacket;
 import com.bobby.valorant.network.SyncCurveballChargesPacket;
 import com.bobby.valorant.network.SyncRoundStatePacket;
+import com.bobby.valorant.network.SyncCreditsPacket;
 import com.bobby.valorant.network.ThrowCurveballPacket;
 import com.bobby.valorant.network.BuyRequestPacket;
 import com.bobby.valorant.network.EquipCurveballPacket;
@@ -25,7 +26,8 @@ public final class ModNetworking {
                 .playToServer(BuyRequestPacket.TYPE, BuyRequestPacket.STREAM_CODEC, BuyRequestPacket::handle)
                 .playToServer(EquipCurveballPacket.TYPE, EquipCurveballPacket.STREAM_CODEC, EquipCurveballPacket::handle)
                 .playToClient(SyncCurveballChargesPacket.TYPE, SyncCurveballChargesPacket.STREAM_CODEC, SyncCurveballChargesPacket::handle)
-                .playToClient(SyncRoundStatePacket.TYPE, SyncRoundStatePacket.STREAM_CODEC, SyncRoundStatePacket::handle);
+                .playToClient(SyncRoundStatePacket.TYPE, SyncRoundStatePacket.STREAM_CODEC, SyncRoundStatePacket::handle)
+                .playToClient(SyncCreditsPacket.TYPE, SyncCreditsPacket.STREAM_CODEC, SyncCreditsPacket::handle);
     }
 }
 

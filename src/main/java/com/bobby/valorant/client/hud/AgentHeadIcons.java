@@ -1,18 +1,19 @@
 package com.bobby.valorant.client.hud;
 
-import com.bobby.valorant.world.agent.Agent;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ResolvableProfile;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
+
+import com.bobby.valorant.world.agent.Agent;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ResolvableProfile;
 
 /**
  * Creates ItemStack player-head icons for agents using developer texture URLs.

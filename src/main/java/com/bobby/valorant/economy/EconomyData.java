@@ -61,6 +61,8 @@ public final class EconomyData {
         Set<String> p = getPurchases(sp);
         p.add(item.name());
         setPurchases(sp, p);
+        // sync to client
+        syncCredits(sp);
         return true;
     }
 
@@ -72,6 +74,8 @@ public final class EconomyData {
         setPurchases(sp, p);
         setCredits(sp, getCredits(sp) + item.price);
         removeItem(sp, item);
+        // sync to client
+        syncCredits(sp);
         return true;
     }
 
@@ -150,6 +154,11 @@ public final class EconomyData {
             }
         }
         sp.containerMenu.broadcastChanges();
+    }
+
+    public static void syncCredits(ServerPlayer sp) {
+        int credits = getCredits(sp);
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(sp, new com.bobby.valorant.network.SyncCreditsPacket(credits));
     }
 
     private static CompoundTag root(Player p) {
