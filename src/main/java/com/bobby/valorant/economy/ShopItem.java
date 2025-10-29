@@ -6,7 +6,7 @@ import net.minecraft.world.item.Items;
 
 public enum ShopItem {
     // Prices use simple placeholders for MVP
-    SIDEARM_P200(Category.SIDEARM, "Classic", 200, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(Items.STONE_SWORD); }},
+    SIDEARM_P200(Category.SIDEARM, "Classic", 200, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(ModItems.CLASSIC.get()); }},
     SIDEARM_GHOST(Category.SIDEARM, "Ghost", 500, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(ModItems.GHOST.get()); }},
 
     SMG_STINGER(Category.SMG, "Stinger", 1200, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.CROSSBOW); }},

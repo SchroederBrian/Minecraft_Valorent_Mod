@@ -1,11 +1,9 @@
 {
 	"format_version": "1.21.6",
 	"credit": "Made with Blockbench",
-	"parent": "Classic",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "valorant:item/classic",
-		"particle": "valorant:item/classic"
+		"0": "valorant:item/classic"
 	},
 	"elements": [
 		{
