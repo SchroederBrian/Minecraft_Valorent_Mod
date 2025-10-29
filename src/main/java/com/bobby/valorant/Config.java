@@ -39,6 +39,9 @@ public final class Config {
         public final ModConfigSpec.BooleanValue showValorantHud;
         public final ModConfigSpec.DoubleValue hudScale;
 
+        // Teams
+        public final ModConfigSpec.IntValue maxTeamSize;
+
         Common(ModConfigSpec.Builder builder) {
             builder.push("curveball");
 
@@ -104,6 +107,12 @@ public final class Config {
                     .define("showValorantHud", true);
             hudScale = builder.comment("Global scale factor for the Valorant HUD (1.0 = 100%).")
                     .defineInRange("hudScale", 1.0D, 0.5D, 2.0D);
+            builder.pop();
+
+            // Team settings
+            builder.push("teams");
+            maxTeamSize = builder.comment("Maximum players per team (A and V).")
+                    .defineInRange("maxTeamSize", 5, 1, 10);
             builder.pop();
         }
     }

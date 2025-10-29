@@ -2,6 +2,7 @@
 package com.bobby.valorant.network;
 
 import com.bobby.valorant.Valorant;
+import com.bobby.valorant.player.AbilityEquipData;
 import com.bobby.valorant.registry.ModItems;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -27,11 +28,18 @@ public record RemoveCurveballPacket() implements CustomPacketPayload {
                     field.setAccessible(true);
                     int selectedSlot = field.getInt(inv);
                     ItemStack heldStack = inv.getItem(selectedSlot);
+                    Valorant.LOGGER.info("[CURVEBALL] Scroll removal request: slot={}, held={} (empty={})",
+                            selectedSlot, heldStack.getItem(), heldStack.isEmpty());
                     if (heldStack.is(ModItems.CURVEBALL.get())) {
-                        inv.setItem(selectedSlot, ItemStack.EMPTY);
+                        ItemStack restore = AbilityEquipData.takeSaved(serverPlayer);
+                        inv.setItem(selectedSlot, restore);
+                        inv.setChanged();
+                        ItemStack now = inv.getItem(selectedSlot);
+                        Valorant.LOGGER.info("[CURVEBALL] After scroll removal now holding: {} (empty={})",
+                                now.getItem(), now.isEmpty());
                     }
                 } catch (Exception e) {
-                    Valorant.LOGGER.error("Failed to remove curveball via packet", e);
+                    Valorant.LOGGER.error("[CURVEBALL] Failed to remove curveball via packet: {}", e.toString());
                 }
             }
         });

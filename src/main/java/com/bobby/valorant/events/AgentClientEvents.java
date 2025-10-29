@@ -3,14 +3,11 @@ package com.bobby.valorant.events;
 import com.bobby.valorant.Valorant;
 import com.bobby.valorant.client.AgentSelectionScreen;
 import com.bobby.valorant.client.ModKeyBindings;
-import com.bobby.valorant.network.GiveCurveballPacket;
+import com.bobby.valorant.network.EquipCurveballPacket;
 import com.bobby.valorant.player.AgentData;
 import com.bobby.valorant.player.CurveballData;
-import com.bobby.valorant.registry.ModItems;
 import com.bobby.valorant.world.agent.Agent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -48,7 +45,7 @@ public final class AgentClientEvents {
             return;
         }
 
-        Agent selectedAgent = AgentData.getSelectedAgent(minecraft.player);
+        var selectedAgent = AgentData.getSelectedAgent(minecraft.player);
         Valorant.LOGGER.info("[Q DEBUG] Selected agent: {}", selectedAgent);
         
         if (selectedAgent != Agent.PHOENIX) {
@@ -64,24 +61,8 @@ public final class AgentClientEvents {
             return;
         }
 
-        // Check if player already has curveball in inventory
-        Inventory inventory = minecraft.player.getInventory();
-        boolean hasCurveball = false;
-        for (int i = 0; i < Inventory.getSelectionSize(); i++) {
-            ItemStack stack = inventory.getItem(i);
-            if (stack.is(ModItems.CURVEBALL.get())) {
-                hasCurveball = true;
-                Valorant.LOGGER.info("[Q DEBUG] Found curveball in slot {}", i);
-                break;
-            }
-        }
-        
-        if (!hasCurveball) {
-            Valorant.LOGGER.info("[Q DEBUG] Player doesn't have curveball, giving one...");
-            ClientPacketDistributor.sendToServer(new GiveCurveballPacket());
-        } else {
-            Valorant.LOGGER.info("[Q DEBUG] Player already has curveball");
-        }
+        // Ask server to equip curveball into the currently selected slot
+        ClientPacketDistributor.sendToServer(new EquipCurveballPacket());
     }
 }
 

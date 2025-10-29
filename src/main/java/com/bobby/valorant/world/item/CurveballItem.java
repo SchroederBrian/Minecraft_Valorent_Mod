@@ -1,6 +1,8 @@
 package com.bobby.valorant.world.item;
 
 import com.bobby.valorant.Config;
+import com.bobby.valorant.Valorant;
+import com.bobby.valorant.player.AbilityEquipData;
 import com.bobby.valorant.player.CurveballData;
 import com.bobby.valorant.registry.ModEntityTypes;
 import com.bobby.valorant.registry.ModSounds;
@@ -58,7 +60,8 @@ public class CurveballItem extends Item {
         orb.setOwner(player);
         orb.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
         orb.setDeltaMovement(look);
-        orb.setItem(stack);
+        // Use a copy so removing from the player's hand doesn't affect the orb's visual/item
+        orb.setItem(stack.copy());
         orb.configure(direction == TurnDirection.LEFT,
                 Config.COMMON.curveballPreCurveDistance.get(),
                 Config.COMMON.curveballCurveAngleDegrees.get(),
@@ -66,15 +69,26 @@ public class CurveballItem extends Item {
                 Config.COMMON.curveballDetonationDelayTicks.get());
 
         level.addFreshEntity(orb);
+        Valorant.LOGGER.info("[CURVEBALL] Thrown by {} at ({}, {}, {}), dir={}, speed={}",
+                player.getGameProfile().getName(), player.getX(), player.getY(), player.getZ(), direction, speed);
 
         player.swing(hand, true);
         player.getCooldowns().addCooldown(stack, Config.COMMON.curveballThrowCooldownTicks.get());
         level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.CURVEBALL_THROW.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
 
-        if (!player.isCreative()) {
-            stack.shrink(1);
+        // After throwing, restore the previously saved item in the selected slot
+        try {
+            var field = net.minecraft.world.entity.player.Inventory.class.getDeclaredField("selected");
+            field.setAccessible(true);
+            int selectedSlot = field.getInt(player.getInventory());
+
+            ItemStack restore = AbilityEquipData.takeSaved(player);
+            player.getInventory().setItem(selectedSlot, restore);
+            player.getInventory().setChanged();
+        } catch (Exception e) {
+            Valorant.LOGGER.error("[CURVEBALL] Reflection failed while restoring previous item: {}", e.toString());
         }
-        
+
         return true;
     }
 

@@ -11,6 +11,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 public class ModKeyBindings {
     public static KeyMapping OPEN_AGENT_MENU;
     public static KeyMapping USE_ABILITY_1;
+    public static KeyMapping OPEN_SHOP;
     
     @SubscribeEvent
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
@@ -29,6 +30,14 @@ public class ModKeyBindings {
                 "category.valorant.valorant"
         );
         event.register(USE_ABILITY_1);
+
+        OPEN_SHOP = new KeyMapping(
+                "key.valorant.open_shop",
+                com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
+                com.mojang.blaze3d.platform.InputConstants.KEY_B,
+                "category.valorant.valorant"
+        );
+        event.register(OPEN_SHOP);
     }
 }
 

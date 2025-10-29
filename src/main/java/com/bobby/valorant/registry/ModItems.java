@@ -2,6 +2,8 @@ package com.bobby.valorant.registry;
 
 import com.bobby.valorant.Valorant;
 import com.bobby.valorant.world.item.CurveballItem;
+import com.bobby.valorant.world.item.ValorRifleItem;
+import com.bobby.valorant.world.item.GhostPistolItem;
 
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
@@ -15,6 +17,8 @@ public final class ModItems {
 
     // Use registerItem so DeferredRegister injects the id into Item.Properties before construction
     public static final DeferredItem<Item> CURVEBALL = ITEMS.registerItem("curveball", props -> new CurveballItem(props.stacksTo(1)));
+    public static final DeferredItem<Item> VALOR_RIFLE = ITEMS.registerItem("valor_rifle", props -> new ValorRifleItem(props.stacksTo(1)));
+    public static final DeferredItem<Item> GHOST = ITEMS.registerItem("ghost", props -> new GhostPistolItem(props.stacksTo(1)));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
