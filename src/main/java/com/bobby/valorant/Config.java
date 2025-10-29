@@ -23,10 +23,14 @@ public final class Config {
         public final ModConfigSpec.IntValue curveballCurveDurationTicks;
         public final ModConfigSpec.DoubleValue curveballCurveAngleDegrees;
         public final ModConfigSpec.IntValue curveballDetonationDelayTicks;
-        public final ModConfigSpec.IntValue curveballFlashDurationTicks;
         public final ModConfigSpec.DoubleValue curveballFlashRadius;
         public final ModConfigSpec.DoubleValue curveballFlashConeAngleDegrees;
         public final ModConfigSpec.BooleanValue curveballAffectsThrower;
+        
+        // Flash timing controls
+        public final ModConfigSpec.IntValue curveballFlashWindupTicks;
+        public final ModConfigSpec.IntValue curveballFlashFullTicks;
+        public final ModConfigSpec.IntValue curveballFlashFadeTicks;
         
         // Agent settings
         public final ModConfigSpec.BooleanValue agentSelectionEnabled;
@@ -46,7 +50,7 @@ public final class Config {
             builder.push("curveball");
 
             curveballMaxCharges = builder.comment("Maximum Curveball charges a player can hold at once.")
-                    .defineInRange("maxCharges", 2, 1, 6);
+                    .defineInRange("maxCharges", 2, 2, 2);
 
             curveballKillRechargeThreshold = builder.comment("Number of kills required to restore one Curveball charge.")
                     .defineInRange("killRechargeThreshold", 2, 1, 10);
@@ -55,13 +59,13 @@ public final class Config {
                     .defineInRange("throwCooldownTicks", 20, 0, 20 * 30);
 
             curveballInitialVelocity = builder.comment("Initial forward velocity applied to the Curveball orb.")
-                    .defineInRange("initialVelocity", 1.7D, 0.1D, 5.0D);
+                    .defineInRange("initialVelocity", 0.8D, 0.8D, 0.8D);
 
             curveballPreCurveDistance = builder.comment("Distance in blocks the orb travels before beginning its curve.")
-                    .defineInRange("preCurveDistance", 2.25D, 0.5D, 10.0D);
+                    .defineInRange("preCurveDistance", 2.5D, 2.5D, 2.5D);
 
             curveballCurveDurationTicks = builder.comment("Duration in ticks for the curved segment of the orb's flight.")
-                    .defineInRange("curveDurationTicks", 12, 4, 60);
+                    .defineInRange("curveDurationTicks", 6, 6, 6);
 
             curveballCurveAngleDegrees = builder.comment("Total turn angle in degrees during the curve segment (left/right based on input).")
                     .defineInRange("curveAngleDegrees", 90.0D, 10.0D, 180.0D);
@@ -69,17 +73,30 @@ public final class Config {
             curveballDetonationDelayTicks = builder.comment("Ticks after completing the curve before the orb detonates.")
                     .defineInRange("detonationDelayTicks", 5, 0, 60);
 
-            curveballFlashDurationTicks = builder.comment("Duration in ticks of the blindness effect applied by Curveball.")
-                    .defineInRange("flashDurationTicks", 30, 1, 20 * 10);
-
             curveballFlashRadius = builder.comment("Maximum radius in blocks for Curveball to blind entities.")
-                    .defineInRange("flashRadius", 16.0D, 1.0D, 64.0D);
+                    .defineInRange("flashRadius", 32.0D, 1.0D, 64.0D);
 
             curveballFlashConeAngleDegrees = builder.comment("Field-of-view cone angle used to determine if entities are looking at the detonation (degrees).")
                     .defineInRange("flashConeAngleDegrees", 130.0D, 30.0D, 180.0D);
 
             curveballAffectsThrower = builder.comment("If true, the thrower can be blinded by their own Curveball when facing it.")
                     .define("affectsThrower", true);
+
+            // New: Flash timing controls
+            builder.comment("Flash timing: windup before flash, full-white hold, then slow fade").push("curveball.flashTiming");
+            // 0.5s windup
+            curveballFlashWindupTicks = builder
+                    .comment("Windup delay after detonation before flash starts (ticks)")
+                    .defineInRange("windupTicks", 10, 0, 20 * 5);
+            // 1.5s full white
+            curveballFlashFullTicks = builder
+                    .comment("Duration of full-white screen with no fade (ticks)")
+                    .defineInRange("fullTicks", 30, 1, 20 * 10);
+            // Slow fade (default 2.0s)
+            curveballFlashFadeTicks = builder
+                    .comment("Fade-out duration after full-white completes (ticks)")
+                    .defineInRange("fadeTicks", 60, 1, 20 * 10);
+            builder.pop();
 
             builder.pop();
             

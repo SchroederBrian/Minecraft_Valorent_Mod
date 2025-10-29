@@ -1,6 +1,7 @@
 package com.bobby.valorant.events.client;
 
 import com.bobby.valorant.Valorant;
+import com.bobby.valorant.client.hud.FlashOverlay;
 import com.bobby.valorant.client.hud.HudOverlay;
 
 import net.minecraft.client.DeltaTracker;
@@ -23,5 +24,6 @@ public final class ClientModBusEvents {
 
     private static void renderCustomHud(GuiGraphics gg, DeltaTracker deltaTracker) {
         HudOverlay.render(gg);
+        FlashOverlay.render(gg);
     }
 }

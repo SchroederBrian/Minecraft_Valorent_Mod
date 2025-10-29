@@ -32,7 +32,7 @@ public final class HudOverlay {
 
 		renderTopPlayerBar(guiGraphics, mc, player, screenWidth);
 		renderHealthCard(guiGraphics, mc, player, screenHeight);
-		renderAbilities(guiGraphics, player, screenWidth, screenHeight);
+		renderModernAbilitiesBar(guiGraphics, player, screenWidth, screenHeight);
 		renderWeaponInfo(guiGraphics, mc, player, screenWidth, screenHeight);
 	}
 
@@ -93,62 +93,6 @@ public final class HudOverlay {
 		return (a & 0xFF) << 24 | (r & 0xFF) << 16 | (g & 0xFF) << 8 | (b & 0xFF);
 	}
 
-	private static void renderAbilities(GuiGraphics g, Player player, int sw, int sh) {
-		int baseX = sw / 2 - 96;   // tighter width overall
-		int baseY = sh - 30;       // slightly closer to bottom
-		int slotW = 32;            // shrink slot width
-		int slotH = 24;            // shrink slot height
-		int gap = 6;               // tighter gap
-
-		// Panel background (tighter padding)
-		g.fill(baseX - 8, baseY - 6, baseX + 4 * (slotW + gap) - gap + 8, baseY + slotH + 16, 0x40000000);
-
-		// Slot 1: C (placeholder)
-		drawAbilitySlot(g, baseX + 0 * (slotW + gap), baseY, slotW, slotH,
-				null, getKeyLabel("C", null), 1);
-
-		// Slot 2: Q (Curveball item icon and real charges)
-		ItemStack curveballIcon = new ItemStack(com.bobby.valorant.registry.ModItems.CURVEBALL.get());
-		int cbCharges = com.bobby.valorant.player.CurveballData.getCharges(player);
-		String qKey = getKeyLabel("Q", com.bobby.valorant.client.ModKeyBindings.USE_ABILITY_1);
-		drawAbilitySlot(g, baseX + 1 * (slotW + gap), baseY, slotW, slotH,
-				curveballIcon, qKey, Math.max(0, cbCharges));
-
-		// Slot 3: E (placeholder)
-		drawAbilitySlot(g, baseX + 2 * (slotW + gap), baseY, slotW, slotH,
-				null, getKeyLabel("E", null), 1);
-
-		// Slot 4: X (ultimate placeholder with 0/5 dots style later)
-		drawAbilitySlot(g, baseX + 3 * (slotW + gap), baseY, slotW, slotH,
-				null, getKeyLabel("X", null), 0);
-	}
-
-	private static String getKeyLabel(String fallback, net.minecraft.client.KeyMapping mapping) {
-		if (mapping != null) {
-			String text = mapping.getTranslatedKeyMessage().getString();
-			if (text != null && !text.isEmpty()) return text;
-		}
-		return fallback;
-	}
-
-	private static void drawAbilitySlot(GuiGraphics g, int x, int y, int w, int h,
-										ItemStack icon, String keyLabel, int charges) {
-		// Slot background
-		g.fill(x, y, x + w, y + h, 0x90000000);
-		// Top key label
-		g.drawString(net.minecraft.client.Minecraft.getInstance().font, keyLabel, x + 4, y + 4, 0xFFFFFFFF, false);
-		// Icon
-		if (icon != null && !icon.isEmpty()) {
-			g.renderItem(icon, x + (w / 2) - 8, y + 8);
-		} else {
-			// faint placeholder
-			g.fill(x + (w / 2) - 6, y + 10, x + (w / 2) + 6, y + 22, 0x40FFFFFF);
-		}
-		// Charges under the slot
-		String cText = String.valueOf(Math.max(0, charges));
-		g.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font, cText, x + w / 2, y + h + 6, 0xFFFFFFFF);
-	}
-
 	private static void renderTopPlayerBar(GuiGraphics g, net.minecraft.client.Minecraft mc, Player local, int sw) {
 		final net.minecraft.client.multiplayer.ClientLevel level = mc.level;
 		if (level == null) return;
@@ -171,7 +115,7 @@ public final class HudOverlay {
 
 		int slots = 5;
 		int slotW = 28; // tighter
-		int slotH = 22; // tighter
+		int slotH = 24; // tighter
 		int gap = 4;    // tighter
 		int timerW = 60; // tighter timer chip
 		int y = 8;
@@ -224,6 +168,103 @@ public final class HudOverlay {
 			com.bobby.valorant.world.agent.Agent agent = com.bobby.valorant.player.AgentData.getSelectedAgent(p);
 			ItemStack head = com.bobby.valorant.client.hud.AgentHeadIcons.get(agent);
 			g.renderItem(head, x + w / 2 - 8, y + 4);
+		}
+	}
+
+	private static void renderModernAbilitiesBar(GuiGraphics g, Player player, int sw, int sh) {
+		int slotW = 32;
+		int slotH = 32;
+		int gap = 6;
+		int totalSlots = 4;
+		int panelWidth = totalSlots * slotW + (totalSlots - 1) * gap;
+		int baseX = sw / 2 - panelWidth / 2;
+		int baseY = sh - slotH - 42;
+
+		// Background - a subtle gradient borrowing from health card style
+		//int bgTop = argb(160, 12, 14, 16);
+		//int bgBottom = argb(160, 8, 9, 11);
+		//g.fillGradient(baseX - 12, baseY - 12, baseX + panelWidth + 12, baseY + slotH + 12, bgTop, bgBottom);
+
+		// Define abilities
+		ItemStack curveballIcon = new ItemStack(com.bobby.valorant.registry.ModItems.CURVEBALL.get());
+		int cbCharges = com.bobby.valorant.player.CurveballData.getCharges(player);
+		int maxCbCharges = com.bobby.valorant.Config.COMMON.curveballMaxCharges.get();
+		String qKey = getKeyLabel("Q", com.bobby.valorant.client.ModKeyBindings.USE_ABILITY_1);
+
+		// Draw slots with new modern style
+		// Slot 1: C (Placeholder)
+		drawModernAbilitySlot(g, baseX, baseY, slotW, slotH, null, "C", 1, 1, false, 0);
+
+		// Slot 2: Q (Curveball)
+		drawModernAbilitySlot(g, baseX + slotW + gap, baseY, slotW, slotH, curveballIcon, qKey, cbCharges, maxCbCharges, false, 0);
+
+		// Slot 3: E (Placeholder)
+		drawModernAbilitySlot(g, baseX + 2 * (slotW + gap), baseY, slotW, slotH, null, "E", 1, 1, false, 0);
+
+		// Slot 4: X (Ultimate)
+		// For now, let's assume ultimate points are tracked from 0 to 6
+		int ultimatePoints = com.bobby.valorant.player.UltimateData.getPoints(player);
+		drawModernAbilitySlot(g, baseX + 3 * (slotW + gap), baseY, slotW, slotH, null, "X", ultimatePoints, 6, true, ultimatePoints);
+	}
+
+	private static String getKeyLabel(String fallback, net.minecraft.client.KeyMapping mapping) {
+		if (mapping != null) {
+			String text = mapping.getTranslatedKeyMessage().getString();
+			if (text != null && !text.isEmpty()) return text;
+		}
+		return fallback;
+	}
+
+	private static void drawModernAbilitySlot(GuiGraphics g, int x, int y, int w, int h,
+											  ItemStack icon, String keyLabel, int charges, int maxCharges,
+											  boolean isUltimate, int ultimatePoints) {
+		net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+
+		// Determine state colors
+		boolean isAvailable = charges > 0 || (isUltimate && ultimatePoints >= maxCharges);
+		int accentColor;
+		if (isAvailable) {
+			accentColor = charges == 1 && !isUltimate ? argb(255, 255, 220, 100) : argb(255, 100, 220, 255); // Yellowish for last charge, else cyan
+		} else {
+			accentColor = argb(255, 180, 80, 80); // Red when not available
+		}
+
+		// Main slot background
+		g.fill(x, y, x + w, y + h, argb(180, 20, 22, 28));
+
+		// Accent line at the bottom
+		g.fill(x, y + h - 3, x + w, y + h, accentColor);
+
+		// Icon
+		if (icon != null && !icon.isEmpty()) {
+			g.renderItem(icon, x + w / 2 - 8, y + h / 2 - 8);
+		} else {
+			// Placeholder shape for empty/ultimate
+			if (isUltimate) { // Diamond for ult
+				g.drawString(mc.font, "◆", x + w/2 - mc.font.width("◆")/2, y + h/2 - 4, argb(isAvailable ? 255:100, 255, 255, 255));
+			} else { // Circle for basic
+				g.drawCenteredString(mc.font, "●", x + w/2, y + h/2 - 4, argb(isAvailable ? 200:80, 255, 255, 255));
+			}
+		}
+
+		// Key label in top-left
+		g.drawString(mc.font, keyLabel, x + 4, y + 4, 0xFFFFFFFF);
+
+		// Charges or Ultimate points
+		if (isUltimate) {
+			int dotSize = 2;
+			int dotGap = 2;
+			int totalDotWidth = maxCharges * dotSize + Math.max(0, (maxCharges - 1)) * dotGap;
+			int dotStartX = x + w / 2 - totalDotWidth / 2;
+			int dotY = y + h - dotSize - 8;
+			for (int i = 0; i < maxCharges; i++) {
+				int dotColor = i < ultimatePoints ? argb(255, 255, 255, 255) : argb(100, 255, 255, 255);
+				g.fill(dotStartX + i * (dotSize + dotGap), dotY, dotStartX + i * (dotSize + dotGap) + dotSize, dotY + dotSize, dotColor);
+			}
+		} else {
+			// Regular charges in bottom-right
+			String cText = String.valueOf(charges);
+			g.drawString(mc.font, cText, x + w - mc.font.width(cText) - 4, y + h - mc.font.lineHeight - 4, 0xFFFFFFFF);
 		}
 	}
 

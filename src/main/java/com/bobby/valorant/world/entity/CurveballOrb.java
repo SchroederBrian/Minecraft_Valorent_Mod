@@ -3,6 +3,7 @@ package com.bobby.valorant.world.entity;
 import java.util.List;
 
 import com.bobby.valorant.Config;
+import com.bobby.valorant.network.TriggerFlashPacket;
 import com.bobby.valorant.registry.ModEntityTypes;
 import com.bobby.valorant.registry.ModItems;
 import com.bobby.valorant.registry.ModSounds;
@@ -12,8 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
@@ -22,6 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class CurveballOrb extends ThrowableItemProjectile {
     private static final double EPSILON = 1.0E-4D;
@@ -113,7 +113,7 @@ public class CurveballOrb extends ThrowableItemProjectile {
             return;
         }
 
-        double angle = yawPerTickRadians * (curveLeft ? 1.0D : -1.0D);
+        double angle = yawPerTickRadians * (curveLeft ? -1.0D : 1.0D);
         double cos = Math.cos(angle);
         double sin = Math.sin(angle);
         double newX = movement.x * cos - movement.z * sin;
@@ -129,7 +129,9 @@ public class CurveballOrb extends ThrowableItemProjectile {
 
         double radius = Config.COMMON.curveballFlashRadius.get();
         double coneAngle = Config.COMMON.curveballFlashConeAngleDegrees.get();
-        int duration = Config.COMMON.curveballFlashDurationTicks.get();
+        int windup = Config.COMMON.curveballFlashWindupTicks.get();
+        int full = Config.COMMON.curveballFlashFullTicks.get();
+        int fade = Config.COMMON.curveballFlashFadeTicks.get();
 
         Vec3 center = position();
         AABB area = getBoundingBox().inflate(radius);
@@ -138,7 +140,7 @@ public class CurveballOrb extends ThrowableItemProjectile {
             if (!shouldBlind(target, center, radius, coneAngle)) {
                 continue;
             }
-            target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, duration, 0, false, false));
+            PacketDistributor.sendToPlayer(target, new TriggerFlashPacket(windup, full, fade));
         }
 
         serverLevel.sendParticles(ParticleTypes.FLASH, getX(), getY(), getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);

@@ -9,6 +9,8 @@ import com.bobby.valorant.network.SyncCreditsPacket;
 import com.bobby.valorant.network.ThrowCurveballPacket;
 import com.bobby.valorant.network.BuyRequestPacket;
 import com.bobby.valorant.network.EquipCurveballPacket;
+import com.bobby.valorant.network.TriggerFlashPacket;
+import com.bobby.valorant.network.SyncUltimatePointsPacket;
 
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
@@ -27,7 +29,9 @@ public final class ModNetworking {
                 .playToServer(EquipCurveballPacket.TYPE, EquipCurveballPacket.STREAM_CODEC, EquipCurveballPacket::handle)
                 .playToClient(SyncCurveballChargesPacket.TYPE, SyncCurveballChargesPacket.STREAM_CODEC, SyncCurveballChargesPacket::handle)
                 .playToClient(SyncRoundStatePacket.TYPE, SyncRoundStatePacket.STREAM_CODEC, SyncRoundStatePacket::handle)
-                .playToClient(SyncCreditsPacket.TYPE, SyncCreditsPacket.STREAM_CODEC, SyncCreditsPacket::handle);
+                .playToClient(SyncCreditsPacket.TYPE, SyncCreditsPacket.STREAM_CODEC, SyncCreditsPacket::handle)
+                .playToClient(TriggerFlashPacket.TYPE, TriggerFlashPacket.STREAM_CODEC, TriggerFlashPacket::handle)
+                .playToClient(SyncUltimatePointsPacket.TYPE, SyncUltimatePointsPacket.STREAM_CODEC, SyncUltimatePointsPacket::handle);
     }
 }
 
