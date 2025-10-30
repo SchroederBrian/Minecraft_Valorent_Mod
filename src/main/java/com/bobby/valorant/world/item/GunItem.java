@@ -37,18 +37,16 @@ public abstract class GunItem extends Item {
 
     @Override
     public InteractionResult use(Level level, net.minecraft.world.entity.player.Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (level.isClientSide) {
-            return InteractionResult.SUCCESS;
-        }
+        // Disable right-click firing for guns; left-click will be handled via events/packet
+        return InteractionResult.PASS;
+    }
 
-        ServerPlayer serverPlayer = (ServerPlayer) player;
-        if (serverPlayer.getCooldowns().isOnCooldown(stack)) {
-            return InteractionResult.FAIL;
+    // Public entry for server-side callers (packets/events) to fire the gun
+    public boolean fire(ServerPlayer player, InteractionHand hand, ItemStack stack) {
+        if (player.getCooldowns().isOnCooldown(stack)) {
+            return false;
         }
-
-        boolean fired = shoot(serverPlayer, hand, stack);
-        return fired ? InteractionResult.SUCCESS_SERVER : InteractionResult.FAIL;
+        return shoot(player, hand, stack);
     }
 
     protected boolean shoot(ServerPlayer player, InteractionHand hand, ItemStack stack) {

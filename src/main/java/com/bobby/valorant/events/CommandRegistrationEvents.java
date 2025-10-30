@@ -12,6 +12,6 @@ public final class CommandRegistrationEvents {
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
-        ValorantCommand.register(event.getDispatcher());
+        ValorantCommand.register(event.getDispatcher(), event.getBuildContext());
     }
 }

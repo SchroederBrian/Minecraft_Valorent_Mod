@@ -1,5 +1,6 @@
 package com.bobby.valorant.client.hud;
 
+import com.bobby.valorant.player.FireballData;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -198,8 +199,12 @@ public final class HudOverlay {
 		// Slot 2: Q (Curveball)
 		drawModernAbilitySlot(g, baseX + slotW + gap, baseY, slotW, slotH, curveballIcon, qKey, cbCharges, maxCbCharges, false, 0);
 
-		// Slot 3: E (Placeholder)
-		drawModernAbilitySlot(g, baseX + 2 * (slotW + gap), baseY, slotW, slotH, null, "E", 1, 1, false, 0);
+		// Slot 3: E (Fireball)
+		ItemStack fireballIcon = new ItemStack(com.bobby.valorant.registry.ModItems.FIREBALL.get());
+		int fbCharges = FireballData.getCharges(player);
+		int maxFbCharges = com.bobby.valorant.Config.COMMON.fireballMaxCharges.get();
+		String eKey = getKeyLabel("E", com.bobby.valorant.client.ModKeyBindings.USE_ABILITY_2);
+		drawModernAbilitySlot(g, baseX + 2 * (slotW + gap), baseY, slotW, slotH, fireballIcon, eKey, fbCharges, maxFbCharges, false, 0);
 
 		// Slot 4: X (Ultimate)
 		// For now, let's assume ultimate points are tracked from 0 to 6

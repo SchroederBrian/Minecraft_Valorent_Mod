@@ -1,17 +1,24 @@
 package com.bobby.valorant.command;
 
 import com.bobby.valorant.player.CurveballData;
+import com.bobby.valorant.player.FireballData;
 import com.bobby.valorant.round.RoundController;
 import com.bobby.valorant.round.TeamManager;
+import com.bobby.valorant.util.ParticleScheduler;
+import com.bobby.valorant.Config;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.commands.CommandBuildContext;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,9 +26,67 @@ import java.util.List;
 public final class ValorantCommand {
     private ValorantCommand() {}
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         dispatcher.register(
                 Commands.literal("valorant")
+                        .then(Commands.literal("particle")
+                                .requires(source -> source.hasPermission(2))
+                                .then(Commands.argument("particle", ParticleArgument.particle(buildContext))
+                                        .executes(ctx -> {
+                                            ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                            ParticleOptions po = ParticleArgument.getParticle(ctx, "particle");
+                                            int duration = Config.COMMON.particleCommandDefaultDurationTicks.get();
+                                            spawnScheduledParticles(sp, po, 0, 0, 0, 0.0D, 100, duration);
+                                            ctx.getSource().sendSuccess(() -> Component.literal("Scheduled particles for " + duration + " ticks"), false);
+                                            return 1;
+                                        })
+                                        .then(Commands.argument("duration", IntegerArgumentType.integer(1))
+                                                .executes(ctx -> {
+                                                    ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                                    ParticleOptions po = ParticleArgument.getParticle(ctx, "particle");
+                                                    int duration = IntegerArgumentType.getInteger(ctx, "duration");
+                                                    spawnScheduledParticles(sp, po, 0, 0, 0, 0.0D, 100, duration);
+                                                    ctx.getSource().sendSuccess(() -> Component.literal("Scheduled particles for " + duration + " ticks"), false);
+                                                    return 1;
+                                                })
+                                                .then(Commands.argument("count", IntegerArgumentType.integer(1))
+                                                        .then(Commands.argument("dx", DoubleArgumentType.doubleArg())
+                                                                .then(Commands.argument("dy", DoubleArgumentType.doubleArg())
+                                                                        .then(Commands.argument("dz", DoubleArgumentType.doubleArg())
+                                                                                .then(Commands.argument("speed", DoubleArgumentType.doubleArg(0.0D))
+                                                                                        .executes(ctx -> {
+                                                                                            ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                                                                            ParticleOptions po = ParticleArgument.getParticle(ctx, "particle");
+                                                                                            int duration = IntegerArgumentType.getInteger(ctx, "duration");
+                                                                                            int count = IntegerArgumentType.getInteger(ctx, "count");
+                                                                                            double dx = DoubleArgumentType.getDouble(ctx, "dx");
+                                                                                            double dy = DoubleArgumentType.getDouble(ctx, "dy");
+                                                                                            double dz = DoubleArgumentType.getDouble(ctx, "dz");
+                                                                                            double speed = DoubleArgumentType.getDouble(ctx, "speed");
+                                                                                            spawnScheduledParticles(sp, po, dx, dy, dz, speed, count, duration);
+                                                                                            ctx.getSource().sendSuccess(() -> Component.literal("Scheduled particles for " + duration + " ticks"), false);
+                                                                                            return 1;
+                                                                                        }))))))))
+                        )
+                        .then(Commands.literal("fireball")
+                                .then(Commands.literal("charges")
+                                        .requires(source -> source.hasPermission(2))
+                                        .then(Commands.argument("amount", IntegerArgumentType.integer(0))
+                                                .executes(context -> {
+                                                    ServerPlayer player = context.getSource().getPlayerOrException();
+                                                    int amount = IntegerArgumentType.getInteger(context, "amount");
+                                                    return setFireballCharges(context.getSource(), List.of(player), amount);
+                                                })
+                                                .then(Commands.argument("players", EntityArgument.players())
+                                                        .executes(context -> {
+                                                            int amount = IntegerArgumentType.getInteger(context, "amount");
+                                                            Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
+                                                            return setFireballCharges(context.getSource(), players, amount);
+                                                        })
+                                                )
+                                        )
+                                )
+                        )
                         .then(Commands.literal("curveball")
                                 .then(Commands.literal("charges")
                                         .requires(source -> source.hasPermission(2))
@@ -200,6 +265,19 @@ public final class ValorantCommand {
         );
     }
 
+    private static void spawnScheduledParticles(ServerPlayer sp,
+                                                ParticleOptions po,
+                                                double dx, double dy, double dz,
+                                                double speed,
+                                                int count,
+                                                int duration) {
+        ServerLevel level = (ServerLevel) sp.level();
+        double x = sp.getX();
+        double y = sp.getY();
+        double z = sp.getZ();
+        ParticleScheduler.spawnRepeating(level, po, x, y, z, count, dx, dy, dz, speed, duration);
+    }
+
     private static boolean hasSecondaryNonDefault(ServerPlayer sp) {
         int size = sp.getInventory().getContainerSize();
         for (int i = 0; i < size; i++) {
@@ -217,6 +295,17 @@ public final class ValorantCommand {
         }
 
         Component message = Component.translatable("commands.valorant.curveball.charges.set", amount, players.size());
+        source.sendSuccess(() -> message, true);
+
+        return players.size();
+    }
+
+    private static int setFireballCharges(CommandSourceStack source, Collection<ServerPlayer> players, int amount) {
+        for (ServerPlayer player : players) {
+            FireballData.setCharges(player, amount);
+        }
+
+        Component message = Component.translatable("commands.valorant.fireball.charges.set", amount, players.size());
         source.sendSuccess(() -> message, true);
 
         return players.size();

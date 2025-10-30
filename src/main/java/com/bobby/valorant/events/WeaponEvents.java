@@ -6,12 +6,16 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+// Import RoundController
+import com.bobby.valorant.round.RoundController;
 
 @EventBusSubscriber(modid = Valorant.MODID)
 public final class WeaponEvents {
@@ -20,6 +24,16 @@ public final class WeaponEvents {
     @SubscribeEvent
     public static void onDeathRemoveWeapons(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer sp)) return;
+        // Drop Spike if present
+        int invSize = sp.getInventory().getContainerSize();
+        for (int i = 0; i < invSize; i++) {
+            ItemStack s = sp.getInventory().getItem(i);
+            if (s.is(ModItems.SPIKE.get())) {
+                ItemEntity ent = new ItemEntity(sp.level(), sp.getX(), sp.getY() + 0.5, sp.getZ(), s.copyWithCount(1));
+                sp.level().addFreshEntity(ent);
+                sp.getInventory().setItem(i, ItemStack.EMPTY);
+            }
+        }
         // Find first primary (rifle-like) to drop manually
         ItemStack toDrop = ItemStack.EMPTY;
         int dropSlot = -1;
@@ -49,6 +63,28 @@ public final class WeaponEvents {
         }
         // Ensure knife present
         ensureKnife(sp);
+
+        // Persist death location for custom spectator flow
+        com.bobby.valorant.player.SpectatorData.markDeath(sp);
+
+        // Apply spectator-like effects immediately
+        sp.getAbilities().mayfly = true;
+        sp.getAbilities().flying = true;
+        sp.onUpdateAbilities();
+        sp.setInvulnerable(true);
+        sp.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 20 * 60 * 60, 0, false, false));
+        sp.setInvisible(true);
+
+        // Re-apply on next tick to survive respawn overrides
+        sp.getServer().execute(() -> {
+            if (!sp.isAlive()) return;
+            sp.getAbilities().mayfly = true;
+            sp.getAbilities().flying = true;
+            sp.onUpdateAbilities();
+            sp.setInvulnerable(true);
+            sp.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 20 * 60 * 60, 0, false, false));
+            sp.setInvisible(true);
+        });
     }
 
     @SubscribeEvent

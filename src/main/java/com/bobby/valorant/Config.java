@@ -32,6 +32,23 @@ public final class Config {
         public final ModConfigSpec.IntValue curveballFlashFullTicks;
         public final ModConfigSpec.IntValue curveballFlashFadeTicks;
         
+        // Fireball settings
+        public final ModConfigSpec.IntValue fireballMaxCharges;
+        public final ModConfigSpec.IntValue fireballKillRechargeThreshold;
+        public final ModConfigSpec.IntValue fireballThrowCooldownTicks;
+        public final ModConfigSpec.DoubleValue fireballInitialVelocity;
+        public final ModConfigSpec.DoubleValue fireballDamage;
+        public final ModConfigSpec.DoubleValue fireballExplosionRadius;
+        // Fireball molly cloud
+        public final ModConfigSpec.DoubleValue fireballMollyRadius;
+        public final ModConfigSpec.IntValue fireballMollyDurationTicks;
+        public final ModConfigSpec.IntValue fireballMollyWitherAmplifier;
+        public final ModConfigSpec.IntValue fireballMollyReapplicationDelay;
+        public final ModConfigSpec.DoubleValue fireballMollyDamagePerTick;
+        public final ModConfigSpec.IntValue fireballMollyTickInterval;
+        public final ModConfigSpec.ConfigValue<String> fireballMollyPrimaryParticle;
+        public final ModConfigSpec.ConfigValue<String> fireballMollySecondaryParticle;
+
         // Agent settings
         public final ModConfigSpec.BooleanValue agentSelectionEnabled;
         public final ModConfigSpec.IntValue agentSelectionKeyBinding;
@@ -69,6 +86,9 @@ public final class Config {
         public final ModConfigSpec.IntValue valorRifleCooldownTicks;
         public final ModConfigSpec.IntValue valorRifleTracerParticles;
         public final ModConfigSpec.IntValue valorRifleMuzzleParticles;
+
+        // Commands / particles
+        public final ModConfigSpec.IntValue particleCommandDefaultDurationTicks;
 
         Common(ModConfigSpec.Builder builder) {
             builder.push("curveball");
@@ -119,11 +139,54 @@ public final class Config {
             // Slow fade (default 2.0s)
             curveballFlashFadeTicks = builder
                     .comment("Fade-out duration after full-white completes (ticks)")
-                    .defineInRange("fadeTicks", 60, 1, 20 * 10);
+                    .defineInRange("fadeTicks", 120, 120, 120);
             builder.pop();
 
             builder.pop();
             
+            // Fireball configuration
+            builder.push("fireball");
+
+            fireballMaxCharges = builder.comment("Maximum Fireball charges a player can hold at once.")
+                    .defineInRange("maxCharges", 1, 1, 5);
+
+            fireballKillRechargeThreshold = builder.comment("Number of kills required to restore one Fireball charge.")
+                    .defineInRange("killRechargeThreshold", 2, 1, 10);
+
+            fireballThrowCooldownTicks = builder.comment("Cooldown in ticks applied after throwing a Fireball.")
+                    .defineInRange("throwCooldownTicks", 20, 0, 20 * 30);
+
+            fireballInitialVelocity = builder.comment("Initial forward velocity applied to the Fireball entity.")
+                    .defineInRange("initialVelocity", 1.5D, 0.5D, 5.0D);
+            
+            fireballDamage = builder.comment("Damage dealt by the Fireball explosion.")
+                    .defineInRange("damage", 6.0D, 0.0D, 100.0D);
+            
+            fireballExplosionRadius = builder.comment("Radius of the Fireball explosion.")
+                    .defineInRange("explosionRadius", 3.0D, 1.0D, 10.0D);
+
+            // Molly cloud parameters (used instead of explosion)
+            builder.push("molly");
+            fireballMollyRadius = builder.comment("Radius of fire molly cloud.")
+                    .defineInRange("radius", 3.5D, 0.5D, 12.0D);
+            fireballMollyDurationTicks = builder.comment("Duration of molly cloud in ticks.")
+                    .defineInRange("durationTicks", 200, 20, 20 * 30);
+            fireballMollyWitherAmplifier = builder.comment("Wither amplifier applied while in cloud (tick damage strength). 0=base.")
+                    .defineInRange("witherAmplifier", 0, 0, 4);
+            fireballMollyReapplicationDelay = builder.comment("Ticks before the cloud reapplies its effect to the same target.")
+                    .defineInRange("reapplicationDelay", 10, 1, 40);
+            fireballMollyDamagePerTick = builder.comment("Direct damage dealt each tick interval inside the cloud.")
+                    .defineInRange("damagePerTick", 1.0D, 0.0D, 20.0D);
+            fireballMollyTickInterval = builder.comment("Interval in ticks between damage applications.")
+                    .defineInRange("tickInterval", 10, 1, 40);
+            fireballMollyPrimaryParticle = builder.comment("Primary particle id for molly (e.g., FLAME, CAMPFIRE_COSY_SMOKE, ASH, LAVA, SOUL_FIRE_FLAME)")
+                    .define("primaryParticle", "CAMPFIRE_COSY_SMOKE");
+            fireballMollySecondaryParticle = builder.comment("Secondary particle id for molly (optional, empty to disable)")
+                    .define("secondaryParticle", "FLAME");
+            builder.pop();
+
+            builder.pop();
+
             // Agent configuration
             builder.push("agent");
             
@@ -207,6 +270,15 @@ public final class Config {
                     .defineInRange("muzzleParticles", 6, 1, 32);
             builder.pop();
 
+            builder.pop();
+
+            // Commands / particles
+            builder.push("commands");
+            builder.push("particles");
+            particleCommandDefaultDurationTicks = builder
+                    .comment("Default duration for /valorant particle command (ticks)")
+                    .defineInRange("defaultDurationTicks", 200, 1, 20 * 60 * 10);
+            builder.pop();
             builder.pop();
 
             // Team settings

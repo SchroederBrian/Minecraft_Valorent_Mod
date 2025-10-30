@@ -6,6 +6,7 @@ import com.bobby.valorant.client.ModKeyBindings;
 import com.bobby.valorant.network.EquipCurveballPacket;
 import com.bobby.valorant.player.AgentData;
 import com.bobby.valorant.player.CurveballData;
+import com.bobby.valorant.player.FireballData;
 import com.bobby.valorant.world.agent.Agent;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -28,6 +29,11 @@ public final class AgentClientEvents {
         if (ModKeyBindings.USE_ABILITY_1.consumeClick()) {
             Valorant.LOGGER.info("[Q DEBUG] Q key pressed!");
             handleAbility1();
+        }
+
+        if (ModKeyBindings.USE_ABILITY_2.consumeClick()) {
+            Valorant.LOGGER.info("[E DEBUG] E key pressed!");
+            handleAbility2();
         }
     }
 
@@ -63,6 +69,25 @@ public final class AgentClientEvents {
 
         // Ask server to equip curveball into the currently selected slot
         ClientPacketDistributor.sendToServer(new EquipCurveballPacket());
+    }
+
+    private static void handleAbility2() {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null || minecraft.level == null) {
+            return;
+        }
+
+        var selectedAgent = AgentData.getSelectedAgent(minecraft.player);
+        if (selectedAgent != Agent.PHOENIX) {
+            return;
+        }
+
+        int charges = FireballData.getCharges(minecraft.player);
+        if (charges <= 0) {
+            return;
+        }
+
+        ClientPacketDistributor.sendToServer(new com.bobby.valorant.network.EquipFireballPacket());
     }
 }
 

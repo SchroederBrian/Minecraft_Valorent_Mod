@@ -32,6 +32,15 @@ public final class ModKeyBindings {
             "key.categories.valorant"
     );
 
+    // Ability 2 (E)
+    public static final KeyMapping USE_ABILITY_2 = new KeyMapping(
+            "key.valorant.use_ability_2",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_E,
+            "key.categories.valorant"
+    );
+
     // Shop (B)
     public static final KeyMapping OPEN_SHOP = new KeyMapping(
             "key.valorant.open_shop",
@@ -64,14 +73,33 @@ public final class ModKeyBindings {
             "key.categories.valorant"
     );
 
+    // Spike/Defuser keys
+    public static final KeyMapping DROP_SPIKE = new KeyMapping(
+            "key.valorant.drop_spike",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_G,
+            "key.categories.valorant"
+    );
+    public static final KeyMapping EQUIP_SPIKE_OR_DEFUSE = new KeyMapping(
+            "key.valorant.equip_spike_or_defuse",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_4,
+            "key.categories.valorant"
+    );
+
     @SubscribeEvent
     public static void onRegisterKeys(RegisterKeyMappingsEvent event) {
         event.register(OPEN_AGENT_MENU);
         event.register(USE_ABILITY_1);
+        event.register(USE_ABILITY_2);
         event.register(OPEN_SHOP);
         event.register(SELECT_RIFLE);
         event.register(SELECT_PISTOL);
         event.register(SELECT_KNIFE);
+        event.register(DROP_SPIKE);
+        event.register(EQUIP_SPIKE_OR_DEFUSE);
     }
 }
 

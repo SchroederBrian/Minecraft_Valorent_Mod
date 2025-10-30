@@ -28,6 +28,8 @@ public class ValorantClient {
     static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             EntityRenderers.register(ModEntityTypes.CURVEBALL_ORB.get(), ThrownItemRenderer::new);
+            EntityRenderers.register(ModEntityTypes.FIREBALL.get(), ThrownItemRenderer::new);
+            EntityRenderers.register(ModEntityTypes.PLANTED_SPIKE.get(), ThrownItemRenderer::new);
 
             // Optionally unbind vanilla inventory key
             if (Config.COMMON.blockAllVanillaInventories.get()) {

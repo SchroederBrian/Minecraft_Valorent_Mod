@@ -2,6 +2,7 @@ package com.bobby.valorant.round;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffects;
 
 import java.util.WeakHashMap;
 
@@ -56,7 +57,17 @@ public final class RoundController {
             }
             ensureDefaultPistol(sp);
             ensureKnife(sp);
+
+            // Reset abilities and effects for the new round, removing spectator mode
+            if (!sp.isCreative()) {
+                sp.getAbilities().mayfly = false;
+                sp.getAbilities().invulnerable = false;
+                sp.onUpdateAbilities();
+            }
+            sp.removeEffect(MobEffects.INVISIBILITY);
         }
+        // Give Spike to a random attacker at round start
+        tryAssignSpikeToRandomAttacker();
         syncNow();
     }
 
@@ -170,7 +181,35 @@ public final class RoundController {
         RoundState.updatePhase(phase.ordinal());
     }
 
-    private static void ensureDefaultPistol(ServerPlayer sp) {
+    private void tryAssignSpikeToRandomAttacker() {
+        java.util.List<ServerPlayer> attackers = new java.util.ArrayList<>();
+        for (ServerPlayer sp : level.players()) {
+            net.minecraft.world.scores.Scoreboard sb = sp.getServer().getScoreboard();
+            net.minecraft.world.scores.PlayerTeam team = sb.getPlayersTeam(sp.getScoreboardName());
+            if (team == null) continue;
+            boolean isAttacker = attackersOnLeft ? "A".equals(team.getName()) : "V".equals(team.getName());
+            if (isAttacker) attackers.add(sp);
+        }
+        if (attackers.isEmpty()) return;
+        ServerPlayer chosen = attackers.get(level.random.nextInt(attackers.size()));
+        // Ensure only one Spike exists: remove from others
+        for (ServerPlayer sp : level.players()) {
+            removeAllSpikes(sp);
+        }
+        chosen.getInventory().add(com.bobby.valorant.registry.ModItems.SPIKE.get().getDefaultInstance());
+    }
+
+    private static void removeAllSpikes(ServerPlayer sp) {
+        int size = sp.getInventory().getContainerSize();
+        for (int i = 0; i < size; i++) {
+            net.minecraft.world.item.ItemStack s = sp.getInventory().getItem(i);
+            if (s.is(com.bobby.valorant.registry.ModItems.SPIKE.get())) {
+                sp.getInventory().setItem(i, net.minecraft.world.item.ItemStack.EMPTY);
+            }
+        }
+    }
+
+    public static void ensureDefaultPistol(ServerPlayer sp) {
         // If no simple sidearm present, give a basic one
         boolean hasSecondary = false;
         int size = sp.getInventory().getContainerSize();
