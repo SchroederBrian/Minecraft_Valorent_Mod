@@ -1,7 +1,7 @@
 package com.bobby.valorant.client;
 
 import com.bobby.valorant.client.hud.AgentHeadIcons;
-import com.bobby.valorant.client.hud.HudOverlay;
+import com.bobby.valorant.client.lock.AgentLockState;
 import com.bobby.valorant.player.AgentData;
 import com.bobby.valorant.world.agent.Agent;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,6 +9,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.scores.PlayerTeam;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class AgentSelectionScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.addRenderableWidget(this.lockInButton = Button.builder(Component.literal("LOCK IN"), b -> this.onClose())
+        this.addRenderableWidget(this.lockInButton = Button.builder(Component.literal("LOCK IN"), b -> onLockIn())
                 .bounds(this.width / 2 - 50, this.height - 40, 100, 20)
                 .build());
     }
@@ -44,6 +45,10 @@ public class AgentSelectionScreen extends Screen {
 
         renderAgentGrid(g, mouseX, mouseY);
         renderAgentDetails(g);
+
+        // Enable/disable lock-in based on availability
+        boolean lockedForTeam = isLockedForMyTeam(selectedAgent);
+        if (this.lockInButton != null) this.lockInButton.active = !lockedForTeam;
 
         super.render(g, mouseX, mouseY, partialTick);
     }
@@ -60,19 +65,26 @@ public class AgentSelectionScreen extends Screen {
             int x = startX + i * 60;
             boolean isSelected = agent == selectedAgent;
             boolean isHovered = mouseX >= x && mouseX < x + 50 && mouseY >= y && mouseY < y + 50;
+            boolean isLocked = isLockedForMyTeam(agent);
 
-            if (isHovered) {
+            if (isHovered && !isLocked) {
                 hoveredAgent = agent;
             }
 
             // Draw portrait box
-            int borderColor = isSelected ? 0xFFFFFFFF : (isHovered ? 0xFFCCCCCC : 0xFF555555);
-            g.fill(x, y, x + 50, y + 50, isSelected ? 0x80FFFFFF : 0x80000000);
+            int borderColor = isLocked ? 0xFF444444 : (isSelected ? 0xFFFFFFFF : (isHovered ? 0xFFCCCCCC : 0xFF555555));
+            int fill = isLocked ? 0x60000000 : (isSelected ? 0x80FFFFFF : 0x80000000);
+            g.fill(x, y, x + 50, y + 50, fill);
             g.renderOutline(x, y, 50, 50, borderColor);
 
             // Draw agent head
             ItemStack head = AgentHeadIcons.get(agent);
             g.renderItem(head, x + 17, y + 17);
+
+            if (isLocked) {
+                // strike overlay to indicate unavailable
+                g.renderOutline(x + 4, y + 25, 42, 1, 0xFFAA3333);
+            }
         }
     }
 
@@ -99,6 +111,9 @@ public class AgentSelectionScreen extends Screen {
                 Agent agent = agents.get(i);
                 int x = startX + i * 60;
                 if (mouseX >= x && mouseX < x + 50 && mouseY >= y && mouseY < y + 50) {
+                    if (isLockedForMyTeam(agent)) {
+                        return true; // ignore clicks on locked agents
+                    }
                     this.selectedAgent = agent;
                     if (this.minecraft != null && this.minecraft.player != null) {
                         AgentData.setSelectedAgent(this.minecraft.player, agent);
@@ -117,6 +132,26 @@ public class AgentSelectionScreen extends Screen {
 
     private int argb(int a, int r, int g, int b) {
         return (a & 0xFF) << 24 | (r & 0xFF) << 16 | (g & 0xFF) << 8 | (b & 0xFF);
+    }
+
+    private void onLockIn() {
+        if (this.minecraft == null) return;
+        if (selectedAgent == null) return;
+        if (isLockedForMyTeam(selectedAgent)) return;
+        net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
+                new com.bobby.valorant.network.LockAgentRequestPacket(selectedAgent.getId())
+        );
+        // Keep screen open to observe other locks; optionally close:
+        // this.onClose();
+    }
+
+    private boolean isLockedForMyTeam(Agent agent) {
+        if (this.minecraft == null || this.minecraft.level == null || this.minecraft.player == null) return false;
+        var sb = this.minecraft.level.getScoreboard();
+        PlayerTeam team = sb.getPlayersTeam(this.minecraft.player.getScoreboardName());
+        String teamId = team != null ? team.getName() : null;
+        if (teamId == null) return false;
+        return AgentLockState.getLockedForTeamId(teamId).contains(agent);
     }
 }
 

@@ -36,6 +36,8 @@ public final class Config {
         public final ModConfigSpec.BooleanValue agentSelectionEnabled;
         public final ModConfigSpec.IntValue agentSelectionKeyBinding;
         public final ModConfigSpec.ConfigValue<String> defaultAgent;
+        public final ModConfigSpec.BooleanValue uniqueAgentsPerTeam;
+        public final ModConfigSpec.BooleanValue mirrorPicksAcrossTeams;
 
         // HUD/Inventory settings
         public final ModConfigSpec.BooleanValue blockAllVanillaInventories;
@@ -133,6 +135,12 @@ public final class Config {
             
             defaultAgent = builder.comment("Default agent ID to use when player has no selection.")
                     .define("defaultAgent", "jett");
+
+            uniqueAgentsPerTeam = builder.comment("If true, each agent can be locked by at most one player per team.")
+                    .define("uniqueAgentsPerTeam", true);
+
+            mirrorPicksAcrossTeams = builder.comment("If true, the same agent can be locked once per team (mirror picks allowed).")
+                    .define("mirrorPicksAcrossTeams", true);
             
             builder.pop();
 

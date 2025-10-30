@@ -23,6 +23,8 @@ public final class TeamManager {
         if (existing != null && existing != team) sb.removePlayerFromTeam(player.getScoreboardName(), existing);
 
         sb.addPlayerToTeam(player.getScoreboardName(), team);
+        // Clear any previous agent lock so the player can re-lock on new team
+        AgentLockManager.get(player.getServer()).onTeamChanged(player);
         return true;
     }
 
@@ -31,7 +33,9 @@ public final class TeamManager {
         Scoreboard sb = player.getServer().getScoreboard();
         PlayerTeam existing = sb.getPlayersTeam(player.getScoreboardName());
         String target = (existing != null && existing.getName().equals("A")) ? "V" : "A";
-        return joinTeam(player, target);
+        boolean ok = joinTeam(player, target);
+        if (ok) AgentLockManager.get(player.getServer()).onTeamChanged(player);
+        return ok;
     }
 }
 

@@ -176,12 +176,12 @@ public final class RoundController {
         int size = sp.getInventory().getContainerSize();
         for (int i = 0; i < size; i++) {
             net.minecraft.world.item.ItemStack s = sp.getInventory().getItem(i);
-            if (s.is(net.minecraft.world.item.Items.STONE_SWORD) || s.is(net.minecraft.world.item.Items.IRON_SWORD)) {
+            if (s.is(com.bobby.valorant.registry.ModItems.CLASSIC.get()) || s.is(com.bobby.valorant.registry.ModItems.GHOST.get())) {
                 hasSecondary = true; break;
             }
         }
         if (!hasSecondary) {
-            sp.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.STONE_SWORD));
+            sp.getInventory().add(com.bobby.valorant.registry.ModItems.CLASSIC.get().getDefaultInstance());
         }
     }
 
