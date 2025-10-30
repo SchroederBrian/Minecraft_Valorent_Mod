@@ -90,7 +90,7 @@ public final class SpikeDefusingHandler {
             RoundController.get(level).defuseSpikeFull();
 
             // Show defuse success title
-            TitleMessages.broadcast(level, "SPIKE DEFUSED", "Defenders win the round");
+            TitleMessages.broadcast(level, "SPIKE DEFUSED", "Defenders win the round", 10, 1000, 10, 0xFFFFD700, 0xFFFFFF00);
 
             // Remove defuser from player
             removeDefuser(sp);
