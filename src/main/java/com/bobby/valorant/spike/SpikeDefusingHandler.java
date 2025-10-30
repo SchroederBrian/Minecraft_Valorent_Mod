@@ -3,6 +3,7 @@ package com.bobby.valorant.spike;
 import com.bobby.valorant.registry.ModItems;
 import com.bobby.valorant.round.RoundController;
 import com.bobby.valorant.server.TitleMessages;
+import com.bobby.valorant.player.AbilityEquipData;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -90,10 +91,12 @@ public final class SpikeDefusingHandler {
             RoundController.get(level).defuseSpikeFull();
 
             // Show defuse success title
-            TitleMessages.broadcast(level, "SPIKE DEFUSED", "Defenders win the round", 10, 1000, 10, 0xFFFFD700, 0xFFFFFF00);
+            TitleMessages.show("SPIKE DEFUSED", "Defenders win the round", 0xFFFFD700, 0xFFFFFF00, 10, 1000, 10);
 
             // Remove defuser from player
             removeDefuser(sp);
+
+            // switch to weapon before defusing
             return true;
         });
     }

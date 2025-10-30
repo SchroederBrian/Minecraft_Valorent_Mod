@@ -66,8 +66,6 @@ public final class Config {
         public final ModConfigSpec.IntValue titleFadeInTicks;
         public final ModConfigSpec.IntValue titleStayTicks;
         public final ModConfigSpec.IntValue titleFadeOutTicks;
-        public final ModConfigSpec.IntValue titleColor;
-        public final ModConfigSpec.IntValue subtitleColor;
 
         // Teams
         public final ModConfigSpec.IntValue maxTeamSize;
@@ -234,13 +232,9 @@ public final class Config {
             titleFadeInTicks = builder.comment("Ticks for title overlay to fade in.")
                     .defineInRange("fadeInTicks", 10, 0, 100);
             titleStayTicks = builder.comment("Ticks for title overlay to stay visible.")
-                    .defineInRange("stayTicks", 120, 0, 400);
+                    .defineInRange("stayTicks", 700, 0, 400);
             titleFadeOutTicks = builder.comment("Ticks for title overlay to fade out.")
                     .defineInRange("fadeOutTicks", 10, 0, 100);
-            titleColor = builder.comment("ARGB color for title text (0xAARRGGBB).")
-                    .defineInRange("titleColor", 0xFFFFD700, 0, Integer.MAX_VALUE);
-            subtitleColor = builder.comment("ARGB color for subtitle text (0xAARRGGBB).")
-                    .defineInRange("subtitleColor", 0xFFFFFF00, 0, Integer.MAX_VALUE);
             builder.pop();
 
             builder.pop();
@@ -253,13 +247,13 @@ public final class Config {
             classicDamage = builder.comment("Damage per shot for Classic pistol.")
                     .defineInRange("damage", 6.0D, 0.0D, 100.0D);
             classicRange = builder.comment("Max range in blocks for Classic pistol.")
-                    .defineInRange("range", 48.0D, 1.0D, 256.0D);
+                    .defineInRange("range", 1000.0D, 1000.0D, 1000.0D);
             classicSpreadDegrees = builder.comment("Random spread in degrees for Classic pistol.")
                     .defineInRange("spreadDegrees", 1.25D, 0.0D, 15.0D);
             classicCooldownTicks = builder.comment("Cooldown (fire rate) in ticks for Classic pistol.")
                     .defineInRange("cooldownTicks", 8, 0, 40);
             classicTracerParticles = builder.comment("Tracer particle steps for Classic pistol (visual only).")
-                    .defineInRange("tracerSteps", 16, 1, 128);
+                    .defineInRange("tracerSteps", 5, 5, 5);
             classicMuzzleParticles = builder.comment("Muzzle particle count for Classic pistol (visual only).")
                     .defineInRange("muzzleParticles", 4, 1, 32);
             builder.pop();

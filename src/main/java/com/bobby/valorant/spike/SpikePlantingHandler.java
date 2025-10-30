@@ -8,6 +8,7 @@ import com.bobby.valorant.Valorant;
 import com.bobby.valorant.registry.ModItems;
 import com.bobby.valorant.round.RoundController;
 import com.bobby.valorant.server.TitleMessages;
+import com.bobby.valorant.player.AbilityEquipData;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -54,6 +55,7 @@ public final class SpikePlantingHandler {
             broadcastPlantedTitle(level);
             com.bobby.valorant.Config.COMMON.spikePlanted.set(true);
             RoundController.get(level).plantSpike();
+            switchToWeapon(sp);
             return true;
         });
     }
@@ -89,10 +91,33 @@ public final class SpikePlantingHandler {
 
     private static void broadcastPlantedTitle(ServerLevel level) {
         // Send title overlay to all players
-        TitleMessages.broadcast(level, "SPIKE PLANTED", "Hold site until detonation");
+        TitleMessages.show("SPIKE PLANTED", "Hold site until detonation", 0xFFFFD700, 0xFFFFFF00, 10, 1000, 10);
 
         // Server console/log line
         Valorant.LOGGER.info("Spike planted");
+    }
+
+    private static void switchToWeapon(ServerPlayer sp) {
+        var inv = sp.getInventory();
+        try {
+            var field = net.minecraft.world.entity.player.Inventory.class.getDeclaredField("selected");
+            field.setAccessible(true);
+            int selectedSlot = field.getInt(inv);
+            ItemStack heldStack = inv.getItem(selectedSlot);
+            Valorant.LOGGER.info("[SPIKE PLANTING] Switching to weapon: slot={}, held={} (empty={})",
+                    selectedSlot, heldStack.getItem(), heldStack.isEmpty());
+            if (heldStack.isEmpty() || heldStack.is(ModItems.SPIKE.get())) {
+                ItemStack restore = AbilityEquipData.takeSaved(sp);
+                inv.setItem(selectedSlot, restore);
+                inv.setChanged();
+                sp.containerMenu.broadcastChanges();
+                ItemStack now = inv.getItem(selectedSlot);
+                Valorant.LOGGER.info("[SPIKE PLANTING] After switching to weapon now holding: {} (empty={})",
+                        now.getItem(), now.isEmpty());
+            }
+        } catch (Exception e) {
+            Valorant.LOGGER.error("[SPIKE PLANTING] Failed to switch to weapon: {}", e.toString());
+        }
     }
 }
 

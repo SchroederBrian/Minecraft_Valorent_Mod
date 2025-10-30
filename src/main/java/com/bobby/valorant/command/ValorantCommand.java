@@ -219,7 +219,7 @@ public final class ValorantCommand {
                                                 .then(Commands.argument("title", StringArgumentType.greedyString())
                                                         .executes(ctx -> {
                                                             String titleText = StringArgumentType.getString(ctx, "title");
-                                                            TitleMessages.broadcast(ctx.getSource().getLevel(), titleText, "Test subtitle", 20, 60, 20, 0xFFFF0000, 0xFFFFFF00);
+                                                            TitleMessages.show(titleText, "Test subtitle", 20, 60, 20, 0xFFFF0000, 0xFFFFFF00);
                                                             ctx.getSource().sendSuccess(() -> Component.literal("Title overlay sent: " + titleText), true);
                                                             return 1;
                                                         }))))
