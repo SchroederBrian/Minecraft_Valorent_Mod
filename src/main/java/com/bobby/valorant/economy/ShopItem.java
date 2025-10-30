@@ -5,17 +5,38 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public enum ShopItem {
-    // Prices use simple placeholders for MVP
-    SIDEARM_P200(Category.SIDEARM, "Classic", 200, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(ModItems.CLASSIC.get()); }},
+    // Sidearms
+    SIDEARM_CLASSIC(Category.SIDEARM, "Classic", 0, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(ModItems.CLASSIC.get()); }},
+    SIDEARM_SHORTY(Category.SIDEARM, "Shorty", 300, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(Items.WOODEN_SWORD); }},
+    SIDEARM_FRENZY(Category.SIDEARM, "Frenzy", 450, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(Items.GOLDEN_SWORD); }},
     SIDEARM_GHOST(Category.SIDEARM, "Ghost", 500, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(ModItems.GHOST.get()); }},
+    SIDEARM_SHERIFF(Category.SIDEARM, "Sheriff", 800, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(Items.IRON_SWORD); }},
 
-    SMG_STINGER(Category.SMG, "Stinger", 1200, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.CROSSBOW); }},
-    SHOTGUN_BULLDOG(Category.SHOTGUN, "Bucky", 1500, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.IRON_AXE); }},
+    // SMGs
+    SMG_STINGER(Category.SMG, "Stinger", 1100, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.CROSSBOW); }},
+    SMG_SPECTRE(Category.SMG, "Spectre", 1600, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.CROSSBOW); }},
+
+    // Shotguns
+    SHOTGUN_BUCKY(Category.SHOTGUN, "Bucky", 850, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.IRON_AXE); }},
+    SHOTGUN_JUDGE(Category.SHOTGUN, "Judge", 1850, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.DIAMOND_AXE); }},
+
+    // Rifles
+    RIFLE_BULLDOG(Category.RIFLE, "Bulldog", 2050, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.BOW); }},
+    RIFLE_GUARDIAN(Category.RIFLE, "Guardian", 2400, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.BOW); }},
+    RIFLE_PHANTOM(Category.RIFLE, "Phantom", 2900, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.BOW); }},
     RIFLE_VANDAL(Category.RIFLE, "Vandal", 2900, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.BOW); }},
-    SNIPER_OP(Category.SNIPER, "Operator", 4500, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.TRIDENT); }},
-    HEAVY_ARES(Category.HEAVY, "Ares", 1600, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.NETHERITE_AXE); }},
     RIFLE_VALOR(Category.RIFLE, "Valor Rifle", 3000, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(ModItems.VALOR_RIFLE.get()); }},
 
+    // Snipers
+    SNIPER_MARSHAL(Category.SNIPER, "Marshal", 950, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.TRIDENT); }},
+    SNIPER_OUTLAW(Category.SNIPER, "Outlaw", 2400, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.TRIDENT); }},
+    SNIPER_OPERATOR(Category.SNIPER, "Operator", 4500, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.TRIDENT); }},
+
+    // Heavy
+    HEAVY_ARES(Category.HEAVY, "Ares", 1600, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.NETHERITE_AXE); }},
+    HEAVY_ODIN(Category.HEAVY, "Odin", 3200, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.NETHERITE_AXE); }},
+
+    // Armor
     ARMOR_LIGHT(Category.ARMOR, "Light Shields", 400, Slot.ARMOR) { public ItemStack giveStack() { return new ItemStack(Items.LEATHER_CHESTPLATE); }},
     ARMOR_HEAVY(Category.ARMOR, "Heavy Shields", 1000, Slot.ARMOR) { public ItemStack giveStack() { return new ItemStack(Items.IRON_CHESTPLATE); }},
     ;

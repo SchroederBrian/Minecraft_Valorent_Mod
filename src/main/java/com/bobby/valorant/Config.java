@@ -46,6 +46,28 @@ public final class Config {
         // Teams
         public final ModConfigSpec.IntValue maxTeamSize;
 
+        // Weapons: Classic, Ghost, Valor Rifle
+        public final ModConfigSpec.DoubleValue classicDamage;
+        public final ModConfigSpec.DoubleValue classicRange;
+        public final ModConfigSpec.DoubleValue classicSpreadDegrees;
+        public final ModConfigSpec.IntValue classicCooldownTicks;
+        public final ModConfigSpec.IntValue classicTracerParticles;
+        public final ModConfigSpec.IntValue classicMuzzleParticles;
+
+        public final ModConfigSpec.DoubleValue ghostDamage;
+        public final ModConfigSpec.DoubleValue ghostRange;
+        public final ModConfigSpec.DoubleValue ghostSpreadDegrees;
+        public final ModConfigSpec.IntValue ghostCooldownTicks;
+        public final ModConfigSpec.IntValue ghostTracerParticles;
+        public final ModConfigSpec.IntValue ghostMuzzleParticles;
+
+        public final ModConfigSpec.DoubleValue valorRifleDamage;
+        public final ModConfigSpec.DoubleValue valorRifleRange;
+        public final ModConfigSpec.DoubleValue valorRifleSpreadDegrees;
+        public final ModConfigSpec.IntValue valorRifleCooldownTicks;
+        public final ModConfigSpec.IntValue valorRifleTracerParticles;
+        public final ModConfigSpec.IntValue valorRifleMuzzleParticles;
+
         Common(ModConfigSpec.Builder builder) {
             builder.push("curveball");
 
@@ -124,6 +146,59 @@ public final class Config {
                     .define("showValorantHud", true);
             hudScale = builder.comment("Global scale factor for the Valorant HUD (1.0 = 100%).")
                     .defineInRange("hudScale", 1.0D, 0.5D, 2.0D);
+            builder.pop();
+
+            // Weapons configuration
+            builder.push("weapons");
+
+            // Classic
+            builder.push("classic");
+            classicDamage = builder.comment("Damage per shot for Classic pistol.")
+                    .defineInRange("damage", 6.0D, 0.0D, 100.0D);
+            classicRange = builder.comment("Max range in blocks for Classic pistol.")
+                    .defineInRange("range", 48.0D, 1.0D, 256.0D);
+            classicSpreadDegrees = builder.comment("Random spread in degrees for Classic pistol.")
+                    .defineInRange("spreadDegrees", 1.25D, 0.0D, 15.0D);
+            classicCooldownTicks = builder.comment("Cooldown (fire rate) in ticks for Classic pistol.")
+                    .defineInRange("cooldownTicks", 8, 0, 40);
+            classicTracerParticles = builder.comment("Tracer particle steps for Classic pistol (visual only).")
+                    .defineInRange("tracerSteps", 16, 1, 128);
+            classicMuzzleParticles = builder.comment("Muzzle particle count for Classic pistol (visual only).")
+                    .defineInRange("muzzleParticles", 4, 1, 32);
+            builder.pop();
+
+            // Ghost
+            builder.push("ghost");
+            ghostDamage = builder.comment("Damage per shot for Ghost pistol.")
+                    .defineInRange("damage", 8.0D, 0.0D, 100.0D);
+            ghostRange = builder.comment("Max range in blocks for Ghost pistol.")
+                    .defineInRange("range", 64.0D, 1.0D, 256.0D);
+            ghostSpreadDegrees = builder.comment("Random spread in degrees for Ghost pistol.")
+                    .defineInRange("spreadDegrees", 0.9D, 0.0D, 15.0D);
+            ghostCooldownTicks = builder.comment("Cooldown (fire rate) in ticks for Ghost pistol.")
+                    .defineInRange("cooldownTicks", 7, 0, 40);
+            ghostTracerParticles = builder.comment("Tracer particle steps for Ghost pistol (visual only).")
+                    .defineInRange("tracerSteps", 18, 1, 128);
+            ghostMuzzleParticles = builder.comment("Muzzle particle count for Ghost pistol (visual only).")
+                    .defineInRange("muzzleParticles", 5, 1, 32);
+            builder.pop();
+
+            // Valor Rifle
+            builder.push("valor_rifle");
+            valorRifleDamage = builder.comment("Damage per shot for Valor Rifle.")
+                    .defineInRange("damage", 5.0D, 0.0D, 100.0D);
+            valorRifleRange = builder.comment("Max range in blocks for Valor Rifle.")
+                    .defineInRange("range", 80.0D, 1.0D, 256.0D);
+            valorRifleSpreadDegrees = builder.comment("Random spread in degrees for Valor Rifle.")
+                    .defineInRange("spreadDegrees", 0.75D, 0.0D, 15.0D);
+            valorRifleCooldownTicks = builder.comment("Cooldown (fire rate) in ticks for Valor Rifle.")
+                    .defineInRange("cooldownTicks", 4, 0, 40);
+            valorRifleTracerParticles = builder.comment("Tracer particle steps for Valor Rifle (visual only).")
+                    .defineInRange("tracerSteps", 24, 1, 128);
+            valorRifleMuzzleParticles = builder.comment("Muzzle particle count for Valor Rifle (visual only).")
+                    .defineInRange("muzzleParticles", 6, 1, 32);
+            builder.pop();
+
             builder.pop();
 
             // Team settings
