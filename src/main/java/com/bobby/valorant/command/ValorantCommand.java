@@ -6,6 +6,7 @@ import com.bobby.valorant.round.RoundController;
 import com.bobby.valorant.round.TeamManager;
 import com.bobby.valorant.util.ParticleScheduler;
 import com.bobby.valorant.Config;
+import com.bobby.valorant.server.TitleMessages;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -204,10 +205,24 @@ public final class ValorantCommand {
                                                         }))))
                                 .then(Commands.literal("plant")
                                         .executes(ctx -> {
-                                            RoundController.get(ctx.getSource().getLevel()).plantSpike();
+                                            var sender = ctx.getSource().getEntity();
+                                            if (sender == null) {
+                                                ctx.getSource().sendFailure(Component.literal("Command must be run by a player"));
+                                                return 0;
+                                            }
+                                            RoundController.get(ctx.getSource().getLevel()).plantSpike(sender.position());
                                             ctx.getSource().sendSuccess(() -> Component.literal("Spike planted"), true);
                                             return 1;
                                         }))
+                                .then(Commands.literal("title")
+                                        .then(Commands.literal("test")
+                                                .then(Commands.argument("title", StringArgumentType.greedyString())
+                                                        .executes(ctx -> {
+                                                            String titleText = StringArgumentType.getString(ctx, "title");
+                                                            TitleMessages.broadcast(ctx.getSource().getLevel(), titleText, "Test subtitle", 20, 60, 20, 0xFFFF0000, 0xFFFFFF00);
+                                                            ctx.getSource().sendSuccess(() -> Component.literal("Title overlay sent: " + titleText), true);
+                                                            return 1;
+                                                        }))))
                                 .then(Commands.literal("defuse")
                                         .executes(ctx -> {
                                             RoundController.get(ctx.getSource().getLevel()).defuseSpikeFull();

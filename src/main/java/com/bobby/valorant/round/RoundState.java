@@ -21,6 +21,10 @@ public final class RoundState {
     }
 
     public static void updatePhase(int ordinal) {
+        // Reset spike defused flag when starting a new round (BUY phase = 1)
+        if (ordinal == 1 && phaseOrdinal != 1) { // Phase changed to BUY
+            com.bobby.valorant.events.SpikeClientEvents.resetSpikeDefusedFlag();
+        }
         phaseOrdinal = ordinal;
     }
 

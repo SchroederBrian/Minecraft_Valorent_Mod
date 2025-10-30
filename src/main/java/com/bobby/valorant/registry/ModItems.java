@@ -9,6 +9,7 @@ import com.bobby.valorant.world.item.KnifeItem;
 import com.bobby.valorant.world.item.FireballItem;
 import com.bobby.valorant.world.item.SpikeItem;
 import com.bobby.valorant.world.item.DefuserItem;
+import com.bobby.valorant.world.item.StimBeaconHandItem;
 
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
@@ -30,6 +31,7 @@ public final class ModItems {
     public static final DeferredItem<Item> PLANTEDSPIKE = ITEMS.registerItem("plantedspike", props -> new Item(props.stacksTo(1)));
     public static final DeferredItem<Item> SPIKE = ITEMS.registerItem("spike", props -> new SpikeItem(props.stacksTo(1)));
     public static final DeferredItem<Item> DEFUSER = ITEMS.registerItem("defuser", props -> new DefuserItem(props.stacksTo(1)));
+    public static final DeferredItem<Item> STIMBEACONHAND = ITEMS.registerItem("stimbeaconhand", props -> new StimBeaconHandItem(props.stacksTo(1)));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

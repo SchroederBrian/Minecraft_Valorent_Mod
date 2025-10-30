@@ -3,6 +3,7 @@ package com.bobby.valorant.round;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.WeakHashMap;
 
@@ -30,6 +31,7 @@ public final class RoundController {
     private int overtimeBudget = 0; // 0 disables
     private final java.util.HashMap<java.util.UUID, net.minecraft.world.phys.Vec3> buySpawn = new java.util.HashMap<>();
     private static final double SPAWN_RADIUS = 12.0;
+    private boolean spikeDefused = false; // tracks if spike has been defused this round
 
     private RoundController(ServerLevel level) { this.level = level; }
 
@@ -44,6 +46,9 @@ public final class RoundController {
         phase = Phase.BUY;
         remainingSeconds = seconds > 0 ? seconds : BUY_SECONDS;
         roundCounter++;
+        // Reset spike planted and defused flags at round start
+        com.bobby.valorant.Config.COMMON.spikePlanted.set(false);
+        spikeDefused = false;
         // Capture spawn positions for lock and apply OT budget/default pistols
         for (ServerPlayer sp : level.players()) {
             buySpawn.put(sp.getUUID(), sp.position());
@@ -86,23 +91,40 @@ public final class RoundController {
     }
 
     public void plantSpike() {
+        plantSpike(null); // For backward compatibility, spawn at default location if no position provided
+    }
+
+    public void plantSpike(Vec3 position) {
         if (phase == Phase.ROUND) {
             phase = Phase.PLANTED;
             remainingSeconds = PLANTED_SECONDS;
+
+            // Spawn planted spike entity if position is provided
+            if (position != null) {
+                com.bobby.valorant.spike.SpikePlantingHandler.spawnPlanted(level, position);
+                com.bobby.valorant.Config.COMMON.spikePlanted.set(true);
+            }
+
             EconomyManager.onSpikePlanted(level, attackersOnLeft);
             syncNow();
         }
     }
 
     public void defuseSpikeFull() {
-        if (phase == Phase.PLANTED) {
-            // Defenders win
+        if (phase == Phase.PLANTED && !spikeDefused) {
+            // Defenders win - set defused flag to prevent further defusing
+            spikeDefused = true;
+            System.out.println("[RoundController] Spike defused successfully, spikeDefused set to true");
             awardDefenders();
             enterPost();
+        } else {
+            System.out.println("[RoundController] defuseSpikeFull called but conditions not met - phase: " + phase + ", spikeDefused: " + spikeDefused);
         }
     }
 
     public Phase phase() { return phase; }
+
+    public boolean isSpikeDefused() { return spikeDefused; }
 
     public boolean isInSpawn(ServerPlayer sp) {
         net.minecraft.world.phys.Vec3 center = buySpawn.get(sp.getUUID());
@@ -187,16 +209,19 @@ public final class RoundController {
             net.minecraft.world.scores.Scoreboard sb = sp.getServer().getScoreboard();
             net.minecraft.world.scores.PlayerTeam team = sb.getPlayersTeam(sp.getScoreboardName());
             if (team == null) continue;
-            boolean isAttacker = attackersOnLeft ? "A".equals(team.getName()) : "V".equals(team.getName());
+            // MVP rule: Attackers are always team "A"
+            boolean isAttacker = "A".equals(team.getName());
             if (isAttacker) attackers.add(sp);
         }
         if (attackers.isEmpty()) return;
         ServerPlayer chosen = attackers.get(level.random.nextInt(attackers.size()));
-        // Ensure only one Spike exists: remove from others
+        // Ensure only one Spike exists: remove from everyone first
         for (ServerPlayer sp : level.players()) {
             removeAllSpikes(sp);
         }
-        chosen.getInventory().add(com.bobby.valorant.registry.ModItems.SPIKE.get().getDefaultInstance());
+        var inv = chosen.getInventory();
+        // Place Spike into hotbar slot 3 (the 4th slot)
+        inv.setItem(3, com.bobby.valorant.registry.ModItems.SPIKE.get().getDefaultInstance());
     }
 
     private static void removeAllSpikes(ServerPlayer sp) {

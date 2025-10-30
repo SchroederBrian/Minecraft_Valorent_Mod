@@ -20,6 +20,7 @@ import com.bobby.valorant.network.PlantSpikePacket;
 import com.bobby.valorant.network.PlantingProgressPacket;
 import com.bobby.valorant.network.DefuseSpikePacket;
 import com.bobby.valorant.network.DefuseProgressPacket;
+import com.bobby.valorant.network.ShowTitleOverlayPacket;
 
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
@@ -48,6 +49,7 @@ public final class ModNetworking {
                 .playToClient(SyncUltimatePointsPacket.TYPE, SyncUltimatePointsPacket.STREAM_CODEC, SyncUltimatePointsPacket::handle)
                 .playToClient(SyncAgentLocksPacket.TYPE, SyncAgentLocksPacket.STREAM_CODEC, SyncAgentLocksPacket::handle)
                 .playToClient(SyncFireballChargesPacket.TYPE, SyncFireballChargesPacket.STREAM_CODEC, SyncFireballChargesPacket::handle)
+                .playToClient(ShowTitleOverlayPacket.TYPE, ShowTitleOverlayPacket.STREAM_CODEC, ShowTitleOverlayPacket::handle)
                 .playToClient(PlantingProgressPacket.TYPE, PlantingProgressPacket.STREAM_CODEC, (pkt, ctx) -> {})
                 .playToClient(DefuseProgressPacket.TYPE, DefuseProgressPacket.STREAM_CODEC, (pkt, ctx) -> {});
     }

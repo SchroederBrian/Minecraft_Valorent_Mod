@@ -1,18 +1,18 @@
 package com.bobby.valorant.spike;
 
-import com.bobby.valorant.registry.ModEntityTypes;
-import com.bobby.valorant.registry.ModItems;
-import com.bobby.valorant.round.RoundController;
-
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import com.bobby.valorant.Valorant;
+import com.bobby.valorant.registry.ModItems;
+import com.bobby.valorant.round.RoundController;
+import com.bobby.valorant.server.TitleMessages;
+
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Server-side planting progress tracking. 4 seconds (80 ticks) hold to plant.
@@ -51,6 +51,8 @@ public final class SpikePlantingHandler {
             if (sp == null) return true;
             if (!consumeSpike(sp)) return true;
             spawnPlanted(level, sp.position());
+            broadcastPlantedTitle(level);
+            com.bobby.valorant.Config.COMMON.spikePlanted.set(true);
             RoundController.get(level).plantSpike();
             return true;
         });
@@ -68,11 +70,29 @@ public final class SpikePlantingHandler {
         return false;
     }
 
-    private static void spawnPlanted(ServerLevel level, Vec3 pos) {
-        var planted = ModEntityTypes.PLANTED_SPIKE.get().create(level, EntitySpawnReason.TRIGGERED);
-        if (planted == null) return;
-        planted.setPos(pos.x, pos.y, pos.z);
-        level.addFreshEntity(planted);
+    public static void spawnPlanted(ServerLevel level, Vec3 pos) {
+        // Use an invisible, invulnerable ArmorStand as a stationary holder for the spike item
+        double yOffset = com.bobby.valorant.Config.COMMON.plantedSpikeYOffset.get();
+        net.minecraft.world.entity.decoration.ArmorStand stand = new net.minecraft.world.entity.decoration.ArmorStand(level, pos.x, pos.y + yOffset, pos.z);
+        stand.setInvisible(true);
+        stand.setInvulnerable(true);
+        stand.setNoGravity(true);
+        stand.setSilent(true);
+        // Keep it stationary and unobtrusive
+        // Cosmetic: no baseplate/arms, keep default pose
+        stand.setShowArms(false);
+        stand.setNoBasePlate(true);
+        // Display the planted spike item on its head
+        stand.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, ModItems.PLANTEDSPIKE.get().getDefaultInstance());
+        level.addFreshEntity(stand);
+    }
+
+    private static void broadcastPlantedTitle(ServerLevel level) {
+        // Send title overlay to all players
+        TitleMessages.broadcast(level, "SPIKE PLANTED", "Hold site until detonation");
+
+        // Server console/log line
+        Valorant.LOGGER.info("Spike planted");
     }
 }
 

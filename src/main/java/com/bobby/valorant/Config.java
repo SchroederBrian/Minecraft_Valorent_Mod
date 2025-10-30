@@ -15,12 +15,12 @@ public final class Config {
     private Config() {}
 
     public static final class Common {
-        public final ModConfigSpec.IntValue curveballMaxCharges;
+        public final ModConfigSpec.ConfigValue<Integer> curveballMaxCharges;
         public final ModConfigSpec.IntValue curveballKillRechargeThreshold;
         public final ModConfigSpec.IntValue curveballThrowCooldownTicks;
-        public final ModConfigSpec.DoubleValue curveballInitialVelocity;
-        public final ModConfigSpec.DoubleValue curveballPreCurveDistance;
-        public final ModConfigSpec.IntValue curveballCurveDurationTicks;
+        public final ModConfigSpec.ConfigValue<Double> curveballInitialVelocity;
+        public final ModConfigSpec.ConfigValue<Double> curveballPreCurveDistance;
+        public final ModConfigSpec.ConfigValue<Integer> curveballCurveDurationTicks;
         public final ModConfigSpec.DoubleValue curveballCurveAngleDegrees;
         public final ModConfigSpec.IntValue curveballDetonationDelayTicks;
         public final ModConfigSpec.DoubleValue curveballFlashRadius;
@@ -30,7 +30,7 @@ public final class Config {
         // Flash timing controls
         public final ModConfigSpec.IntValue curveballFlashWindupTicks;
         public final ModConfigSpec.IntValue curveballFlashFullTicks;
-        public final ModConfigSpec.IntValue curveballFlashFadeTicks;
+        public final ModConfigSpec.ConfigValue<Integer> curveballFlashFadeTicks;
         
         // Fireball settings
         public final ModConfigSpec.IntValue fireballMaxCharges;
@@ -62,8 +62,19 @@ public final class Config {
         public final ModConfigSpec.BooleanValue showValorantHud;
         public final ModConfigSpec.DoubleValue hudScale;
 
+        // Title overlay settings
+        public final ModConfigSpec.IntValue titleFadeInTicks;
+        public final ModConfigSpec.IntValue titleStayTicks;
+        public final ModConfigSpec.IntValue titleFadeOutTicks;
+        public final ModConfigSpec.IntValue titleColor;
+        public final ModConfigSpec.IntValue subtitleColor;
+
         // Teams
         public final ModConfigSpec.IntValue maxTeamSize;
+
+        // Spike runtime signal
+        public final ModConfigSpec.BooleanValue spikePlanted;
+        public final ModConfigSpec.DoubleValue plantedSpikeYOffset;
 
         // Weapons: Classic, Ghost, Valor Rifle
         public final ModConfigSpec.DoubleValue classicDamage;
@@ -94,7 +105,7 @@ public final class Config {
             builder.push("curveball");
 
             curveballMaxCharges = builder.comment("Maximum Curveball charges a player can hold at once.")
-                    .defineInRange("maxCharges", 2, 2, 2);
+                    .define("maxCharges", 2);
 
             curveballKillRechargeThreshold = builder.comment("Number of kills required to restore one Curveball charge.")
                     .defineInRange("killRechargeThreshold", 2, 1, 10);
@@ -103,13 +114,13 @@ public final class Config {
                     .defineInRange("throwCooldownTicks", 20, 0, 20 * 30);
 
             curveballInitialVelocity = builder.comment("Initial forward velocity applied to the Curveball orb.")
-                    .defineInRange("initialVelocity", 0.8D, 0.8D, 0.8D);
+                    .define("initialVelocity", 0.8D);
 
             curveballPreCurveDistance = builder.comment("Distance in blocks the orb travels before beginning its curve.")
-                    .defineInRange("preCurveDistance", 2.5D, 2.5D, 2.5D);
+                    .define("preCurveDistance", 2.5D);
 
             curveballCurveDurationTicks = builder.comment("Duration in ticks for the curved segment of the orb's flight.")
-                    .defineInRange("curveDurationTicks", 6, 6, 6);
+                    .define("curveDurationTicks", 6);
 
             curveballCurveAngleDegrees = builder.comment("Total turn angle in degrees during the curve segment (left/right based on input).")
                     .defineInRange("curveAngleDegrees", 90.0D, 10.0D, 180.0D);
@@ -139,7 +150,7 @@ public final class Config {
             // Slow fade (default 2.0s)
             curveballFlashFadeTicks = builder
                     .comment("Fade-out duration after full-white completes (ticks)")
-                    .defineInRange("fadeTicks", 120, 120, 120);
+                    .define("fadeTicks", 120);
             builder.pop();
 
             builder.pop();
@@ -217,6 +228,21 @@ public final class Config {
                     .define("showValorantHud", true);
             hudScale = builder.comment("Global scale factor for the Valorant HUD (1.0 = 100%).")
                     .defineInRange("hudScale", 1.0D, 0.5D, 2.0D);
+
+            // Title overlay settings
+            builder.push("titleOverlay");
+            titleFadeInTicks = builder.comment("Ticks for title overlay to fade in.")
+                    .defineInRange("fadeInTicks", 10, 0, 100);
+            titleStayTicks = builder.comment("Ticks for title overlay to stay visible.")
+                    .defineInRange("stayTicks", 120, 0, 400);
+            titleFadeOutTicks = builder.comment("Ticks for title overlay to fade out.")
+                    .defineInRange("fadeOutTicks", 10, 0, 100);
+            titleColor = builder.comment("ARGB color for title text (0xAARRGGBB).")
+                    .defineInRange("titleColor", 0xFFFFD700, 0, Integer.MAX_VALUE);
+            subtitleColor = builder.comment("ARGB color for subtitle text (0xAARRGGBB).")
+                    .defineInRange("subtitleColor", 0xFFFFFF00, 0, Integer.MAX_VALUE);
+            builder.pop();
+
             builder.pop();
 
             // Weapons configuration
@@ -279,6 +305,14 @@ public final class Config {
                     .comment("Default duration for /valorant particle command (ticks)")
                     .defineInRange("defaultDurationTicks", 200, 1, 20 * 60 * 10);
             builder.pop();
+            builder.pop();
+
+            // Spike section (runtime flags)
+            builder.push("spike");
+            spikePlanted = builder.comment("Runtime flag set to true when Spike is planted. Server-updated.")
+                    .define("planted", false);
+            plantedSpikeYOffset = builder.comment("Vertical offset applied to the planted spike ArmorStand (negative sinks it).")
+                    .defineInRange("plantedSpikeYOffset", -1.6D, -1.6D, -1.60D);
             builder.pop();
 
             // Team settings

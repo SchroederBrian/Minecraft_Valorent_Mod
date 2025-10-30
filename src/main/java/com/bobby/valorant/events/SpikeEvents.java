@@ -5,7 +5,6 @@ import com.bobby.valorant.registry.ModItems;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -38,15 +37,36 @@ public final class SpikeEvents {
         var sb = server.getScoreboard();
         var team = sb.getPlayersTeam(sp.getScoreboardName());
         boolean isAttackerTeam = team != null && "A".equals(team.getName());
-        if (isAttackerTeam) return;
-        // Defender holding Spike -> immediately drop and remove
+
         int size = sp.getInventory().getContainerSize();
+        if (isAttackerTeam) {
+            // Attackers must not have Defuser -> remove
+            for (int i = 0; i < size; i++) {
+                ItemStack s = sp.getInventory().getItem(i);
+                if (s.is(ModItems.DEFUSER.get())) {
+                    sp.getInventory().setItem(i, ItemStack.EMPTY);
+                }
+            }
+            return;
+        }
+
+        // Defenders must not hold Spike -> drop and remove
         for (int i = 0; i < size; i++) {
             ItemStack s = sp.getInventory().getItem(i);
             if (s.is(ModItems.SPIKE.get())) {
                 ItemEntity ent = new ItemEntity(sp.level(), sp.getX(), sp.getY() + 0.5, sp.getZ(), s.copyWithCount(1));
                 sp.level().addFreshEntity(ent);
                 sp.getInventory().setItem(i, ItemStack.EMPTY);
+            }
+        }
+
+        // Defenders should not have defusers unless actively defusing
+        if (!com.bobby.valorant.spike.SpikeDefusingHandler.isDefusing(sp)) {
+            for (int i = 0; i < size; i++) {
+                ItemStack s = sp.getInventory().getItem(i);
+                if (s.is(ModItems.DEFUSER.get())) {
+                    sp.getInventory().setItem(i, ItemStack.EMPTY);
+                }
             }
         }
     }

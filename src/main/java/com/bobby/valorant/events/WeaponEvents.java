@@ -93,6 +93,8 @@ public final class WeaponEvents {
         Player p = event.getEntity();
         if (p instanceof ServerPlayer sp) {
             ensureKnife(sp);
+            // Also give a free Classic if the player lacks a sidearm
+            RoundController.ensureDefaultPistol(sp);
         }
     }
 

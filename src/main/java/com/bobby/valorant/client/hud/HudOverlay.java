@@ -35,6 +35,9 @@ public final class HudOverlay {
 		renderHealthCard(guiGraphics, mc, player, screenHeight);
 		renderModernAbilitiesBar(guiGraphics, player, screenWidth, screenHeight);
 		renderWeaponInfo(guiGraphics, mc, player, screenWidth, screenHeight);
+
+		// Render title overlay (last to draw on top)
+		TitleOverlay.render(guiGraphics);
 	}
 
 	// New minimal health card (bottom-left)

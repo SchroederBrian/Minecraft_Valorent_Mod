@@ -12,7 +12,7 @@ set SOURCE_JAR=%BUILD_DIR%\%MOD_JAR_NAME%
 set TARGET_JAR=%MOD_FOLDER%\%MOD_JAR_NAME%
 
 echo Step 1: Building the mod...
-call gradlew.bat build
+call gradlew.bat clean build
 
 if %ERRORLEVEL% NEQ 0 (
     echo.
