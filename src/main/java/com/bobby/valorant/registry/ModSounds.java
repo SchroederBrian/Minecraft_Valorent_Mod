@@ -17,6 +17,19 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> CURVEBALL_THROW = register("curveball_throw");
     public static final DeferredHolder<SoundEvent, SoundEvent> CURVEBALL_DETONATE = register("curveball_detonate");
 
+    // Weapon sounds
+    public static final DeferredHolder<SoundEvent, SoundEvent> CLASSIC_RELOAD = register("classic.reload");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GHOST_RELOAD = register("ghost.reload");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VALOR_RIFLE_RELOAD = register("valor_rifle.reload");
+
+    // Spike sounds
+    public static final DeferredHolder<SoundEvent, SoundEvent> SPIKE_PLANT = register("spike.plant");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SPIKE_DEFUSE = register("spike.defuse");
+
+    // UI sounds
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUY_SUCCESS = register("ui.buy_success");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUY_FAILURE = register("ui.buy_failure");
+
     private static DeferredHolder<SoundEvent, SoundEvent> register(String path) {
         return SOUND_EVENTS.register(path, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Valorant.MODID, path)));
     }

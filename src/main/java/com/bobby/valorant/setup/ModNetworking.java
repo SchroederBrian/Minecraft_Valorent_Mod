@@ -18,8 +18,11 @@ import com.bobby.valorant.network.EquipFireballPacket;
 import com.bobby.valorant.network.SyncFireballChargesPacket;
 import com.bobby.valorant.network.PlantSpikePacket;
 import com.bobby.valorant.network.PlantingProgressPacket;
+import com.bobby.valorant.network.ReloadWeaponPacket;
+import com.bobby.valorant.network.SyncWeaponAmmoPacket;
 import com.bobby.valorant.network.DefuseSpikePacket;
 import com.bobby.valorant.network.DefuseProgressPacket;
+import com.bobby.valorant.network.EquipSpikePacket;
 import com.bobby.valorant.network.ShowTitleOverlayPacket;
 
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -42,6 +45,9 @@ public final class ModNetworking {
                 .playToServer(EquipFireballPacket.TYPE, EquipFireballPacket.STREAM_CODEC, EquipFireballPacket::handle)
                 .playToServer(PlantSpikePacket.TYPE, PlantSpikePacket.STREAM_CODEC, PlantSpikePacket::handle)
                 .playToServer(DefuseSpikePacket.TYPE, DefuseSpikePacket.STREAM_CODEC, DefuseSpikePacket::handle)
+                .playToServer(EquipSpikePacket.TYPE, EquipSpikePacket.STREAM_CODEC, EquipSpikePacket::handle)
+                .playToServer(ReloadWeaponPacket.TYPE, ReloadWeaponPacket.STREAM_CODEC, ReloadWeaponPacket::handle)
+                .playToClient(SyncWeaponAmmoPacket.TYPE, SyncWeaponAmmoPacket.STREAM_CODEC, SyncWeaponAmmoPacket::handle)
                 .playToClient(SyncCurveballChargesPacket.TYPE, SyncCurveballChargesPacket.STREAM_CODEC, SyncCurveballChargesPacket::handle)
                 .playToClient(SyncRoundStatePacket.TYPE, SyncRoundStatePacket.STREAM_CODEC, SyncRoundStatePacket::handle)
                 .playToClient(SyncCreditsPacket.TYPE, SyncCreditsPacket.STREAM_CODEC, SyncCreditsPacket::handle)

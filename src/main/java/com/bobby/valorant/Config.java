@@ -81,6 +81,8 @@ public final class Config {
         public final ModConfigSpec.IntValue classicCooldownTicks;
         public final ModConfigSpec.IntValue classicTracerParticles;
         public final ModConfigSpec.IntValue classicMuzzleParticles;
+        public final ModConfigSpec.IntValue classicMagazineSize;
+        public final ModConfigSpec.IntValue classicMaxReserveAmmo;
 
         public final ModConfigSpec.DoubleValue ghostDamage;
         public final ModConfigSpec.DoubleValue ghostRange;
@@ -88,6 +90,8 @@ public final class Config {
         public final ModConfigSpec.IntValue ghostCooldownTicks;
         public final ModConfigSpec.IntValue ghostTracerParticles;
         public final ModConfigSpec.IntValue ghostMuzzleParticles;
+        public final ModConfigSpec.IntValue ghostMagazineSize;
+        public final ModConfigSpec.IntValue ghostMaxReserveAmmo;
 
         public final ModConfigSpec.DoubleValue valorRifleDamage;
         public final ModConfigSpec.DoubleValue valorRifleRange;
@@ -95,6 +99,8 @@ public final class Config {
         public final ModConfigSpec.IntValue valorRifleCooldownTicks;
         public final ModConfigSpec.IntValue valorRifleTracerParticles;
         public final ModConfigSpec.IntValue valorRifleMuzzleParticles;
+        public final ModConfigSpec.IntValue valorRifleMagazineSize;
+        public final ModConfigSpec.IntValue valorRifleMaxReserveAmmo;
 
         // Commands / particles
         public final ModConfigSpec.IntValue particleCommandDefaultDurationTicks;
@@ -256,6 +262,10 @@ public final class Config {
                     .defineInRange("tracerSteps", 5, 5, 5);
             classicMuzzleParticles = builder.comment("Muzzle particle count for Classic pistol (visual only).")
                     .defineInRange("muzzleParticles", 4, 1, 32);
+            classicMagazineSize = builder.comment("Magazine size for Classic pistol.")
+                    .defineInRange("magazineSize", 12, 1, 100);
+            classicMaxReserveAmmo = builder.comment("Maximum reserve ammo for Classic pistol.")
+                    .defineInRange("maxReserveAmmo", 36, 0, 500);
             builder.pop();
 
             // Ghost
@@ -272,6 +282,10 @@ public final class Config {
                     .defineInRange("tracerSteps", 18, 1, 128);
             ghostMuzzleParticles = builder.comment("Muzzle particle count for Ghost pistol (visual only).")
                     .defineInRange("muzzleParticles", 5, 1, 32);
+            ghostMagazineSize = builder.comment("Magazine size for Ghost pistol.")
+                    .defineInRange("magazineSize", 15, 1, 100);
+            ghostMaxReserveAmmo = builder.comment("Maximum reserve ammo for Ghost pistol.")
+                    .defineInRange("maxReserveAmmo", 45, 0, 500);
             builder.pop();
 
             // Valor Rifle
@@ -288,6 +302,10 @@ public final class Config {
                     .defineInRange("tracerSteps", 24, 1, 128);
             valorRifleMuzzleParticles = builder.comment("Muzzle particle count for Valor Rifle (visual only).")
                     .defineInRange("muzzleParticles", 6, 1, 32);
+            valorRifleMagazineSize = builder.comment("Magazine size for Valor Rifle.")
+                    .defineInRange("magazineSize", 25, 1, 100);
+            valorRifleMaxReserveAmmo = builder.comment("Maximum reserve ammo for Valor Rifle.")
+                    .defineInRange("maxReserveAmmo", 75, 0, 500);
             builder.pop();
 
             builder.pop();

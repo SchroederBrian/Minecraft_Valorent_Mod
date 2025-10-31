@@ -1,6 +1,7 @@
 package com.bobby.valorant.client.hud;
 
 import com.bobby.valorant.player.FireballData;
+import com.bobby.valorant.world.item.WeaponAmmoData;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -35,9 +36,51 @@ public final class HudOverlay {
 		renderHealthCard(guiGraphics, mc, player, screenHeight);
 		renderModernAbilitiesBar(guiGraphics, player, screenWidth, screenHeight);
 		renderWeaponInfo(guiGraphics, mc, player, screenWidth, screenHeight);
+		renderSpikeIndicator(guiGraphics, mc, player, screenWidth, screenHeight);
 
 		// Render title overlay (last to draw on top)
 		TitleOverlay.render(guiGraphics);
+	}
+
+	private static void renderSpikeIndicator(GuiGraphics guiGraphics, net.minecraft.client.Minecraft mc, Player player, int sw, int sh) {
+		// Check if player has Spike in inventory
+		boolean hasSpike = false;
+		int spikeSlot = -1;
+		int invSize = player.getInventory().getContainerSize();
+		for (int i = 0; i < invSize; i++) {
+			ItemStack stack = player.getInventory().getItem(i);
+			if (stack.is(com.bobby.valorant.registry.ModItems.SPIKE.get())) {
+				hasSpike = true;
+				spikeSlot = i;
+				break;
+			}
+		}
+
+		if (!hasSpike) {
+			return;
+		}
+
+		// Draw spike indicator on the right side, middle of screen
+		int panelWidth = 100;
+		int panelHeight = 32;
+		int x = sw - panelWidth - 20;
+		int y = sh / 2 - panelHeight / 2;
+
+		// Background panel (similar to money panel)
+		guiGraphics.fill(x, y, x + panelWidth, y + panelHeight, 0x90181D22);
+
+		// Left accent stripe (spike colored - yellow/gold)
+		guiGraphics.fill(x + 100, y, x + 6, y + panelHeight, argb(255, 255, 193, 7));
+
+		// Spike icon
+		ItemStack spikeStack = player.getInventory().getItem(spikeSlot);
+		guiGraphics.renderItem(spikeStack, x + 8, y + 8);
+
+		// Text label
+		guiGraphics.drawString(mc.font, "You have the", x + 30, y + 5, 0xFFFFD700, false);
+
+		// Status indicator
+		guiGraphics.drawString(mc.font, "Spike", x + 30, y + 16, 0xFFB8E986, false);
 	}
 
 	// New minimal health card (bottom-left)
@@ -169,7 +212,7 @@ public final class HudOverlay {
 		g.fill(x, y, x + 3, y + h, accent);
 		// Agent/player head portrait always
 		if (p != null) {
-			com.bobby.valorant.world.agent.Agent agent = com.bobby.valorant.player.AgentData.getSelectedAgent(p);
+			com.bobby.valorant.world.agent.Agent agent = com.bobby.valorant.client.lock.PlayerAgentState.getAgentForPlayer(p);
 			ItemStack head = com.bobby.valorant.client.hud.AgentHeadIcons.get(agent);
 			g.renderItem(head, x + w / 2 - 8, y + 4);
 		}
@@ -278,26 +321,42 @@ public final class HudOverlay {
 
 	private static void renderWeaponInfo(GuiGraphics guiGraphics, net.minecraft.client.Minecraft mc, Player player, int sw, int sh) {
 		ItemStack heldItem = player.getMainHandItem();
-
-		int bgWidth = 100;
-		int bgHeight = 50;
-		int bgX = sw - bgWidth - 30;
-		int bgY = sh - bgHeight - 25;
-
-		// Render semi-transparent background
-		guiGraphics.fill(bgX, bgY, bgX + bgWidth, bgY + bgHeight, 0x90000000);
-
-		if (!heldItem.isEmpty()) {
-			// Render weapon icon
-			guiGraphics.renderItem(heldItem, bgX + 10, bgY + 15);
-
-			// Render ammo
-			String clipAmmo = "23"; // Placeholder
-			String reserveAmmo = String.valueOf(heldItem.getCount());
-
-			guiGraphics.drawString(mc.font, clipAmmo, bgX + 40, bgY + 10, 0xFFFFFF, true);
-			guiGraphics.drawString(mc.font, reserveAmmo, bgX + 40, bgY + 30, 0xFFFFFF, true);
+		if (heldItem.isEmpty() || !(heldItem.getItem() instanceof com.bobby.valorant.world.item.IWeapon weapon)) {
+			return;
 		}
+
+		int cardWidth = 120;
+		int cardHeight = 44;
+		int x = sw - cardWidth - 20;
+		int y = sh - cardHeight - 20;
+
+		// Background - borrow from health card style
+		int bgTop = argb(160, 12, 14, 16);
+		int bgBottom = argb(160, 8, 9, 11);
+		guiGraphics.fillGradient(x, y, x + cardWidth, y + cardHeight, bgTop, bgBottom);
+
+		// Right accent stripe (consistent look)
+		guiGraphics.fill(x + cardWidth - 6, y, x + cardWidth, y + cardHeight, argb(255, 100, 220, 255));
+
+		// Ammo text
+		String clipAmmo = String.valueOf(WeaponAmmoData.getCurrentAmmo(heldItem));
+		String reserveAmmo = String.valueOf(WeaponAmmoData.getReserveAmmo(heldItem));
+		String ammoText = clipAmmo + " / " + reserveAmmo;
+
+		// Use a larger font for ammo count
+		// Note: mc.font doesn't support scaling directly. For a true Valorant look, a custom font renderer or scaling would be needed.
+		// For now, we'll draw it larger by rendering it multiple times or using a different font if available.
+		// As a simple stand-in, let's just draw it big.
+		guiGraphics.drawString(mc.font, clipAmmo, x + 20, y + 14, 0xFFFFFFFF, true);
+
+		// Separator and reserve
+		int clipWidth = mc.font.width(clipAmmo);
+		guiGraphics.drawString(mc.font, "/", x + 20 + clipWidth + 4, y + 18, 0xFFAAAAAA, false);
+		guiGraphics.drawString(mc.font, reserveAmmo, x + 20 + clipWidth + 12, y + 22, 0xFFAAAAAA, false);
+
+
+		// Weapon icon on the right
+		guiGraphics.renderItem(heldItem, x + cardWidth - 40, y + (cardHeight - 16) / 2);
 	}
 }
 

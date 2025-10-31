@@ -2,24 +2,23 @@ package com.bobby.valorant.events;
 
 import com.bobby.valorant.Valorant;
 import com.bobby.valorant.registry.ModItems;
+import com.bobby.valorant.round.RoundController;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-// Import RoundController
-import com.bobby.valorant.round.RoundController;
 
 @EventBusSubscriber(modid = Valorant.MODID)
-public final class WeaponEvents {
-    private WeaponEvents() {}
+public final class ServerWeaponEvents {
+    private ServerWeaponEvents() {}
 
     @SubscribeEvent
     public static void onDeathRemoveWeapons(LivingDeathEvent event) {
@@ -92,7 +91,7 @@ public final class WeaponEvents {
         if (!event.isWasDeath()) return;
         Player p = event.getEntity();
         if (p instanceof ServerPlayer sp) {
-            ensureKnife(sp);
+            RoundController.ensureKnife(sp);
             // Also give a free Classic if the player lacks a sidearm
             RoundController.ensureDefaultPistol(sp);
         }
@@ -128,5 +127,3 @@ public final class WeaponEvents {
                 s.is(net.minecraft.world.item.Items.NETHERITE_AXE);
     }
 }
-
-

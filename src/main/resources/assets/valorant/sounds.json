@@ -1,25 +1,92 @@
 {
-  "curveball_throw": {
-    "subtitle": "sound.valorant.curveball_throw",
+  "classic.reload": {
+    "category": "player",
+    "subtitle": "valorant.sound.classic.reload",
     "sounds": [
       {
-        "name": "minecraft:item.spyglass.use",
-        "type": "event",
-        "pitch": 1.4,
-        "volume": 0.8
+        "name": "valorant:classic.reload",
+        "stream": false
+      }
+    ]
+  },
+  "ghost.reload": {
+    "category": "player",
+    "subtitle": "valorant.sound.ghost.reload",
+    "sounds": [
+      {
+        "name": "valorant:ghost.reload",
+        "stream": false
+      }
+    ]
+  },
+  "valor_rifle.reload": {
+    "category": "player",
+    "subtitle": "valorant.sound.valor_rifle.reload",
+    "sounds": [
+      {
+        "name": "valorant:valor_rifle.reload",
+        "stream": false
+      }
+    ]
+  },
+  "spike.plant": {
+    "category": "block",
+    "subtitle": "valorant.sound.spike.plant",
+    "sounds": [
+      {
+        "name": "valorant:spike.plant",
+        "stream": false
+      }
+    ]
+  },
+  "spike.defuse": {
+    "category": "block",
+    "subtitle": "valorant.sound.spike.defuse",
+    "sounds": [
+      {
+        "name": "valorant:spike.defuse",
+        "stream": false
+      }
+    ]
+  },
+  "ui.buy_success": {
+    "category": "player",
+    "subtitle": "valorant.sound.ui.buy_success",
+    "sounds": [
+      {
+        "name": "valorant:ui.buy_success",
+        "stream": false
+      }
+    ]
+  },
+  "ui.buy_failure": {
+    "category": "player",
+    "subtitle": "valorant.sound.ui.buy_failure",
+    "sounds": [
+      {
+        "name": "valorant:ui.buy_failure",
+        "stream": false
+      }
+    ]
+  },
+  "curveball_throw": {
+    "category": "player",
+    "subtitle": "valorant.sound.curveball_throw",
+    "sounds": [
+      {
+        "name": "valorant:curveball_throw",
+        "stream": false
       }
     ]
   },
   "curveball_detonate": {
-    "subtitle": "sound.valorant.curveball_detonate",
+    "category": "player",
+    "subtitle": "valorant.sound.curveball_detonate",
     "sounds": [
       {
-        "name": "minecraft:block.amethyst_block.resonate",
-        "type": "event",
-        "pitch": 1.1,
-        "volume": 0.9
+        "name": "valorant:curveball_detonate",
+        "stream": false
       }
     ]
   }
 }
-

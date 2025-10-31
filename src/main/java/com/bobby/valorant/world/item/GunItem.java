@@ -2,6 +2,7 @@ package com.bobby.valorant.world.item;
 
 import java.util.function.Predicate;
 
+import com.bobby.valorant.world.item.IWeapon;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,7 +23,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
-public abstract class GunItem extends Item {
+public abstract class GunItem extends Item implements IWeapon {
     protected GunItem(Properties properties) {
         super(properties);
     }
@@ -46,7 +47,18 @@ public abstract class GunItem extends Item {
         if (player.getCooldowns().isOnCooldown(stack)) {
             return false;
         }
-        return shoot(player, hand, stack);
+
+        if (WeaponAmmoData.getCurrentAmmo(stack) <= 0) {
+            // TODO: Play empty clip sound
+            return false;
+        }
+
+        if (shoot(player, hand, stack)) {
+            WeaponAmmoData.decrementAmmo(stack);
+            return true;
+        }
+
+        return false;
     }
 
     protected boolean shoot(ServerPlayer player, InteractionHand hand, ItemStack stack) {
@@ -107,15 +119,28 @@ public abstract class GunItem extends Item {
     private void spawnMuzzleFlash(ServerLevel level, Vec3 eyePos, Vec3 dir) { }
 
     private void spawnTracer(ServerLevel level, Vec3 start, Vec3 end) {
-        // Very short-lived tracer: minimal points
-        int steps = Math.max(1, getTracerParticles() / 6);
-        Vec3 delta = end.subtract(start);
+        // Create a visible bullet representation as a small line traveling from start to end
+        Vec3 direction = end.subtract(start);
+        double distance = direction.length();
+        
+        // Create dust particle options (white color: 0xFFFFFF; scale 0.3)
+        // Color packed as: (R << 16) | (G << 8) | B = 0xFFFFFF for white
+        net.minecraft.core.particles.DustParticleOptions dustOptions = 
+            new net.minecraft.core.particles.DustParticleOptions(0xFFFFFF, 0.1f);
+        
+        // Create a dense line of particles to represent the bullet itself
+        int steps = Math.max(8, (int)(distance * 4)); // Denser for better visibility
+        
         for (int i = 0; i <= steps; i++) {
             double t = (double) i / (double) steps;
-            Vec3 p = start.add(delta.scale(t));
-            // Use CRIT for a quick flicker that disappears fast
-            level.sendParticles(ParticleTypes.CRIT, p.x, p.y, p.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            Vec3 p = start.add(direction.scale(t));
+            
+            // Send dust particles along the trajectory
+            level.sendParticles(dustOptions, p.x, p.y, p.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         }
+        
+        // Impact effect at the end point
+        level.sendParticles(ParticleTypes.CRIT, end.x, end.y, end.z, 2, 0.1D, 0.1D, 0.1D, 0.0D);
     }
 
     private Vec3 applySpread(Vec3 look, float spreadDegrees, RandomSource random) {

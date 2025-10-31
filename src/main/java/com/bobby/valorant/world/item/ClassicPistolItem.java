@@ -36,4 +36,14 @@ public class ClassicPistolItem extends GunItem {
     protected int getMuzzleParticles() {
         return Config.COMMON.classicMuzzleParticles.get();
     }
+
+    @Override
+    public int getMagazineSize() {
+        return Config.COMMON.classicMagazineSize.get();
+    }
+
+    @Override
+    public int getMaxReserveAmmo() {
+        return Config.COMMON.classicMaxReserveAmmo.get();
+    }
 }

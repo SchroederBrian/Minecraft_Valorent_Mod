@@ -36,6 +36,16 @@ public class GhostPistolItem extends GunItem {
     protected int getMuzzleParticles() {
         return Config.COMMON.ghostMuzzleParticles.get();
     }
+
+    @Override
+    public int getMagazineSize() {
+        return Config.COMMON.ghostMagazineSize.get();
+    }
+
+    @Override
+    public int getMaxReserveAmmo() {
+        return Config.COMMON.ghostMaxReserveAmmo.get();
+    }
 }
 
 

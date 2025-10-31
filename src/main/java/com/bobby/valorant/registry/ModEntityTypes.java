@@ -21,7 +21,7 @@ public final class ModEntityTypes {
     private static final ResourceKey<EntityType<?>> CURVEBALL_ORB_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "curveball_orb"));
     private static final ResourceKey<EntityType<?>> FIREBALL_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "fireball"));
     private static final ResourceKey<EntityType<?>> PLANTED_SPIKE_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "plantedspike"));
-
+        
     public static final DeferredHolder<EntityType<?>, EntityType<CurveballOrb>> CURVEBALL_ORB = ENTITY_TYPES.register("curveball_orb",
             () -> EntityType.Builder.<CurveballOrb>of(CurveballOrb::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F)

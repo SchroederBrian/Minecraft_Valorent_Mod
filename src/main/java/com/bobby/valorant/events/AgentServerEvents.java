@@ -8,7 +8,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = Valorant.MODID)
 public final class AgentServerEvents {
@@ -28,22 +30,19 @@ public final class AgentServerEvents {
         if (event.getEntity() instanceof ServerPlayer sp) {
             // Send current locks to the joining player
             var manager = AgentLockManager.get(sp.getServer());
-            var lockedA = new ArrayList<String>();
-            var lockedV = new ArrayList<String>();
-            manager.getLockedA().forEach(a -> lockedA.add(a.getId()));
-            manager.getLockedV().forEach(a -> lockedV.add(a.getId()));
-            net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(sp, new SyncAgentLocksPacket(lockedA, lockedV));
+            Map<UUID, String> playerAgentMap = new HashMap<>();
+            manager.getPlayerToLocked().forEach((uuid, agent) -> playerAgentMap.put(uuid, agent.getId()));
+            net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(sp, new SyncAgentLocksPacket(playerAgentMap));
         }
     }
 
     private static void broadcastLocks(ServerPlayer anyPlayer) {
         var server = anyPlayer.getServer();
+        if (server == null) return;
         var manager = AgentLockManager.get(server);
-        var lockedA = new ArrayList<String>();
-        var lockedV = new ArrayList<String>();
-        manager.getLockedA().forEach(a -> lockedA.add(a.getId()));
-        manager.getLockedV().forEach(a -> lockedV.add(a.getId()));
-        SyncAgentLocksPacket sync = new SyncAgentLocksPacket(lockedA, lockedV);
+        Map<UUID, String> playerAgentMap = new HashMap<>();
+        manager.getPlayerToLocked().forEach((uuid, agent) -> playerAgentMap.put(uuid, agent.getId()));
+        SyncAgentLocksPacket sync = new SyncAgentLocksPacket(playerAgentMap);
         server.getPlayerList().getPlayers().forEach(p ->
                 net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(p, sync)
         );

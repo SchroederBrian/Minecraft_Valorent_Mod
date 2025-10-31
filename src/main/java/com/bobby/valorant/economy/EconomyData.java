@@ -112,11 +112,24 @@ public final class EconomyData {
         if (item == ShopItem.ARMOR_HEAVY) {
             removeItem(sp, ShopItem.ARMOR_LIGHT);
         }
-        if (item.slot == ShopItem.Slot.SECONDARY) {
-            // Replace default pistol if present
-            removeDefaultSecondary(sp);
+
+        switch (item.slot) {
+            case PRIMARY:
+                // Remove any existing primary weapon before giving the new one.
+                removeItemsOfSlot(sp, ShopItem.Slot.PRIMARY);
+                sp.getInventory().setItem(0, item.giveStack());
+                break;
+            case SECONDARY:
+                // Remove any existing secondary weapon, including the default pistol.
+                removeItemsOfSlot(sp, ShopItem.Slot.SECONDARY);
+                sp.getInventory().setItem(1, item.giveStack());
+                break;
+            default:
+                // For other items like armor, add them to the inventory without specific slot placement.
+                sp.getInventory().add(item.giveStack());
+                break;
         }
-        sp.getInventory().add(item.giveStack());
+
         sp.containerMenu.broadcastChanges();
     }
 
@@ -132,13 +145,12 @@ public final class EconomyData {
         return false;
     }
 
-    private static void removeDefaultSecondary(ServerPlayer sp) {
+    private static void removeItemsOfSlot(ServerPlayer sp, ShopItem.Slot slot) {
         int size = sp.getInventory().getContainerSize();
         for (int i = 0; i < size; i++) {
             ItemStack s = sp.getInventory().getItem(i);
-            if (s.is(net.minecraft.world.item.Items.STONE_SWORD)) {
+            if (matchesSlot(s, slot)) {
                 sp.getInventory().setItem(i, ItemStack.EMPTY);
-                return;
             }
         }
     }

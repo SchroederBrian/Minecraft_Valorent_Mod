@@ -36,6 +36,16 @@ public class ValorRifleItem extends GunItem {
     protected int getMuzzleParticles() {
         return Config.COMMON.valorRifleMuzzleParticles.get();
     }
+
+    @Override
+    public int getMagazineSize() {
+        return Config.COMMON.valorRifleMagazineSize.get();
+    }
+
+    @Override
+    public int getMaxReserveAmmo() {
+        return Config.COMMON.valorRifleMaxReserveAmmo.get();
+    }
 }
 
 

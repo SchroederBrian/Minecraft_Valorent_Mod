@@ -41,6 +41,14 @@ public final class ModKeyBindings {
             "key.categories.valorant"
     );
 
+    public static final KeyMapping RELOAD_WEAPON = new KeyMapping(
+            "key.valorant.reload_weapon",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_R,
+            "key.categories.valorant"
+    );
+
     // Shop (B)
     public static final KeyMapping OPEN_SHOP = new KeyMapping(
             "key.valorant.open_shop",

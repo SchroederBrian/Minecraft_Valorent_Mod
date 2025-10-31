@@ -72,6 +72,10 @@ public final class AgentLockManager {
     public synchronized Set<Agent> getLockedA() { return Set.copyOf(lockedA); }
     public synchronized Set<Agent> getLockedV() { return Set.copyOf(lockedV); }
 
+    public synchronized Map<UUID, Agent> getPlayerToLocked() {
+        return new HashMap<>(playerToLocked);
+    }
+
     private boolean isLockedForTeam(String teamId, Agent agent) {
         return getTeamSet(teamId).contains(agent);
     }
@@ -82,8 +86,9 @@ public final class AgentLockManager {
     }
 
     private static String getTeamId(ServerPlayer player) {
-        if (player.getServer() == null) return null;
-        Scoreboard sb = player.getServer().getScoreboard();
+        var server = player.getServer();
+        if (server == null) return null;
+        Scoreboard sb = server.getScoreboard();
         PlayerTeam team = sb.getPlayersTeam(player.getScoreboardName());
         return team != null ? team.getName() : null;
     }

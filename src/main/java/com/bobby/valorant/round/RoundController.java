@@ -1,8 +1,12 @@
 package com.bobby.valorant.round;
 
+import com.bobby.valorant.network.SyncRoundStatePacket;
+import com.bobby.valorant.world.item.IWeapon;
+import com.bobby.valorant.world.item.WeaponAmmoData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.WeakHashMap;
@@ -62,10 +66,11 @@ public final class RoundController {
             }
             ensureDefaultPistol(sp);
             ensureKnife(sp);
+            resetPlayerAmmo(sp);
 
             // Reset abilities and effects for the new round, removing spectator mode
             if (!sp.isCreative()) {
-                sp.getAbilities().mayfly = false;
+                sp.getAbilities().flying = false;
                 sp.getAbilities().invulnerable = false;
                 sp.onUpdateAbilities();
             }
@@ -206,7 +211,9 @@ public final class RoundController {
     private void tryAssignSpikeToRandomAttacker() {
         java.util.List<ServerPlayer> attackers = new java.util.ArrayList<>();
         for (ServerPlayer sp : level.players()) {
-            net.minecraft.world.scores.Scoreboard sb = sp.getServer().getScoreboard();
+            var server = sp.getServer();
+            if (server == null) continue;
+            net.minecraft.world.scores.Scoreboard sb = server.getScoreboard();
             net.minecraft.world.scores.PlayerTeam team = sb.getPlayersTeam(sp.getScoreboardName());
             if (team == null) continue;
             // MVP rule: Attackers are always team "A"
@@ -235,23 +242,34 @@ public final class RoundController {
     }
 
     public static void ensureDefaultPistol(ServerPlayer sp) {
-        // If no simple sidearm present, give a basic one
-        boolean hasSecondary = false;
-        int size = sp.getInventory().getContainerSize();
-        for (int i = 0; i < size; i++) {
-            net.minecraft.world.item.ItemStack s = sp.getInventory().getItem(i);
-            if (s.is(com.bobby.valorant.registry.ModItems.CLASSIC.get()) || s.is(com.bobby.valorant.registry.ModItems.GHOST.get())) {
-                hasSecondary = true; break;
-            }
+        net.minecraft.world.item.ItemStack itemInSlot = sp.getInventory().getItem(1);
+        if (itemInSlot.getItem() instanceof com.bobby.valorant.world.item.IWeapon) {
+            return;
         }
-        if (!hasSecondary) {
-            sp.getInventory().add(com.bobby.valorant.registry.ModItems.CLASSIC.get().getDefaultInstance());
-        }
+        // If slot is not a pistol (could be empty or something else), give Classic.
+        sp.getInventory().setItem(1, com.bobby.valorant.registry.ModItems.CLASSIC.get().getDefaultInstance());
     }
 
-    private static void ensureKnife(ServerPlayer sp) {
-        if (!sp.getInventory().contains(com.bobby.valorant.registry.ModItems.KNIFE.get().getDefaultInstance())) {
-            sp.getInventory().add(com.bobby.valorant.registry.ModItems.KNIFE.get().getDefaultInstance());
+    public static void ensureKnife(ServerPlayer sp) {
+        // First, remove any existing knives to prevent duplication
+        sp.getInventory().removeItem(com.bobby.valorant.registry.ModItems.KNIFE.get().getDefaultInstance());
+        // Then, place a new knife in slot 3 (index 2)
+        sp.getInventory().setItem(2, com.bobby.valorant.registry.ModItems.KNIFE.get().getDefaultInstance());
+    }
+
+    private void resetPlayerAmmo(ServerPlayer sp) {
+        for (int i = 0; i < sp.getInventory().getContainerSize(); i++) {
+            ItemStack stack = sp.getInventory().getItem(i);
+            if (stack.getItem() instanceof IWeapon weapon) {
+                WeaponAmmoData.setCurrentAmmo(stack, weapon.getMagazineSize());
+                WeaponAmmoData.setReserveAmmo(stack, weapon.getMaxReserveAmmo());
+
+                // Sync ammo to client
+                int currentAmmo = WeaponAmmoData.getCurrentAmmo(stack);
+                int reserveAmmo = WeaponAmmoData.getReserveAmmo(stack);
+                net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(sp,
+                    new com.bobby.valorant.network.SyncWeaponAmmoPacket(i, currentAmmo, reserveAmmo));
+            }
         }
     }
 

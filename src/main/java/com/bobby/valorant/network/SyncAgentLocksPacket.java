@@ -1,39 +1,44 @@
 package com.bobby.valorant.network;
 
 import com.bobby.valorant.Valorant;
-import com.bobby.valorant.client.lock.AgentLockState;
+import com.bobby.valorant.client.lock.PlayerAgentState;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-public record SyncAgentLocksPacket(List<String> lockedA, List<String> lockedV) implements CustomPacketPayload {
+public record SyncAgentLocksPacket(Map<UUID, String> playerAgents) implements CustomPacketPayload {
     public static final Type<SyncAgentLocksPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "sync_agent_locks"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, SyncAgentLocksPacket> STREAM_CODEC = StreamCodec.of(
-            (buf, packet) -> {
-                buf.writeVarInt(packet.lockedA.size());
-                for (String id : packet.lockedA) buf.writeUtf(id);
-                buf.writeVarInt(packet.lockedV.size());
-                for (String id : packet.lockedV) buf.writeUtf(id);
-            },
-            buf -> {
-                int aCount = buf.readVarInt();
-                List<String> a = new ArrayList<>(aCount);
-                for (int i = 0; i < aCount; i++) a.add(buf.readUtf());
-                int vCount = buf.readVarInt();
-                List<String> v = new ArrayList<>(vCount);
-                for (int i = 0; i < vCount; i++) v.add(buf.readUtf());
-                return new SyncAgentLocksPacket(a, v);
+    public static final StreamCodec<RegistryFriendlyByteBuf, SyncAgentLocksPacket> STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public SyncAgentLocksPacket decode(RegistryFriendlyByteBuf buf) {
+            int size = buf.readVarInt();
+            Map<UUID, String> map = new HashMap<>();
+            for (int i = 0; i < size; i++) {
+                map.put(buf.readUUID(), buf.readUtf());
             }
-    );
+            return new SyncAgentLocksPacket(map);
+        }
+
+        @Override
+        public void encode(RegistryFriendlyByteBuf buf, SyncAgentLocksPacket packet) {
+            buf.writeVarInt(packet.playerAgents.size());
+            packet.playerAgents.forEach((uuid, agentId) -> {
+                buf.writeUUID(uuid);
+                buf.writeUtf(agentId);
+            });
+        }
+    };
 
     public static void handle(SyncAgentLocksPacket packet, IPayloadContext context) {
-        // Client-side: update lock state
-        AgentLockState.updateFromIds(packet.lockedA, packet.lockedV);
+        context.enqueueWork(() -> {
+            PlayerAgentState.update(packet.playerAgents);
+        });
     }
 
     @Override

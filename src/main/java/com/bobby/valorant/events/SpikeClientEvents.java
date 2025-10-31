@@ -4,12 +4,12 @@ import com.bobby.valorant.Valorant;
 import com.bobby.valorant.client.ModKeyBindings;
 import com.bobby.valorant.client.hud.TitleOverlay;
 import com.bobby.valorant.network.DefuseSpikePacket;
+import com.bobby.valorant.network.EquipSpikePacket;
 import com.bobby.valorant.network.PlantSpikePacket;
 import com.bobby.valorant.registry.ModItems;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
@@ -136,7 +136,16 @@ public final class SpikeClientEvents {
                 boolean startedDefuse = tryStartDefuse();
                 if (!startedDefuse) {
                     int slot = findHotbarSlot(player, ModItems.SPIKE.get().getDefaultInstance());
-                    if (slot >= 0) conn.send(new ServerboundSetCarriedItemPacket(slot));
+                    if (slot >= 0) {
+                        try {
+                            java.lang.reflect.Field selectedField = Inventory.class.getDeclaredField("selected");
+                            selectedField.setAccessible(true);
+                            selectedField.set(player.getInventory(), slot);
+                        } catch (Exception e) {
+                            Valorant.LOGGER.error("[SPIKE CLIENT] Failed to set selected slot via reflection: {}", e.toString());
+                        }
+                        ClientPacketDistributor.sendToServer(new EquipSpikePacket());
+                    }
                 }
             }
         }

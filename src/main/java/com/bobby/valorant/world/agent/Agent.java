@@ -11,7 +11,8 @@ public enum Agent {
     BRIMSTONE("brimstone", Component.translatable("agent.valorant.brimstone"), "Controller"),
     PHOENIX("phoenix", Component.translatable("agent.valorant.phoenix"), "Duelist"),
     SAGE("sage", Component.translatable("agent.valorant.sage"), "Sentinel"),
-    SOVA("sova", Component.translatable("agent.valorant.sova"), "Initiator");
+    SOVA("sova", Component.translatable("agent.valorant.sova"), "Initiator"),
+    UNSELECTED("unselected", Component.literal(""), "");
     
     private final String id;
     private final Component displayName;
@@ -45,7 +46,7 @@ public enum Agent {
                 return agent;
             }
         }
-        return JETT; // Default fallback
+        return UNSELECTED; // Default fallback
     }
 }
 
