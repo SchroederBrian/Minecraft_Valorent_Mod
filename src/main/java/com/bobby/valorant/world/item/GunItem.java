@@ -115,9 +115,6 @@ public abstract class GunItem extends Item implements IWeapon {
         return true;
     }
 
-    // Muzzle flash removed per request
-    private void spawnMuzzleFlash(ServerLevel level, Vec3 eyePos, Vec3 dir) { }
-
     private void spawnTracer(ServerLevel level, Vec3 start, Vec3 end) {
         // Create a visible bullet representation as a small line traveling from start to end
         Vec3 direction = end.subtract(start);

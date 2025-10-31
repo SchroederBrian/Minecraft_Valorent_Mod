@@ -102,6 +102,15 @@ public final class Config {
         public final ModConfigSpec.IntValue valorRifleMagazineSize;
         public final ModConfigSpec.IntValue valorRifleMaxReserveAmmo;
 
+        public final ModConfigSpec.DoubleValue vandalRifleDamage;
+        public final ModConfigSpec.DoubleValue vandalRifleRange;
+        public final ModConfigSpec.DoubleValue vandalRifleSpreadDegrees;
+        public final ModConfigSpec.IntValue vandalRifleCooldownTicks;
+        public final ModConfigSpec.IntValue vandalRifleTracerParticles;
+        public final ModConfigSpec.IntValue vandalRifleMuzzleParticles;
+        public final ModConfigSpec.IntValue vandalRifleMagazineSize;
+        public final ModConfigSpec.IntValue vandalRifleMaxReserveAmmo;
+
         // Commands / particles
         public final ModConfigSpec.IntValue particleCommandDefaultDurationTicks;
 
@@ -305,6 +314,26 @@ public final class Config {
             valorRifleMagazineSize = builder.comment("Magazine size for Valor Rifle.")
                     .defineInRange("magazineSize", 25, 1, 100);
             valorRifleMaxReserveAmmo = builder.comment("Maximum reserve ammo for Valor Rifle.")
+                    .defineInRange("maxReserveAmmo", 75, 0, 500);
+            builder.pop();
+
+            // Vandal Rifle
+            builder.push("vandal_rifle");
+            vandalRifleDamage = builder.comment("Damage per shot for Vandal Rifle.")
+                    .defineInRange("damage", 5.0D, 0.0D, 100.0D);
+            vandalRifleRange = builder.comment("Max range in blocks for Vandal Rifle.")
+                    .defineInRange("range", 80.0D, 1.0D, 256.0D);
+            vandalRifleSpreadDegrees = builder.comment("Random spread in degrees for Vandal Rifle.")
+                    .defineInRange("spreadDegrees", 0.75D, 0.0D, 15.0D);
+            vandalRifleCooldownTicks = builder.comment("Cooldown (fire rate) in ticks for Vandal Rifle.")
+                    .defineInRange("cooldownTicks", 4, 0, 40);
+            vandalRifleTracerParticles = builder.comment("Tracer particle steps for Vandal Rifle (visual only).")
+                    .defineInRange("tracerSteps", 24, 1, 128);
+            vandalRifleMuzzleParticles = builder.comment("Muzzle particle count for Vandal Rifle (visual only).")
+                    .defineInRange("muzzleParticles", 6, 1, 32);
+            vandalRifleMagazineSize = builder.comment("Magazine size for Vandal Rifle.")
+                    .defineInRange("magazineSize", 25, 1, 100);
+            vandalRifleMaxReserveAmmo = builder.comment("Maximum reserve ammo for Vandal Rifle.")
                     .defineInRange("maxReserveAmmo", 75, 0, 500);
             builder.pop();
 

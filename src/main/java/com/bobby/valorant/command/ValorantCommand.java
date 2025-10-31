@@ -277,6 +277,28 @@ public final class ValorantCommand {
                                                     return ok ? 1 : 0;
                                                 })))
                         )
+                        .then(Commands.literal("wall")
+                                .then(Commands.literal("test")
+                                        .executes(ctx -> {
+                                            ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                            ServerLevel level = (ServerLevel) sp.level();
+
+                                            // Create armor stand at player position
+                                            net.minecraft.world.entity.decoration.ArmorStand stand = new net.minecraft.world.entity.decoration.ArmorStand(level, sp.getX(), sp.getY(), sp.getZ());
+                                            stand.setInvisible(true);
+                                            stand.setInvulnerable(true);
+                                            stand.setNoGravity(true);
+                                            stand.setSilent(true);
+                                            // Keep it stationary and unobtrusive
+                                            stand.setShowArms(false);
+                                            stand.setNoBasePlate(true);
+                                            // Display the wall segment item on its head
+                                            stand.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, com.bobby.valorant.registry.ModItems.WALLSEGMENT.get().getDefaultInstance());
+                                            level.addFreshEntity(stand);
+
+                                            ctx.getSource().sendSuccess(() -> Component.literal("Wall segment test armor stand spawned"), false);
+                                            return 1;
+                                        })))
         );
     }
 

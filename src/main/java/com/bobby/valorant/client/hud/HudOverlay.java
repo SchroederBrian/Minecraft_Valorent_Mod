@@ -70,7 +70,7 @@ public final class HudOverlay {
 		guiGraphics.fill(x, y, x + panelWidth, y + panelHeight, 0x90181D22);
 
 		// Left accent stripe (spike colored - yellow/gold)
-		guiGraphics.fill(x + 100, y, x + 6, y + panelHeight, argb(255, 255, 193, 7));
+		guiGraphics.fill(x + 106, y, x + 100, y + panelHeight, argb(255, 255, 193, 7));
 
 		// Spike icon
 		ItemStack spikeStack = player.getInventory().getItem(spikeSlot);

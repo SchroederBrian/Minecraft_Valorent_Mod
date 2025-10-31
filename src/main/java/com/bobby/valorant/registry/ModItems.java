@@ -11,6 +11,7 @@ import com.bobby.valorant.world.item.SpikeItem;
 import com.bobby.valorant.world.item.DefuserItem;
 import com.bobby.valorant.world.item.StimBeaconHandItem;
 import com.bobby.valorant.world.item.PlacedStimBeacon;
+import com.bobby.valorant.world.item.VandalRifleItem;
 
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
@@ -35,6 +36,7 @@ public final class ModItems {
     public static final DeferredItem<Item> STIMBEACONHAND = ITEMS.registerItem("stimbeaconhand", props -> new StimBeaconHandItem(props.stacksTo(1)));
     public static final DeferredItem<Item> PLACEDSTIMBEACON = ITEMS.registerItem("placedstimbeacon", props -> new PlacedStimBeacon(props.stacksTo(1)));
     public static final DeferredItem<Item> WALLSEGMENT = ITEMS.registerItem("wallsegment", props -> new Item(props.stacksTo(1)));
+    public static final DeferredItem<Item> VANDAL_RIFLE = ITEMS.registerItem("vandal", props -> new VandalRifleItem(props.stacksTo(1)));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
