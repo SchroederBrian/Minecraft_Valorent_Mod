@@ -46,16 +46,6 @@ if exist "%TARGET_JAR%" (
 )
 
 echo.
-echo Step 5: Copying new mod to Modrinth profile...
-copy "%SOURCE_JAR%" "%TARGET_JAR%"
-
-if %ERRORLEVEL% NEQ 0 (
-    echo ERROR: Failed to copy jar file!
-    pause
-    exit /b 1
-)
-
-echo.
 echo ============================================
 echo SUCCESS! Mod deployed successfully!
 echo ============================================
