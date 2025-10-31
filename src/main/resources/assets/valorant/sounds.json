@@ -19,12 +19,12 @@
       }
     ]
   },
-  "valor_rifle.reload": {
+  "vandal.reload": {
     "category": "player",
-    "subtitle": "valorant.sound.valor_rifle.reload",
+    "subtitle": "valorant.sound.vandal.reload",
     "sounds": [
       {
-        "name": "valorant:valor_rifle.reload",
+        "name": "valorant:vandal.reload",
         "stream": false
       }
     ]

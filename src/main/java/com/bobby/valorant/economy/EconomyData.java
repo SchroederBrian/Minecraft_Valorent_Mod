@@ -100,9 +100,9 @@ public final class EconomyData {
     private static boolean matchesSlot(ItemStack s, ShopItem.Slot slot) {
         if (s.isEmpty()) return false;
         return switch (slot) {
-            case SECONDARY -> s.is(Items.STONE_SWORD) || s.is(Items.IRON_SWORD) || s.is(com.bobby.valorant.registry.ModItems.GHOST.get());
+            case SECONDARY -> s.is(com.bobby.valorant.registry.ModItems.CLASSIC.get()) || s.is(com.bobby.valorant.registry.ModItems.GHOST.get()) || s.is(Items.IRON_SWORD);
             case PRIMARY -> s.is(Items.CROSSBOW) || s.is(Items.IRON_AXE) || s.is(Items.BOW) || s.is(Items.TRIDENT)
-                    || s.is(com.bobby.valorant.registry.ModItems.VALOR_RIFLE.get());
+                    || s.is(com.bobby.valorant.registry.ModItems.VANDAL_RIFLE.get());
             case ARMOR -> s.is(Items.LEATHER_CHESTPLATE) || s.is(Items.IRON_CHESTPLATE);
             default -> false;
         };

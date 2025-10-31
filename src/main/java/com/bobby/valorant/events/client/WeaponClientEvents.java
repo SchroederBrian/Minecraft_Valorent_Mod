@@ -26,7 +26,7 @@ public final class WeaponClientEvents {
         if (player == null || conn == null) return;
 
         if (ModKeyBindings.SELECT_RIFLE.consumeClick()) {
-            int slot = findHotbarSlot(player, ModItems.VALOR_RIFLE.get().getDefaultInstance());
+            int slot = findHotbarSlot(player, ModItems.VANDAL_RIFLE.get().getDefaultInstance());
             if (slot >= 0) conn.send(new ServerboundSetCarriedItemPacket(slot));
         }
         if (ModKeyBindings.SELECT_PISTOL.consumeClick()) {
@@ -54,7 +54,7 @@ public final class WeaponClientEvents {
         double dy = event.getScrollDeltaY();
         int next = (current + (dy > 0 ? 2 : 1)) % 3; // cycle opposite direction on positive delta
         int targetSlot = switch (next) {
-            case 0 -> findHotbarSlot(player, ModItems.VALOR_RIFLE.get().getDefaultInstance());
+            case 0 -> findHotbarSlot(player, ModItems.VANDAL_RIFLE.get().getDefaultInstance());
             case 1 -> findHotbarSlot(player, ModItems.GHOST.get().getDefaultInstance());
             default -> findHotbarSlot(player, ModItems.KNIFE.get().getDefaultInstance());
         };
@@ -66,7 +66,7 @@ public final class WeaponClientEvents {
 
     private static int getCurrentType(LocalPlayer player) {
         ItemStack s = player.getMainHandItem();
-        if (s.is(ModItems.VALOR_RIFLE.get())) return 0; // rifle
+        if (s.is(ModItems.VANDAL_RIFLE.get())) return 0; // rifle
         if (s.is(ModItems.GHOST.get())) return 1; // pistol
         return 2; // knife/other
     }

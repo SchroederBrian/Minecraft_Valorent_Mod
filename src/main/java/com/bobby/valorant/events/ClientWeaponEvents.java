@@ -2,6 +2,7 @@ package com.bobby.valorant.events;
 
 import com.bobby.valorant.Valorant;
 import com.bobby.valorant.client.ModKeyBindings;
+import com.bobby.valorant.network.ReloadWeaponPacket;
 import com.bobby.valorant.network.ShootGunPacket;
 import com.bobby.valorant.world.item.GunItem;
 import com.bobby.valorant.world.item.IWeapon;
@@ -63,14 +64,8 @@ public final class ClientWeaponEvents {
             return; // No ammo to reload
         }
 
-        int needed = magSize - currentAmmo;
-        int toReload = Math.min(needed, reserveAmmo);
-
-        WeaponAmmoData.setCurrentAmmo(heldStack, currentAmmo + toReload);
-        WeaponAmmoData.setReserveAmmo(heldStack, reserveAmmo - toReload);
-
-        // TODO: Play reload sound
-        // TODO: Send packet to server to sync ammo state
+        // Send reload packet to server - let server handle the logic and sync back
+        ClientPacketDistributor.sendToServer(new ReloadWeaponPacket());
     }
 
     @SubscribeEvent

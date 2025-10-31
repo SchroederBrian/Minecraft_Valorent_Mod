@@ -120,7 +120,7 @@ public final class ServerWeaponEvents {
     }
 
     private static boolean isPrimaryWeapon(ItemStack s) {
-        return s.is(ModItems.VALOR_RIFLE.get()) ||
+        return s.is(ModItems.VANDAL_RIFLE.get()) ||
                 s.is(net.minecraft.world.item.Items.BOW) ||
                 s.is(net.minecraft.world.item.Items.TRIDENT) ||
                 s.is(net.minecraft.world.item.Items.IRON_AXE) ||

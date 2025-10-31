@@ -74,7 +74,7 @@ public final class Config {
         public final ModConfigSpec.BooleanValue spikePlanted;
         public final ModConfigSpec.DoubleValue plantedSpikeYOffset;
 
-        // Weapons: Classic, Ghost, Valor Rifle
+        // Weapons:
         public final ModConfigSpec.DoubleValue classicDamage;
         public final ModConfigSpec.DoubleValue classicRange;
         public final ModConfigSpec.DoubleValue classicSpreadDegrees;
@@ -92,15 +92,6 @@ public final class Config {
         public final ModConfigSpec.IntValue ghostMuzzleParticles;
         public final ModConfigSpec.IntValue ghostMagazineSize;
         public final ModConfigSpec.IntValue ghostMaxReserveAmmo;
-
-        public final ModConfigSpec.DoubleValue valorRifleDamage;
-        public final ModConfigSpec.DoubleValue valorRifleRange;
-        public final ModConfigSpec.DoubleValue valorRifleSpreadDegrees;
-        public final ModConfigSpec.IntValue valorRifleCooldownTicks;
-        public final ModConfigSpec.IntValue valorRifleTracerParticles;
-        public final ModConfigSpec.IntValue valorRifleMuzzleParticles;
-        public final ModConfigSpec.IntValue valorRifleMagazineSize;
-        public final ModConfigSpec.IntValue valorRifleMaxReserveAmmo;
 
         public final ModConfigSpec.DoubleValue vandalRifleDamage;
         public final ModConfigSpec.DoubleValue vandalRifleRange;
@@ -295,26 +286,6 @@ public final class Config {
                     .defineInRange("magazineSize", 15, 1, 100);
             ghostMaxReserveAmmo = builder.comment("Maximum reserve ammo for Ghost pistol.")
                     .defineInRange("maxReserveAmmo", 45, 0, 500);
-            builder.pop();
-
-            // Valor Rifle
-            builder.push("valor_rifle");
-            valorRifleDamage = builder.comment("Damage per shot for Valor Rifle.")
-                    .defineInRange("damage", 5.0D, 0.0D, 100.0D);
-            valorRifleRange = builder.comment("Max range in blocks for Valor Rifle.")
-                    .defineInRange("range", 80.0D, 1.0D, 256.0D);
-            valorRifleSpreadDegrees = builder.comment("Random spread in degrees for Valor Rifle.")
-                    .defineInRange("spreadDegrees", 0.75D, 0.0D, 15.0D);
-            valorRifleCooldownTicks = builder.comment("Cooldown (fire rate) in ticks for Valor Rifle.")
-                    .defineInRange("cooldownTicks", 4, 0, 40);
-            valorRifleTracerParticles = builder.comment("Tracer particle steps for Valor Rifle (visual only).")
-                    .defineInRange("tracerSteps", 24, 1, 128);
-            valorRifleMuzzleParticles = builder.comment("Muzzle particle count for Valor Rifle (visual only).")
-                    .defineInRange("muzzleParticles", 6, 1, 32);
-            valorRifleMagazineSize = builder.comment("Magazine size for Valor Rifle.")
-                    .defineInRange("magazineSize", 25, 1, 100);
-            valorRifleMaxReserveAmmo = builder.comment("Maximum reserve ammo for Valor Rifle.")
-                    .defineInRange("maxReserveAmmo", 75, 0, 500);
             builder.pop();
 
             // Vandal Rifle

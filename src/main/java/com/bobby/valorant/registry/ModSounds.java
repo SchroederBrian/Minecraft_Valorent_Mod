@@ -20,7 +20,7 @@ public final class ModSounds {
     // Weapon sounds
     public static final DeferredHolder<SoundEvent, SoundEvent> CLASSIC_RELOAD = register("classic.reload");
     public static final DeferredHolder<SoundEvent, SoundEvent> GHOST_RELOAD = register("ghost.reload");
-    public static final DeferredHolder<SoundEvent, SoundEvent> VALOR_RIFLE_RELOAD = register("valor_rifle.reload");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VANDAL_RELOAD = register("vandal.reload");
 
     // Spike sounds
     public static final DeferredHolder<SoundEvent, SoundEvent> SPIKE_PLANT = register("spike.plant");

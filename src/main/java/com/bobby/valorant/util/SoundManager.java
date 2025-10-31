@@ -51,7 +51,7 @@ public class SoundManager {
         ResourceLocation soundLocation = switch (weaponType.toLowerCase()) {
             case "classic" -> getSoundLocation("classic.reload");
             case "ghost" -> getSoundLocation("ghost.reload");
-            case "valor_rifle", "valor" -> getSoundLocation("valor_rifle.reload");
+            case "valor_rifle", "vandal" -> getSoundLocation("valor_rifle.reload");
             default -> getSoundLocation("classic.reload"); // fallback
         };
         playSoundForPlayer(player, soundLocation, SoundSource.PLAYERS, 1.0f, 1.0f);

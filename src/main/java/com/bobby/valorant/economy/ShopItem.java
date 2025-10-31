@@ -24,8 +24,7 @@ public enum ShopItem {
     RIFLE_BULLDOG(Category.RIFLE, "Bulldog", 2050, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.BOW); }},
     RIFLE_GUARDIAN(Category.RIFLE, "Guardian", 2400, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.BOW); }},
     RIFLE_PHANTOM(Category.RIFLE, "Phantom", 2900, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.BOW); }},
-    RIFLE_VANDAL(Category.RIFLE, "Vandal", 2900, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.BOW); }},
-    RIFLE_VALOR(Category.RIFLE, "Valor Rifle", 3000, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(ModItems.VALOR_RIFLE.get()); }},
+    RIFLE_VANDAL(Category.RIFLE, "Vandal", 2900, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(ModItems.VANDAL_RIFLE.get()); }},
 
     // Snipers
     SNIPER_MARSHAL(Category.SNIPER, "Marshal", 950, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.TRIDENT); }},
