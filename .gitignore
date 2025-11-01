@@ -1,26 +1,47 @@
-# eclipse
-bin
-*.launch
-.settings
+# -----------------------
+# IDE: Eclipse
+# -----------------------
 .metadata
+.settings/
 .classpath
 .project
+# Eclipse Build-Ordner
+bin/
+eclipse/
 
-# idea
-out
-*.ipr
-*.iws
+# -----------------------
+# IDE: IntelliJ IDEA
+# -----------------------
+.idea/
 *.iml
-.idea
+*.iws
+*.ipr
+out/
 
-# gradle
-build
-.gradle
+# -----------------------
+# Gradle
+# -----------------------
+.gradle/
+build/
 
-# other
-eclipse
-run
-runs
-run-data
+# -----------------------
+# Minecraft Dev (NeoForge/Fabric/Forge)
+# -----------------------
+# Standard-Run-Ordner ignorieren …
+run/
+runs/
+run-data/
 
-repo
+# … aber FancyMenu-Konfiguration NICHT ignorieren:
+!run/config/
+!run/config/fancymenu/
+!run/config/fancymenu/**
+
+# -----------------------
+# Sonstiges
+# -----------------------
+# Falls du Launch-Konfigurationen exportierst:
+*.launch
+
+# Falls du versehentlich ein lokales Repo im Repo hast
+repo/

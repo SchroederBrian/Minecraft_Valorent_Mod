@@ -36,6 +36,7 @@ public class Valorant {
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

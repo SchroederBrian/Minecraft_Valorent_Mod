@@ -5,14 +5,45 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public final class Config {
     public static final Common COMMON;
     public static final ModConfigSpec COMMON_SPEC;
+    public static final Client CLIENT;
+    public static final ModConfigSpec CLIENT_SPEC;
 
     static {
-        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
-        COMMON = new Common(builder);
-        COMMON_SPEC = builder.build();
+        ModConfigSpec.Builder commonBuilder = new ModConfigSpec.Builder();
+        COMMON = new Common(commonBuilder);
+        COMMON_SPEC = commonBuilder.build();
+
+        ModConfigSpec.Builder clientBuilder = new ModConfigSpec.Builder();
+        CLIENT = new Client(clientBuilder);
+        CLIENT_SPEC = clientBuilder.build();
     }
 
     private Config() {}
+
+    public static final class Client {
+        public final ModConfigSpec.BooleanValue enableBuyOnH;
+        public final ModConfigSpec.BooleanValue useFancyMenuForBuy;
+        public final ModConfigSpec.ConfigValue<String> fancyMenuBuyIdentifier;
+        public final ModConfigSpec.BooleanValue fallbackToNativeBuyScreen;
+
+        Client(ModConfigSpec.Builder builder) {
+            builder.push("buy");
+
+            enableBuyOnH = builder.comment("Enable the H keybind to open the buy screen.")
+                    .define("enableBuyOnH", true);
+
+            useFancyMenuForBuy = builder.comment("Use FancyMenu for buy screen if available.")
+                    .define("useFancyMenuForBuy", true);
+
+            fancyMenuBuyIdentifier = builder.comment("FancyMenu layout identifier for buy screen.")
+                    .define("fancyMenuBuyIdentifier", "buyscreen");
+
+            fallbackToNativeBuyScreen = builder.comment("Fallback to native BuyScreen if FancyMenu fails or is unavailable.")
+                    .define("fallbackToNativeBuyScreen", false);
+
+            builder.pop();
+        }
+    }
 
     public static final class Common {
         public final ModConfigSpec.ConfigValue<Integer> curveballMaxCharges;
@@ -248,7 +279,7 @@ public final class Config {
                     .defineInRange("growthSpeed", 0.1D, 0.1D, 0.1D);
 
             firewallSegmentSpacing = builder.comment("Distance between wall segments in blocks.")
-                    .defineInRange("segmentSpacing", 0.5D, 0.5D, 0.5D);
+                    .defineInRange("segmentSpacing", 0.55D, 0.55D, 0.55D);
 
             firewallCurveSensitivity = builder.comment("How sensitive the wall is to player head movement (degrees per tick).")
                     .defineInRange("curveSensitivity", 0.1D, 0.1D, 0.1D);
@@ -428,4 +459,10 @@ public final class Config {
             builder.pop();
         }
     }
+
+    // Client config accessors
+    public static boolean enableBuyOnH() { return CLIENT.enableBuyOnH.get(); }
+    public static boolean useFancyMenuForBuy() { return CLIENT.useFancyMenuForBuy.get(); }
+    public static String fancyMenuBuyIdentifier() { return CLIENT.fancyMenuBuyIdentifier.get(); }
+    public static boolean fallbackToNativeBuyScreen() { return CLIENT.fallbackToNativeBuyScreen.get(); }
 }

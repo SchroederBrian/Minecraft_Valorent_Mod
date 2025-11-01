@@ -186,6 +186,9 @@ public final class HudOverlay {
 		g.fill(cx - timerW / 2, y - 2, cx + timerW / 2, y + slotH + 2, 0x90000000);
 		g.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font, timeLabel, cx, y + 5, 0xFFFFFFFF);
 
+		// Render spike plant info below timer
+		renderSpikePlantInfo(g, sw);
+
 		// Draw team slots
 		int leftPanelW = slots * slotW + (slots - 1) * gap;
 		int leftStart = cx - timerW / 2 - 6 - leftPanelW - scoreBoxW - 4;
@@ -387,6 +390,68 @@ public final class HudOverlay {
 			guiGraphics.drawString(mc.font, reloadText, textX, textY, 0xFFFFD700, false);
 		}
 	}
+
+	private static void renderSpikeSymbol(GuiGraphics g, int x, int y) {
+		int spikeColor = 0xFFE74C3C; // Valorant red color
+		int highlightColor = 0xFFFFA500; // Orange highlight
+		int shadowColor = 0xCC8B0000; // Dark red shadow
+
+		// Spike/bomb body (circle base)
+		for (int px = 0; px < 32; px++) {
+			for (int py = 0; py < 32; py++) {
+				int relX = px - 16;
+				int relY = py - 16;
+				float dist = (float) Math.sqrt(relX * relX + relY * relY);
+
+				// Main body (circle with radius ~12)
+				if (dist <= 12) {
+					// Add some texture to the body
+					if ((px + py) % 3 == 0 && dist > 8) {
+						g.fill(x + px, y + py, x + px + 1, y + py + 1, shadowColor);
+					} else {
+						g.fill(x + px, y + py, x + px + 1, y + py + 1, spikeColor);
+					}
+				}
+
+				// Spike protrusion (top)
+				if (relY < -8 && Math.abs(relX) <= 4 && dist <= 14) {
+					g.fill(x + px, y + py, x + px + 1, y + py + 1, spikeColor);
+				}
+
+				// Fuse/spark on top
+				if (relY < -12 && Math.abs(relX) <= 2) {
+					g.fill(x + px, y + py, x + px + 1, y + py + 1, highlightColor);
+				}
+			}
+		}
+
+		// Add some highlight pixels on the right side
+		for (int i = 0; i < 8; i++) {
+			int hx = x + 16 + 4 + (i % 3);
+			int hy = y + 16 - 8 + i;
+			if (hx < x + 32 && hy < y + 32) {
+				g.fill(hx, hy, hx + 1, hy + 1, highlightColor);
+			}
+		}
+	}
+
+	private static void renderSpikePlantInfo(GuiGraphics g, int sw) {
+		// Only show when spike is planted
+		if (!com.bobby.valorant.Config.COMMON.spikePlanted.get()) {
+			return;
+		}
+
+		// Position below timer chip with slight offset
+		int symbolSize = 32;
+		int cx = sw / 2;
+		int timerY = 8; // Same y position as timer chip
+		int timerH = 24; // Same height as timer chip
+
+		// Position below timer with small gap and slight right offset
+		int symbolX = cx - symbolSize / 2 + 8;
+		int symbolY = timerY + timerH + 2 + 4; // Below timer + gap
+
+		renderSpikeSymbol(g, symbolX, symbolY);
+	}
+
 }
-
-

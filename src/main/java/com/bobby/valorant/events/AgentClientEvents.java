@@ -1,8 +1,10 @@
 package com.bobby.valorant.events;
 
 import com.bobby.valorant.Valorant;
+import com.bobby.valorant.Config;
 import com.bobby.valorant.client.AgentSelectionScreen;
 import com.bobby.valorant.client.ModKeyBindings;
+import com.bobby.valorant.compat.fancymenu.FancyMenuIntegration;
 import com.bobby.valorant.network.EquipCurveballPacket;
 import com.bobby.valorant.player.AgentData;
 import com.bobby.valorant.player.CurveballData;
@@ -21,6 +23,20 @@ public final class AgentClientEvents {
     
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
+        if (ModKeyBindings.OPEN_BUY_FANCY.consumeClick()) {
+            Minecraft mc = Minecraft.getInstance();
+            if (Config.enableBuyOnH() && mc.player != null && mc.screen == null) {
+                boolean opened = false;
+                if (Config.useFancyMenuForBuy()) {
+                    opened = FancyMenuIntegration.openCustomGui(Config.fancyMenuBuyIdentifier());
+                }
+                if (!opened && Config.fallbackToNativeBuyScreen()) {
+                    mc.setScreen(new com.bobby.valorant.client.BuyScreen());
+                }
+            }
+            return; // avoid handling multiple keys this tick
+        }
+
         if (ModKeyBindings.OPEN_AGENT_MENU.consumeClick()) {
             openAgentMenu();
             return; // Prevent trying to handle both keybinds in the same tick
