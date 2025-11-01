@@ -28,4 +28,5 @@ run/
 !run/config/fancymenu/**
 !run/fancymenu_data/
 !run/fancymenu_data/**
-
+!run/mods/
+!run/mods/**
