@@ -1,9 +1,0 @@
-[buy]
-	#Enable the H keybind to open the buy screen.
-	enableBuyOnH = true
-	#Use FancyMenu for buy screen if available.
-	useFancyMenuForBuy = true
-	#FancyMenu layout identifier for buy screen.
-	fancyMenuBuyIdentifier = "buyscreen"
-	#Fallback to native BuyScreen if FancyMenu fails or is unavailable.
-	fallbackToNativeBuyScreen = false
