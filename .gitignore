@@ -23,8 +23,9 @@ repo
 
 # dev/runtime
 run/
-runs
-run-data
+!run/config/
+!run/config/fancymenu/
+!run/config/fancymenu/**
+!run/fancymenu_data/
+!run/fancymenu_data/**
 
-# --- EXCEPTIONS (müssen NACH den Ignore-Regeln stehen) ---
-# Unterordner wieder zulassen:
