@@ -29,6 +29,7 @@ public record EquipCurveballPacket() implements CustomPacketPayload {
             var field = Inventory.class.getDeclaredField("selected");
             field.setAccessible(true);
             int slot = field.getInt(inv);
+            com.bobby.valorant.player.AbilityEquipData.saveSelectedSlot(sp, slot);
             ItemStack current = inv.getItem(slot).copy();
             AbilityEquipData.saveCurrent(sp, current);
             inv.setItem(slot, new ItemStack(ModItems.CURVEBALL.get()));

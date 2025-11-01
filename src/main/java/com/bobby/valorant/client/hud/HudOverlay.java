@@ -236,34 +236,24 @@ public final class HudOverlay {
 		//int bgBottom = argb(160, 8, 9, 11);
 		//g.fillGradient(baseX - 12, baseY - 12, baseX + panelWidth + 12, baseY + slotH + 12, bgTop, bgBottom);
 
-		// Define abilities
-		ItemStack curveballIcon = new ItemStack(com.bobby.valorant.registry.ModItems.CURVEBALL.get());
-		int cbCharges = com.bobby.valorant.player.CurveballData.getCharges(player);
-		int maxCbCharges = com.bobby.valorant.Config.COMMON.curveballMaxCharges.get();
-		String qKey = getKeyLabel("Q", com.bobby.valorant.client.ModKeyBindings.USE_ABILITY_1);
+        // Dynamic abilities by agent
+        com.bobby.valorant.world.agent.Agent agent = com.bobby.valorant.client.lock.PlayerAgentState.getAgentForPlayer(player);
+        com.bobby.valorant.ability.AbilitySet set = com.bobby.valorant.ability.Abilities.getForAgent(agent);
 
-		// Draw slots with new modern style
-		// Slot 1: C (Placeholder)
-		ItemStack firewallIcon = new ItemStack(com.bobby.valorant.registry.ModItems.WALLSEGMENT.get());
-		int fwCharges = com.bobby.valorant.player.FireWallData.getCharges(player);
-		int maxFwCharges = com.bobby.valorant.Config.COMMON.firewallMaxCharges.get();
 		String cKey = getKeyLabel("C", com.bobby.valorant.client.ModKeyBindings.USE_ABILITY_3);
-		drawModernAbilitySlot(g, baseX, baseY, slotW, slotH, firewallIcon, cKey, fwCharges, maxFwCharges, false, 0);
-
-		// Slot 2: Q (Curveball)
-		drawModernAbilitySlot(g, baseX + slotW + gap, baseY, slotW, slotH, curveballIcon, qKey, cbCharges, maxCbCharges, false, 0);
-
-		// Slot 3: E (Fireball)
-		ItemStack fireballIcon = new ItemStack(com.bobby.valorant.registry.ModItems.FIREBALL.get());
-		int fbCharges = FireballData.getCharges(player);
-		int maxFbCharges = com.bobby.valorant.Config.COMMON.fireballMaxCharges.get();
+        String qKey = getKeyLabel("Q", com.bobby.valorant.client.ModKeyBindings.USE_ABILITY_1);
 		String eKey = getKeyLabel("E", com.bobby.valorant.client.ModKeyBindings.USE_ABILITY_2);
-		drawModernAbilitySlot(g, baseX + 2 * (slotW + gap), baseY, slotW, slotH, fireballIcon, eKey, fbCharges, maxFbCharges, false, 0);
 
-		// Slot 4: X (Ultimate)
-		// For now, let's assume ultimate points are tracked from 0 to 6
-		int ultimatePoints = com.bobby.valorant.player.UltimateData.getPoints(player);
-		drawModernAbilitySlot(g, baseX + 3 * (slotW + gap), baseY, slotW, slotH, null, "X", ultimatePoints, 6, true, ultimatePoints);
+        int cCharges = com.bobby.valorant.client.ability.ClientAbilityState.cCharges();
+        int qCharges = com.bobby.valorant.client.ability.ClientAbilityState.qCharges();
+        int eCharges = com.bobby.valorant.client.ability.ClientAbilityState.eCharges();
+        int ultPts = com.bobby.valorant.client.ability.ClientAbilityState.ultPoints();
+        int ultCost = set.x() != null ? Math.max(1, set.x().ultCost()) : 6;
+
+        drawModernAbilitySlot(g, baseX, baseY, slotW, slotH, set.c() != null ? set.c().icon() : ItemStack.EMPTY, cKey, cCharges, set.c() != null ? set.c().baseCharges() : 0, false, 0);
+        drawModernAbilitySlot(g, baseX + slotW + gap, baseY, slotW, slotH, set.q() != null ? set.q().icon() : ItemStack.EMPTY, qKey, qCharges, set.q() != null ? set.q().baseCharges() : 0, false, 0);
+        drawModernAbilitySlot(g, baseX + 2 * (slotW + gap), baseY, slotW, slotH, set.e() != null ? set.e().icon() : ItemStack.EMPTY, eKey, eCharges, set.e() != null ? set.e().baseCharges() : 0, false, 0);
+        drawModernAbilitySlot(g, baseX + 3 * (slotW + gap), baseY, slotW, slotH, null, "X", ultPts, ultCost, true, ultPts);
 	}
 
 	private static String getKeyLabel(String fallback, net.minecraft.client.KeyMapping mapping) {

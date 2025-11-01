@@ -52,6 +52,7 @@ public final class SpikePlantingHandler {
             if (sp == null) return true;
             if (!consumeSpike(sp)) return true;
             spawnPlanted(level, sp.position());
+            com.bobby.valorant.util.SoundManager.playSpikePlantSound(level, sp.getX(), sp.getY(), sp.getZ());
             broadcastPlantedTitle(level);
             com.bobby.valorant.Config.COMMON.spikePlanted.set(true);
             RoundController.get(level).plantSpike();

@@ -3,10 +3,15 @@ package com.bobby.valorant.world.item;
 import com.bobby.valorant.Config;
 import com.bobby.valorant.Valorant;
 import com.bobby.valorant.player.AbilityEquipData;
-import com.bobby.valorant.player.CurveballData;
+import com.bobby.valorant.player.AbilityStateData;
+import com.bobby.valorant.ability.Ability;
+import com.bobby.valorant.ability.Abilities;
+import com.bobby.valorant.player.AgentData;
+import com.bobby.valorant.world.agent.Agent;
 import com.bobby.valorant.registry.ModEntityTypes;
 import com.bobby.valorant.registry.ModSounds;
 import com.bobby.valorant.world.entity.CurveballOrb;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -49,10 +54,20 @@ public class CurveballItem extends Item {
             return false;
         }
 
-        if (!CurveballData.tryConsumeCharge(player)) {
+        // Consume ability charge for E slot
+        Agent agent = AgentData.getSelectedAgent(player);
+        var set = Abilities.getForAgent(agent);
+        Ability ability = set.e();
+        if (ability == null || !AbilityStateData.tryConsume(player, ability)) {
             player.displayClientMessage(Component.translatable("message.valorant.curveball.no_charges"), true);
             return false;
         }
+        // Sync ability state
+        int c = set.c() != null ? AbilityStateData.getCharges(player, set.c()) : 0;
+        int q = set.q() != null ? AbilityStateData.getCharges(player, set.q()) : 0;
+        int eCharges = AbilityStateData.getCharges(player, ability);
+        int x = AbilityStateData.getUltPoints(player);
+        PacketDistributor.sendToPlayer(player, new com.bobby.valorant.network.SyncAbilityStateS2CPacket(c, q, eCharges, x));
 
         double speed = Config.COMMON.curveballInitialVelocity.get();
         Vec3 look = player.getLookAngle().normalize().scale(speed);

@@ -3,9 +3,14 @@ package com.bobby.valorant.world.item;
 import com.bobby.valorant.Config;
 import com.bobby.valorant.Valorant;
 import com.bobby.valorant.player.AbilityEquipData;
-import com.bobby.valorant.player.FireWallData;
+import com.bobby.valorant.player.AbilityStateData;
+import com.bobby.valorant.ability.Ability;
+import com.bobby.valorant.ability.Abilities;
+import com.bobby.valorant.player.AgentData;
+import com.bobby.valorant.world.agent.Agent;
 import com.bobby.valorant.registry.ModSounds;
 import com.bobby.valorant.world.entity.FireWallEntity;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -43,10 +48,20 @@ public class FireWallItem extends Item {
             return false;
         }
 
-        if (!FireWallData.tryConsumeCharge(player)) {
+        // Consume ability charge for C slot
+        Agent agent = AgentData.getSelectedAgent(player);
+        var set = Abilities.getForAgent(agent);
+        Ability ability = set.c();
+        if (ability == null || !AbilityStateData.tryConsume(player, ability)) {
             player.displayClientMessage(Component.translatable("message.valorant.firewall.no_charges"), true);
             return false;
         }
+        // Sync ability state
+        int c = AbilityStateData.getCharges(player, ability);
+        int q = set.q() != null ? AbilityStateData.getCharges(player, set.q()) : 0;
+        int eCharges = set.e() != null ? AbilityStateData.getCharges(player, set.e()) : 0;
+        int x = AbilityStateData.getUltPoints(player);
+        PacketDistributor.sendToPlayer(player, new com.bobby.valorant.network.SyncAbilityStateS2CPacket(c, q, eCharges, x));
 
         // Create fire wall entity 2 blocks in front of player
         Vec3 direction = player.getLookAngle().normalize();

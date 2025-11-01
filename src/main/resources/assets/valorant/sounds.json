@@ -1,92 +1,52 @@
 {
   "classic.reload": {
+    "subtitle": "Classic reload",
     "category": "player",
-    "subtitle": "valorant.sound.classic.reload",
     "sounds": [
-      {
-        "name": "valorant:classic.reload",
-        "stream": false
-      }
+      { "name": "valorant:classic.reload", "stream": false }
     ]
   },
   "ghost.reload": {
+    "subtitle": "Ghost reload",
     "category": "player",
-    "subtitle": "valorant.sound.ghost.reload",
     "sounds": [
-      {
-        "name": "valorant:ghost.reload",
-        "stream": false
-      }
+      { "name": "valorant:ghost.reload", "stream": false }
     ]
   },
   "vandal.reload": {
+    "subtitle": "Vandal reload",
     "category": "player",
-    "subtitle": "valorant.sound.vandal.reload",
     "sounds": [
-      {
-        "name": "valorant:vandal.reload",
-        "stream": false
-      }
+      { "name": "valorant:vandal.reload", "stream": false }
     ]
   },
   "spike.plant": {
-    "category": "block",
-    "subtitle": "valorant.sound.spike.plant",
+    "subtitle": "Spike planted",
+    "category": "blocks",
     "sounds": [
-      {
-        "name": "valorant:spike.plant",
-        "stream": false
-      }
+      { "name": "valorant:spike.plant", "stream": false }
     ]
   },
   "spike.defuse": {
-    "category": "block",
-    "subtitle": "valorant.sound.spike.defuse",
+    "subtitle": "Spike defused",
+    "category": "blocks",
     "sounds": [
-      {
-        "name": "valorant:spike.defuse",
-        "stream": false
-      }
+      { "name": "valorant:spike.defuse", "stream": false }
     ]
   },
   "ui.buy_success": {
+    "subtitle": "Purchase successful",
     "category": "player",
-    "subtitle": "valorant.sound.ui.buy_success",
     "sounds": [
-      {
-        "name": "valorant:ui.buy_success",
-        "stream": false
-      }
+      { "name": "valorant:ui.buy_success", "stream": false }
     ]
   },
   "ui.buy_failure": {
+    "subtitle": "Purchase failed",
     "category": "player",
-    "subtitle": "valorant.sound.ui.buy_failure",
     "sounds": [
-      {
-        "name": "valorant:ui.buy_failure",
-        "stream": false
-      }
-    ]
-  },
-  "curveball_throw": {
-    "category": "player",
-    "subtitle": "valorant.sound.curveball_throw",
-    "sounds": [
-      {
-        "name": "valorant:curveball_throw",
-        "stream": false
-      }
-    ]
-  },
-  "curveball_detonate": {
-    "category": "player",
-    "subtitle": "valorant.sound.curveball_detonate",
-    "sounds": [
-      {
-        "name": "valorant:curveball_detonate",
-        "stream": false
-      }
+      { "name": "valorant:ui.buy_failure", "stream": false }
     ]
   }
 }
+

@@ -2,6 +2,10 @@ package com.bobby.valorant.command;
 
 import com.bobby.valorant.player.CurveballData;
 import com.bobby.valorant.player.FireballData;
+import com.bobby.valorant.player.AgentData;
+import com.bobby.valorant.player.AbilityStateData;
+import com.bobby.valorant.ability.Ability;
+import com.bobby.valorant.ability.Abilities;
 import com.bobby.valorant.round.RoundController;
 import com.bobby.valorant.round.TeamManager;
 import com.bobby.valorant.util.ParticleScheduler;
@@ -11,6 +15,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.bobby.valorant.network.SyncAgentLocksPacket;
+import com.bobby.valorant.network.SyncAgentS2CPacket;
+import com.bobby.valorant.round.AgentLockManager;
+import com.bobby.valorant.world.agent.Agent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -20,6 +28,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.commands.CommandBuildContext;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +39,20 @@ public final class ValorantCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         dispatcher.register(
                 Commands.literal("valorant")
+                        .then(Commands.literal("agent").requires(s -> s.hasPermission(2))
+                                .then(Commands.literal("unlock")
+                                        .executes(ctx -> {
+                                            ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                            return unlockAgents(ctx.getSource(), java.util.List.of(sp));
+                                        })
+                                        .then(Commands.argument("players", EntityArgument.players())
+                                                .executes(ctx -> {
+                                                    Collection<ServerPlayer> players = EntityArgument.getPlayers(ctx, "players");
+                                                    return unlockAgents(ctx.getSource(), players);
+                                                })
+                                        )
+                                )
+                        )
                         .then(Commands.literal("particle")
                                 .requires(source -> source.hasPermission(2))
                                 .then(Commands.argument("particle", ParticleArgument.particle(buildContext))
@@ -347,34 +370,89 @@ public final class ValorantCommand {
 
     private static int setCharges(CommandSourceStack source, Collection<ServerPlayer> players, int amount) {
         for (ServerPlayer player : players) {
+            // Legacy data update (if still referenced elsewhere)
             CurveballData.setCharges(player, amount);
+            // New ability system: set E slot charges for current agent
+            setChargesForSlot(player, Ability.Slot.E, amount);
         }
-
+        // Acknowledge
         Component message = Component.translatable("commands.valorant.curveball.charges.set", amount, players.size());
         source.sendSuccess(() -> message, true);
-
         return players.size();
     }
 
     private static int setFireballCharges(CommandSourceStack source, Collection<ServerPlayer> players, int amount) {
         for (ServerPlayer player : players) {
+            // Legacy data update
             FireballData.setCharges(player, amount);
+            // New ability system: set Q slot charges for current agent
+            setChargesForSlot(player, Ability.Slot.Q, amount);
         }
-
         Component message = Component.translatable("commands.valorant.fireball.charges.set", amount, players.size());
         source.sendSuccess(() -> message, true);
-
         return players.size();
     }
 
     private static int setBlazeCharges(CommandSourceStack source, Collection<ServerPlayer> players, int amount) {
         for (ServerPlayer player : players) {
+            // Legacy data update
             com.bobby.valorant.player.FireWallData.setCharges(player, amount);
+            // New ability system: set C slot charges for current agent
+            setChargesForSlot(player, Ability.Slot.C, amount);
         }
-
         Component message = Component.translatable("commands.valorant.wall.charges.set", amount, players.size());
         source.sendSuccess(() -> message, true);
-
         return players.size();
+    }
+
+    private static void setChargesForSlot(ServerPlayer player, Ability.Slot slot, int amount) {
+        var agent = AgentData.getSelectedAgent(player);
+        var set = Abilities.getForAgent(agent);
+        Ability ability = switch (slot) {
+            case C -> set.c();
+            case Q -> set.q();
+            case E -> set.e();
+            case X -> set.x();
+        };
+        if (ability == null) return;
+        AbilityStateData.setCharges(player, ability, amount);
+        // Sync the full ability state snapshot to the player
+        syncAbilityState(player);
+    }
+
+    private static void syncAbilityState(ServerPlayer player) {
+        var agent = AgentData.getSelectedAgent(player);
+        var set = Abilities.getForAgent(agent);
+        int c = set.c() != null ? AbilityStateData.getCharges(player, set.c()) : 0;
+        int q = set.q() != null ? AbilityStateData.getCharges(player, set.q()) : 0;
+        int e = set.e() != null ? AbilityStateData.getCharges(player, set.e()) : 0;
+        int x = AbilityStateData.getUltPoints(player);
+        PacketDistributor.sendToPlayer(player, new com.bobby.valorant.network.SyncAbilityStateS2CPacket(c, q, e, x));
+    }
+
+    private static int unlockAgents(CommandSourceStack source, Collection<ServerPlayer> players) {
+        int[] count = new int[] { 0 };
+        for (ServerPlayer target : players) {
+            var server = target.getServer();
+            if (server == null) continue;
+            AgentLockManager manager = AgentLockManager.get(server);
+            manager.unlock(target);
+            // Reset selection to UNSELECTED (falls back to default agent skin per config on clients)
+            AgentData.setSelectedAgent(target, Agent.UNSELECTED);
+
+            // Broadcast updated locks to all players
+            java.util.Map<java.util.UUID, String> playerAgentMap = new java.util.HashMap<>();
+            manager.getPlayerToLocked().forEach((uuid, a) -> playerAgentMap.put(uuid, a.getId()));
+            SyncAgentLocksPacket locks = new SyncAgentLocksPacket(playerAgentMap);
+            for (ServerPlayer p : server.getPlayerList().getPlayers()) {
+                net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(p, locks);
+                // Broadcast the unlocked player's selection
+                net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(p, new SyncAgentS2CPacket(target.getUUID(), Agent.UNSELECTED.getId()));
+            }
+            count[0]++;
+        }
+        final int result = count[0];
+        source.sendSuccess(() -> net.minecraft.network.chat.Component.literal("Unlocked agent for " + result + " player(s)"), false);
+        return result;
     }
 }

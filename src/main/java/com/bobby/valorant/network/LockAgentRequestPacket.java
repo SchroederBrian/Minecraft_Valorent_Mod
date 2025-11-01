@@ -38,9 +38,12 @@ public record LockAgentRequestPacket(String agentId) implements CustomPacketPayl
             SyncAgentLocksPacket sync = new SyncAgentLocksPacket(playerAgentMap);
             var server = serverPlayer.getServer();
             if (server != null) {
-                server.getPlayerList().getPlayers().forEach(p ->
-                        net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(p, sync)
-                );
+                server.getPlayerList().getPlayers().forEach(p -> {
+                    net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(p, sync);
+                    // Also broadcast the selected agent for skin/HUD mapping
+                    net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(p,
+                            new SyncAgentS2CPacket(serverPlayer.getUUID(), agent.getId()));
+                });
             }
         } else {
             serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("Agent already locked by your team"), true);

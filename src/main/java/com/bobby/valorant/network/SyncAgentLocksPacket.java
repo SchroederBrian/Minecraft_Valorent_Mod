@@ -1,7 +1,7 @@
 package com.bobby.valorant.network;
 
 import com.bobby.valorant.Valorant;
-import com.bobby.valorant.client.lock.PlayerAgentState;
+import com.bobby.valorant.client.lock.AgentLockState;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -37,7 +37,20 @@ public record SyncAgentLocksPacket(Map<UUID, String> playerAgents) implements Cu
 
     public static void handle(SyncAgentLocksPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            PlayerAgentState.update(packet.playerAgents);
+            // Build team lock sets for red-line overlay
+            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+            if (mc.level == null) return;
+            java.util.List<String> aIds = new java.util.ArrayList<>();
+            java.util.List<String> vIds = new java.util.ArrayList<>();
+            packet.playerAgents.forEach((uuid, agentId) -> {
+                net.minecraft.world.entity.player.Player p = mc.level.getPlayerByUUID(uuid);
+                if (p == null) return;
+                net.minecraft.world.scores.Team t = p.getTeam();
+                String teamName = t != null ? t.getName() : null;
+                if ("A".equalsIgnoreCase(teamName)) aIds.add(agentId);
+                else if ("V".equalsIgnoreCase(teamName)) vIds.add(agentId);
+            });
+            AgentLockState.updateFromIds(aIds, vIds);
         });
     }
 

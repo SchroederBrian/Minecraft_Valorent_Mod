@@ -23,6 +23,18 @@ public class HotbarLockEvents {
             if (heldItem.is(ModItems.CURVEBALL.get())) {
                 ClientPacketDistributor.sendToServer(new RemoveCurveballPacket());
                 event.setCanceled(true);
+            } else if (heldItem.is(ModItems.WALLSEGMENT.get())) {
+                ClientPacketDistributor.sendToServer(new com.bobby.valorant.network.RemoveFireWallPacket());
+                event.setCanceled(true);
+            } else if (heldItem.is(ModItems.FIREBALL.get())) {
+                ClientPacketDistributor.sendToServer(new com.bobby.valorant.network.RemoveFireballPacket());
+                event.setCanceled(true);
+            } else if (heldItem.is(ModItems.BLAST_PACK.get())) {
+                ClientPacketDistributor.sendToServer(new com.bobby.valorant.network.RemoveBlastPackPacket());
+                event.setCanceled(true);
+            } else if (heldItem.is(ModItems.STIMBEACONHAND.get())) {
+                ClientPacketDistributor.sendToServer(new com.bobby.valorant.network.RemoveStimBeaconPacket());
+                event.setCanceled(true);
             }
         }
     }

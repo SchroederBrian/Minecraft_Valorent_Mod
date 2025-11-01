@@ -29,15 +29,16 @@ public record EquipFireWallPacket() implements CustomPacketPayload {
             var field = Inventory.class.getDeclaredField("selected");
             field.setAccessible(true);
             int slot = field.getInt(inv);
+            com.bobby.valorant.player.AbilityEquipData.saveSelectedSlot(sp, slot);
             ItemStack current = inv.getItem(slot).copy();
             AbilityEquipData.saveCurrent(sp, current);
-            inv.setItem(slot, new ItemStack(ModItems.FIREWALL.get()));
+            inv.setItem(slot, new ItemStack(ModItems.WALLSEGMENT.get()));
             inv.setChanged();
         } catch (Exception e) {
             // fallback: put in slot 0
             ItemStack current = inv.getItem(0).copy();
             AbilityEquipData.saveCurrent(sp, current);
-            inv.setItem(0, new ItemStack(ModItems.FIREWALL.get()));
+            inv.setItem(0, new ItemStack(ModItems.WALLSEGMENT.get()));
             inv.setChanged();
         }
     }

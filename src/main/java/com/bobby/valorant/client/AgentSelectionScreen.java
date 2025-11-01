@@ -100,8 +100,8 @@ public class AgentSelectionScreen extends Screen {
             g.renderItem(head, x + 17, y + 17);
 
             if (isLocked) {
-                // strike overlay to indicate unavailable
-                g.renderOutline(x + 4, y + 25, 42, 1, 0xFFAA3333);
+                // Distinct red line across center when locked by teammate
+                g.fill(x + 2, y + 23, x + 48, y + 27, 0xFFAA0000);
             }
         }
     }
@@ -133,10 +133,7 @@ public class AgentSelectionScreen extends Screen {
                     if (isLockedForMyTeam(agent)) {
                         return true; // ignore clicks on locked agents
                     }
-                    this.selectedAgent = agent;
-                    if (this.minecraft != null && this.minecraft.player != null) {
-                        AgentData.setSelectedAgent(this.minecraft.player, agent);
-                    }
+                    this.selectedAgent = agent; // Only select locally; lock on button press
                     return true;
                 }
             }

@@ -14,8 +14,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.minecraft.resources.ResourceLocation;
-import com.bobby.valorant.Valorant;
 
 public class BuyScreen extends Screen {
     private static final int PADDING = 14;
@@ -27,7 +25,6 @@ public class BuyScreen extends Screen {
 
     private int gridCols;
     private final int cellW = 100, cellH = 60;
-    private static final ResourceLocation ARMOR_ICON = ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "textures/gui/bigarmor.png");
 
     public BuyScreen() { super(Component.literal("Shop")); }
 
@@ -136,13 +133,8 @@ public class BuyScreen extends Screen {
             int gy = gridY + (i / this.gridCols) * (this.cellH + cellSpacing);
             boolean sel = it == selectedItem;
             drawCard(g, gx, gy, this.cellW, this.cellH, sel);
-            if (it.category == ShopItem.Category.ARMOR) {
-                // Draw custom armor icon
-                g.blit(ARMOR_ICON, gx + 8, gy + 6, 0, 0, 32, 32, 32, 32);
-            } else {
-                ItemStack icon = it.giveStack();
-                g.renderItem(icon, gx + 8, gy + 10);
-            }
+            ItemStack icon = it.giveStack();
+            g.renderItem(icon, gx + 8, gy + 10);
             g.drawString(font, it.displayName, gx + 32, gy + 12, 0xFFFFFFFF, false);
             g.drawString(font, "$" + it.price, gx + 32, gy + 30, 0xFFB8E986, false);
         }
@@ -152,11 +144,7 @@ public class BuyScreen extends Screen {
         drawPanel(g, rightX, gridY - 12, 200, this.height - gridY - 20, 0x90181D22);
         g.drawString(font, selectedItem.displayName, rightX + 12, gridY, 0xFFFFFFFF, false);
         g.drawString(font, "Price: $" + selectedItem.price, rightX + 12, gridY + 18, 0xFFB8E986, false);
-        if (selectedItem.category == ShopItem.Category.ARMOR) {
-            g.blit(ARMOR_ICON, rightX + 12, gridY + 36, 0, 0, 48, 48, 48, 48);
-        } else {
-            g.renderItem(selectedItem.giveStack(), rightX + 12, gridY + 36);
-        }
+        g.renderItem(selectedItem.giveStack(), rightX + 12, gridY + 36);
 
         // Buy / Sell buttons (stylized)
         int buyY = gridY + 180;

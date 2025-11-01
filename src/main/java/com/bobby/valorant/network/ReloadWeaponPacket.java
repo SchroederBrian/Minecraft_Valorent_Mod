@@ -10,7 +10,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ReloadWeaponPacket() implements CustomPacketPayload {
@@ -74,6 +73,7 @@ public record ReloadWeaponPacket() implements CustomPacketPayload {
         ReloadStateData.startReload(sp, weaponSlot, reloadTimeTicks);
 
         // Play reload sound
+        com.bobby.valorant.Valorant.LOGGER.info("[Reload] Starting reload for {}, slot={}, durationTicks={}", sp.getGameProfile().getName(), weaponSlot, reloadTimeTicks);
         com.bobby.valorant.util.SoundManager.playReloadSound(sp);
     }
 

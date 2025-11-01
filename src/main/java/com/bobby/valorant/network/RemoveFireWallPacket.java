@@ -29,9 +29,13 @@ public record RemoveFireWallPacket() implements CustomPacketPayload {
                     ItemStack heldStack = inv.getItem(selectedSlot);
                     Valorant.LOGGER.info("[FIREWALL] Scroll removal request: slot={}, held={} (empty={})",
                             selectedSlot, heldStack.getItem(), heldStack.isEmpty());
-                    if (heldStack.is(ModItems.FIREWALL.get())) {
+                    if (heldStack.is(ModItems.WALLSEGMENT.get())) {
                         ItemStack restore = AbilityEquipData.takeSaved(serverPlayer);
                         inv.setItem(selectedSlot, restore);
+                        Integer prev = AbilityEquipData.takeSavedSelectedSlot(serverPlayer);
+                        if (prev != null) {
+                            field.setInt(inv, prev);
+                        }
                         inv.setChanged();
                         ItemStack now = inv.getItem(selectedSlot);
                         Valorant.LOGGER.info("[FIREWALL] After scroll removal now holding: {} (empty={})",
