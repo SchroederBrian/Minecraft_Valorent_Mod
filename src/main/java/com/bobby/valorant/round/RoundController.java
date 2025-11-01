@@ -6,6 +6,7 @@ import com.bobby.valorant.world.item.WeaponAmmoData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -56,7 +57,10 @@ public final class RoundController {
         // Capture spawn positions for lock and apply OT budget/default pistols
         for (ServerPlayer sp : level.players()) {
             buySpawn.put(sp.getUUID(), sp.position());
-            // Heal to full at round start
+            // Set max health to 100 and heal to full at round start
+            if (sp.getAttribute(Attributes.MAX_HEALTH) != null) {
+                sp.getAttribute(Attributes.MAX_HEALTH).setBaseValue(100.0D);
+            }
             sp.setHealth(sp.getMaxHealth());
             if (overtimeBudget > 0) {
                 com.bobby.valorant.economy.EconomyData.setCredits(sp, overtimeBudget);
