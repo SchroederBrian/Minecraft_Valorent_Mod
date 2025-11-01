@@ -2,12 +2,10 @@ package com.bobby.valorant.world.item;
 
 import java.util.function.Predicate;
 
-import com.bobby.valorant.world.item.IWeapon;
+import com.bobby.valorant.util.SoundManager;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -109,10 +107,26 @@ public abstract class GunItem extends Item implements IWeapon {
         // Impact particles (very short-lived)
         level.sendParticles(ParticleTypes.POOF, hitPos.x, hitPos.y, hitPos.z, 1, 0.01D, 0.01D, 0.01D, 0.0D);
 
-        // Sound
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.2F);
+        // Sound - weapon-specific shot sound
+        playWeaponShotSound(player);
 
         return true;
+    }
+
+    protected void playWeaponShotSound(ServerPlayer player) {
+        String weaponType = getWeaponTypeName();
+        SoundManager.playWeaponShotSound(player, weaponType);
+    }
+
+    protected String getWeaponTypeName() {
+        if (this instanceof ClassicPistolItem) {
+            return "classic";
+        } else if (this instanceof GhostPistolItem) {
+            return "ghost";
+        } else if (this instanceof VandalRifleItem) {
+            return "vandal";
+        }
+        return "classic"; // fallback
     }
 
     private void spawnTracer(ServerLevel level, Vec3 start, Vec3 end) {

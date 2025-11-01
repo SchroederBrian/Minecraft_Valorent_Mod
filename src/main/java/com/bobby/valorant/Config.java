@@ -94,6 +94,7 @@ public final class Config {
         // Spike runtime signal
         public final ModConfigSpec.BooleanValue spikePlanted;
         public final ModConfigSpec.DoubleValue plantedSpikeYOffset;
+        public final ModConfigSpec.IntValue spikePlantHoldTicks;
 
         // Weapons:
         public final ModConfigSpec.DoubleValue classicDamage;
@@ -144,6 +145,8 @@ public final class Config {
         public final ModConfigSpec.DoubleValue soundReloadVolume;
         public final ModConfigSpec.DoubleValue soundSpikeVolume;
         public final ModConfigSpec.DoubleValue soundUiVolume;
+        public final ModConfigSpec.DoubleValue soundWeaponVolume;
+        public final ModConfigSpec.DoubleValue soundAnnouncerVolume;
 
         Common(ModConfigSpec.Builder builder) {
             builder.push("curveball");
@@ -502,6 +505,10 @@ public final class Config {
                     .defineInRange("spikeVolume", 1.0D, 0.0D, 1.0D);
             soundUiVolume = builder.comment("Volume scale for UI sounds (buy success/failure) (0.0 - 1.0).")
                     .defineInRange("uiVolume", 1.0D, 0.0D, 1.0D);
+            soundWeaponVolume = builder.comment("Volume scale for weapon sounds (shots, equips) (0.0 - 1.0).")
+                    .defineInRange("weaponVolume", 1.0D, 0.0D, 1.0D);
+            soundAnnouncerVolume = builder.comment("Volume scale for announcer sounds (0.0 - 1.0).")
+                    .defineInRange("announcerVolume", 1.0D, 0.0D, 1.0D);
             builder.pop();
 
             // Spike section (runtime flags)
@@ -510,6 +517,8 @@ public final class Config {
                     .define("planted", false);
             plantedSpikeYOffset = builder.comment("Vertical offset applied to the planted spike ArmorStand (negative sinks it).")
                     .defineInRange("plantedSpikeYOffset", -1.6D, -1.6D, -1.60D);
+            spikePlantHoldTicks = builder.comment("Ticks required to plant the spike (20 ticks = 1 second).")
+                    .defineInRange("plantHoldTicks", 88, 88, 88);
             builder.pop();
 
             // Team settings

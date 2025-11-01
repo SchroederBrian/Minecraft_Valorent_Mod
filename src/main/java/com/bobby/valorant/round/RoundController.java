@@ -1,6 +1,6 @@
 package com.bobby.valorant.round;
 
-import com.bobby.valorant.network.SyncRoundStatePacket;
+import com.bobby.valorant.util.SoundManager;
 import com.bobby.valorant.world.item.IWeapon;
 import com.bobby.valorant.world.item.WeaponAmmoData;
 import net.minecraft.server.level.ServerLevel;
@@ -112,6 +112,8 @@ public final class RoundController {
             if (position != null) {
                 com.bobby.valorant.spike.SpikePlantingHandler.spawnPlanted(level, position);
                 com.bobby.valorant.Config.COMMON.spikePlanted.set(true);
+                // Play spike planted sound
+                SoundManager.playSpikePlantedSound(level);
             }
 
             EconomyManager.onSpikePlanted(level, attackersOnLeft);
@@ -124,6 +126,8 @@ public final class RoundController {
             // Defenders win - set defused flag to prevent further defusing
             spikeDefused = true;
             System.out.println("[RoundController] Spike defused successfully, spikeDefused set to true");
+            // Play spike defused sound
+            SoundManager.playSpikeDefusedSound(level);
             awardDefenders();
             enterPost();
         } else {
@@ -158,9 +162,18 @@ public final class RoundController {
                     if (remainingSeconds <= 0) {
                         phase = Phase.ROUND;
                         remainingSeconds = ROUND_SECONDS;
+                        // Play round start countdown sound
+                        SoundManager.playRoundStartCountdownSound(level);
                     }
                 }
                 case ROUND -> {
+                    // Announcer sounds at specific times
+                    if (remainingSeconds == 30) {
+                        SoundManager.playAnnouncer30SecondsLeft(level);
+                    } else if (remainingSeconds == 10) {
+                        SoundManager.playAnnouncer10SecondsLeft(level);
+                    }
+
                     if (remainingSeconds <= 0) {
                         // Time over -> defenders win if no plant
                         awardDefenders();
@@ -194,11 +207,15 @@ public final class RoundController {
     private void awardAttackers() {
         if (attackersOnLeft) leftScore++; else rightScore++;
         EconomyManager.onRoundWin(level, true, attackersOnLeft);
+        // Play attackers win sound
+        SoundManager.playMatchVictorySound(level, true);
     }
 
     private void awardDefenders() {
         if (attackersOnLeft) rightScore++; else leftScore++;
         EconomyManager.onRoundWin(level, false, attackersOnLeft);
+        // Play defenders win sound
+        SoundManager.playMatchVictorySound(level, false);
     }
 
     private void syncNow() {

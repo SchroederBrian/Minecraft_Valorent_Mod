@@ -45,8 +45,14 @@ neoForge {
     runs {
         client {
             client()
+            // WICHTIG: Run-Dir = 'run', damit Quick-Play die Saves findet
+            gameDirectory = file('run')
 
-            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+            // Quick-Play direkt in Singleplayer-Welt "Utopia"
+            // Entspricht: --quickPlaySingleplayer Utopia
+            programArguments.addAll('--quickPlaySingleplayer', 'Utopia')
+
+            // Optionale Logs/Flags
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 

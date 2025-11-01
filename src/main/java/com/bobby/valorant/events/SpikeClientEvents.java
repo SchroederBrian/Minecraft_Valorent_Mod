@@ -202,8 +202,10 @@ public final class SpikeClientEvents {
         // Start planting on attack interaction
         System.out.println("[SpikeClient] Starting planting - sending START packet");
         ClientPacketDistributor.sendToServer(new PlantSpikePacket(PlantSpikePacket.Action.START));
-        // Planting takes 4 seconds (4000ms), overlay stays visible until action completes
-        TitleOverlay.showWithProgress("Planting Spike", "Hold position", 10, 1000, 10, 0xFFFFD700, 0xFFFFFF00, 0.0f, 4000L, ModItems.SPIKE.get().getDefaultInstance());
+        // Get planting duration from config (convert ticks to milliseconds: ticks * 50)
+        int plantTicks = com.bobby.valorant.Config.COMMON.spikePlantHoldTicks.get();
+        long plantDurationMs = plantTicks * 50L;
+        TitleOverlay.showWithProgress("Planting Spike", "Hold position", 10, 1200, 10, 0xFFFFD700, 0xFFFFFF00, 0.0f, plantDurationMs, ModItems.SPIKE.get().getDefaultInstance());
         isPlanting = true; // Track that we're now planting
         event.setCanceled(true);
     }

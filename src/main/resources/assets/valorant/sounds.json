@@ -1,52 +1,203 @@
 {
-  "classic.reload": {
-    "subtitle": "Classic reload",
-    "category": "player",
+  "announcer.30_seconds_left": {
     "sounds": [
-      { "name": "valorant:classic.reload", "stream": false }
+      "valorant:announcer/30-seconds-left"
+    ]
+  },
+  "announcer.10_seconds_left": {
+    "sounds": [
+      "valorant:announcer/10-seconds-left"
+    ]
+  },
+  "classic.reload": {
+    "sounds": [
+      "valorant:classic/reload"
+    ]
+  },
+  "classic.equip": {
+    "sounds": [
+      "valorant:classic/equip"
+    ]
+  },
+  "classic.single_shot_1": {
+    "sounds": [
+      "valorant:classic/singel-shot-1"
+    ]
+  },
+  "classic.single_shot_2": {
+    "sounds": [
+      "valorant:classic/singel-shot-2"
+    ]
+  },
+  "classic.single_shot_3": {
+    "sounds": [
+      "valorant:classic/singel-shot-3"
+    ]
+  },
+  "classic.single_shot_4": {
+    "sounds": [
+      "valorant:classic/singel-shot-4"
+    ]
+  },
+  "classic.burst_1": {
+    "sounds": [
+      "valorant:classic/burst-1"
+    ]
+  },
+  "classic.burst_2": {
+    "sounds": [
+      "valorant:classic/burst-2"
+    ]
+  },
+  "classic.burst_3": {
+    "sounds": [
+      "valorant:classic/burst-3"
+    ]
+  },
+  "classic.burst_4": {
+    "sounds": [
+      "valorant:classic/burst-4"
     ]
   },
   "ghost.reload": {
-    "subtitle": "Ghost reload",
-    "category": "player",
     "sounds": [
-      { "name": "valorant:ghost.reload", "stream": false }
+      "valorant:ghost/reload-1",
+      "valorant:ghost/reload-2"
+    ]
+  },
+  "ghost.equip_1": {
+    "sounds": [
+      "valorant:ghost/equip-1"
+    ]
+  },
+  "ghost.equip_2": {
+    "sounds": [
+      "valorant:ghost/equip-2"
+    ]
+  },
+  "ghost.shot_1": {
+    "sounds": [
+      "valorant:ghost/shot-1"
+    ]
+  },
+  "ghost.shot_2": {
+    "sounds": [
+      "valorant:ghost/shot-2"
+    ]
+  },
+  "ghost.shot_3": {
+    "sounds": [
+      "valorant:ghost/shot-3"
+    ]
+  },
+  "ghost.shot_4": {
+    "sounds": [
+      "valorant:ghost/shot-4"
     ]
   },
   "vandal.reload": {
-    "subtitle": "Vandal reload",
-    "category": "player",
     "sounds": [
-      { "name": "valorant:vandal.reload", "stream": false }
+      "valorant:vandal/vandal-reload"
+    ]
+  },
+  "vandal.equip": {
+    "sounds": [
+      "valorant:vandal/vandal-equip"
+    ]
+  },
+  "vandal.shot_1": {
+    "sounds": [
+      "valorant:vandal/vandal-shot-1"
+    ]
+  },
+  "vandal.shot_2": {
+    "sounds": [
+      "valorant:vandal/vandal-shot-2"
+    ]
+  },
+  "vandal.shot_3": {
+    "sounds": [
+      "valorant:vandal/vandal-shot-3"
+    ]
+  },
+  "vandal.shot_4": {
+    "sounds": [
+      "valorant:vandal/vandal-shot-4"
     ]
   },
   "spike.plant": {
-    "subtitle": "Spike planted",
-    "category": "blocks",
     "sounds": [
-      { "name": "valorant:spike.plant", "stream": false }
+      "valorant:spike/plant"
     ]
   },
   "spike.defuse": {
-    "subtitle": "Spike defused",
-    "category": "blocks",
     "sounds": [
-      { "name": "valorant:spike.defuse", "stream": false }
+      "valorant:spike/defuse"
+    ]
+  },
+  "spike.countdown": {
+    "sounds": [
+      "valorant:spike/countdown"
     ]
   },
   "ui.buy_success": {
-    "subtitle": "Purchase successful",
-    "category": "player",
     "sounds": [
-      { "name": "valorant:ui.buy_success", "stream": false }
+      "valorant:ui/buy_success"
     ]
   },
   "ui.buy_failure": {
-    "subtitle": "Purchase failed",
-    "category": "player",
     "sounds": [
-      { "name": "valorant:ui.buy_failure", "stream": false }
+      "valorant:ui/buy_failure"
+    ]
+  },
+  "ui.spike_planted": {
+    "sounds": [
+      "valorant:ui/spike-planted"
+    ]
+  },
+  "ui.spike_defused": {
+    "sounds": [
+      "valorant:ui/spike-defused"
+    ]
+  },
+  "ui.round_start_countdown": {
+    "sounds": [
+      "valorant:ui/round-start-countdown"
+    ]
+  },
+  "ui.match_victory_1": {
+    "sounds": [
+      "valorant:ui/match-victory-1"
+    ]
+  },
+  "ui.match_victory_2": {
+    "sounds": [
+      "valorant:ui/match-victory-2"
+    ]
+  },
+  "ui.defenders_win": {
+    "sounds": [
+      "valorant:ui/defenders-win"
+    ]
+  },
+  "ui.attackers_win": {
+    "sounds": [
+      "valorant:ui/attackers-win"
+    ]
+  },
+  "ui.select_agent": {
+    "sounds": [
+      "valorant:ui/selectagent"
+    ]
+  },
+  "ui.lock_in": {
+    "sounds": [
+      "valorant:ui/lock-in"
+    ]
+  },
+  "ui.hover_over_agent": {
+    "sounds": [
+      "valorant:ui/hover-over-agent"
     ]
   }
 }
-

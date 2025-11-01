@@ -2,21 +2,30 @@ package com.bobby.valorant.events;
 
 import com.bobby.valorant.Valorant;
 import com.bobby.valorant.player.ReloadStateData;
+import com.bobby.valorant.util.SoundManager;
+import com.bobby.valorant.world.item.ClassicPistolItem;
+import com.bobby.valorant.world.item.GhostPistolItem;
 import com.bobby.valorant.world.item.IWeapon;
+import com.bobby.valorant.world.item.VandalRifleItem;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+
+import java.util.Map;
+import java.util.WeakHashMap;
 
 @EventBusSubscriber(modid = Valorant.MODID)
 public final class WeaponSwitchEvents {
     private WeaponSwitchEvents() {}
 
+    // Track the last selected weapon for each player to detect weapon switches
+    private static final Map<net.minecraft.server.level.ServerPlayer, net.minecraft.world.item.Item> lastSelectedWeapons = new WeakHashMap<>();
+
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof net.minecraft.server.level.ServerPlayer serverPlayer)) return;
 
-        // Check if player is reloading and has switched weapons
-        if (ReloadStateData.isReloading(serverPlayer)) {
+        // Get current selected slot and item
             var inventory = serverPlayer.getInventory();
             int selectedSlot;
             try {
@@ -28,10 +37,47 @@ public final class WeaponSwitchEvents {
             }
 
             var currentItem = inventory.getItem(selectedSlot);
+        var currentWeapon = currentItem.getItem();
+
+        // Get previously selected weapon
+        var lastWeapon = lastSelectedWeapons.get(serverPlayer);
+
+        // Check if weapon has changed (and is actually a weapon)
+        if (currentWeapon != lastWeapon && currentWeapon instanceof IWeapon) {
+            // Play equip sound for the newly selected weapon
+            playWeaponEquipSound(serverPlayer, currentWeapon);
+
+            // Update the last selected weapon
+            lastSelectedWeapons.put(serverPlayer, currentWeapon);
+        } else if (lastWeapon != null && !(currentWeapon instanceof IWeapon)) {
+            // Clear tracking if no weapon is selected
+            lastSelectedWeapons.remove(serverPlayer);
+        }
+
+        // Check if player is reloading and has switched weapons
+        if (ReloadStateData.isReloading(serverPlayer)) {
             // If the current selected item is not a weapon, cancel reload
             if (currentItem.isEmpty() || !(currentItem.getItem() instanceof IWeapon)) {
                 ReloadStateData.cancelReload(serverPlayer);
             }
         }
+    }
+
+    private static void playWeaponEquipSound(net.minecraft.server.level.ServerPlayer player, net.minecraft.world.item.Item weapon) {
+        String weaponType = getWeaponTypeName(weapon);
+        if (weaponType != null) {
+            SoundManager.playWeaponEquipSound(player, weaponType);
+        }
+    }
+
+    private static String getWeaponTypeName(net.minecraft.world.item.Item weapon) {
+        if (weapon instanceof ClassicPistolItem) {
+            return "classic";
+        } else if (weapon instanceof GhostPistolItem) {
+            return "ghost";
+        } else if (weapon instanceof VandalRifleItem) {
+            return "vandal";
+        }
+        return null;
     }
 }

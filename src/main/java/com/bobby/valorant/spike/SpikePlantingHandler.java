@@ -16,13 +16,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Server-side planting progress tracking. 4 seconds (80 ticks) hold to plant.
+ * Server-side planting progress tracking. Configurable hold time to plant (default 4 seconds / 80 ticks).
  */
 public final class SpikePlantingHandler {
     private SpikePlantingHandler() {}
 
-    private static final int PLANT_TICKS = 80;
     private static final Map<UUID, Integer> plantingTicks = new HashMap<>();
+
+    private static int getPlantTicks() {
+        return com.bobby.valorant.Config.COMMON.spikePlantHoldTicks.get();
+    }
 
     public static void startPlanting(ServerPlayer player) {
         ServerLevel level = (ServerLevel) player.level();
@@ -30,11 +33,15 @@ public final class SpikePlantingHandler {
         var server = player.getServer(); if (server == null) return;
         var team = server.getScoreboard().getPlayersTeam(player.getScoreboardName());
         if (team == null || !"A".equals(team.getName())) return; // MVP: attackers = A
-        plantingTicks.put(player.getUUID(), PLANT_TICKS);
+        plantingTicks.put(player.getUUID(), getPlantTicks());
+        // Start planting sound loop for this player
+        com.bobby.valorant.util.SoundManager.startSpikePlantingSound(player);
     }
 
     public static void cancelPlanting(ServerPlayer player) {
         plantingTicks.remove(player.getUUID());
+        // Stop planting sound if canceled
+        com.bobby.valorant.util.SoundManager.stopSpikePlantingSound(player);
     }
 
     public static boolean isPlanting(ServerPlayer player) {
@@ -51,8 +58,9 @@ public final class SpikePlantingHandler {
             ServerPlayer sp = level.getServer().getPlayerList().getPlayer(id);
             if (sp == null) return true;
             if (!consumeSpike(sp)) return true;
+            // Stop the planting loop sound on success
+            com.bobby.valorant.util.SoundManager.stopSpikePlantingSound(sp);
             spawnPlanted(level, sp.position());
-            com.bobby.valorant.util.SoundManager.playSpikePlantSound(level, sp.getX(), sp.getY(), sp.getZ());
             broadcastPlantedTitle(level);
             com.bobby.valorant.Config.COMMON.spikePlanted.set(true);
             RoundController.get(level).plantSpike();

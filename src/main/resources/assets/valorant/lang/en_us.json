@@ -31,6 +31,14 @@
   "sound.valorant.curveball_throw": "Curveball primed",
   "sound.valorant.curveball_detonate": "Curveball burst",
 
+  "subtitle.valorant.classic_reload": "Classic reload",
+  "subtitle.valorant.ghost_reload": "Ghost reload",
+  "subtitle.valorant.vandal_reload": "Vandal reload",
+  "subtitle.valorant.spike_plant": "Spike planted",
+  "subtitle.valorant.spike_defuse": "Spike defused",
+  "subtitle.valorant.buy_success": "Purchase successful",
+  "subtitle.valorant.buy_failure": "Purchase failed",
+
   "message.valorant.curveball.no_charges": "Curveball unavailable",
   
   "screen.valorant.agent_selection": "Agent Selection",
