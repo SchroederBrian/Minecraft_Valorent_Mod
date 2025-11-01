@@ -16,9 +16,13 @@ import com.bobby.valorant.network.SyncAgentLocksPacket;
 import com.bobby.valorant.network.ShootGunPacket;
 import com.bobby.valorant.network.EquipFireballPacket;
 import com.bobby.valorant.network.SyncFireballChargesPacket;
+import com.bobby.valorant.network.EquipFireWallPacket;
+import com.bobby.valorant.network.RemoveFireWallPacket;
+import com.bobby.valorant.network.SyncFireWallChargesPacket;
 import com.bobby.valorant.network.PlantSpikePacket;
 import com.bobby.valorant.network.PlantingProgressPacket;
 import com.bobby.valorant.network.ReloadWeaponPacket;
+import com.bobby.valorant.network.SyncReloadStatePacket;
 import com.bobby.valorant.network.SyncWeaponAmmoPacket;
 import com.bobby.valorant.network.DefuseSpikePacket;
 import com.bobby.valorant.network.DefuseProgressPacket;
@@ -43,6 +47,8 @@ public final class ModNetworking {
                 .playToServer(ShootGunPacket.TYPE, ShootGunPacket.STREAM_CODEC, ShootGunPacket::handle)
                 .playToServer(LockAgentRequestPacket.TYPE, LockAgentRequestPacket.STREAM_CODEC, LockAgentRequestPacket::handle)
                 .playToServer(EquipFireballPacket.TYPE, EquipFireballPacket.STREAM_CODEC, EquipFireballPacket::handle)
+                .playToServer(EquipFireWallPacket.TYPE, EquipFireWallPacket.STREAM_CODEC, EquipFireWallPacket::handle)
+                .playToServer(RemoveFireWallPacket.TYPE, RemoveFireWallPacket.STREAM_CODEC, RemoveFireWallPacket::handle)
                 .playToServer(PlantSpikePacket.TYPE, PlantSpikePacket.STREAM_CODEC, PlantSpikePacket::handle)
                 .playToServer(DefuseSpikePacket.TYPE, DefuseSpikePacket.STREAM_CODEC, DefuseSpikePacket::handle)
                 .playToServer(EquipSpikePacket.TYPE, EquipSpikePacket.STREAM_CODEC, EquipSpikePacket::handle)
@@ -55,6 +61,8 @@ public final class ModNetworking {
                 .playToClient(SyncUltimatePointsPacket.TYPE, SyncUltimatePointsPacket.STREAM_CODEC, SyncUltimatePointsPacket::handle)
                 .playToClient(SyncAgentLocksPacket.TYPE, SyncAgentLocksPacket.STREAM_CODEC, SyncAgentLocksPacket::handle)
                 .playToClient(SyncFireballChargesPacket.TYPE, SyncFireballChargesPacket.STREAM_CODEC, SyncFireballChargesPacket::handle)
+                .playToClient(SyncFireWallChargesPacket.TYPE, SyncFireWallChargesPacket.STREAM_CODEC, SyncFireWallChargesPacket::handle)
+                .playToClient(SyncReloadStatePacket.TYPE, SyncReloadStatePacket.STREAM_CODEC, SyncReloadStatePacket::handle)
                 .playToClient(ShowTitleOverlayPacket.TYPE, ShowTitleOverlayPacket.STREAM_CODEC, ShowTitleOverlayPacket::handle)
                 .playToClient(PlantingProgressPacket.TYPE, PlantingProgressPacket.STREAM_CODEC, (pkt, ctx) -> {})
                 .playToClient(DefuseProgressPacket.TYPE, DefuseProgressPacket.STREAM_CODEC, (pkt, ctx) -> {});

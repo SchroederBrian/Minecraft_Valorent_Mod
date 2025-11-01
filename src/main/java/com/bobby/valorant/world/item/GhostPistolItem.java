@@ -46,6 +46,11 @@ public class GhostPistolItem extends GunItem {
     public int getMaxReserveAmmo() {
         return Config.COMMON.ghostMaxReserveAmmo.get();
     }
+
+    @Override
+    public int getReloadTimeTicks() {
+        return Config.COMMON.ghostReloadTimeTicks.get();
+    }
 }
 
 

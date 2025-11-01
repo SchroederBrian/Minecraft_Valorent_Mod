@@ -1,6 +1,13 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "valorant:item/curveball"
+    "type": "minecraft:select",
+    "property": "minecraft:display_context",
+    "cases": [
+      {
+        "when": ["gui"],
+        "model": { "type": "minecraft:model", "model": "valorant:item/curveball_gui" }
+      }
+    ],
+    "fallback": { "type": "minecraft:model", "model": "valorant:item/curveball_3d" }
   }
 }

@@ -46,6 +46,11 @@ public class VandalRifleItem extends GunItem {
     public int getMaxReserveAmmo() {
         return Config.COMMON.vandalRifleMaxReserveAmmo.get();
     }
+
+    @Override
+    public int getReloadTimeTicks() {
+        return Config.COMMON.vandalRifleReloadTimeTicks.get();
+    }
 }
 
 

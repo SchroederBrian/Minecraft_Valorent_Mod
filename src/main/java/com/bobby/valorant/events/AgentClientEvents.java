@@ -35,6 +35,11 @@ public final class AgentClientEvents {
             Valorant.LOGGER.info("[E DEBUG] E key pressed!");
             handleAbility2();
         }
+
+        if (ModKeyBindings.USE_ABILITY_3.consumeClick()) {
+            Valorant.LOGGER.info("[C DEBUG] C key pressed!");
+            handleAbility3();
+        }
     }
 
     private static void openAgentMenu() {
@@ -88,6 +93,25 @@ public final class AgentClientEvents {
         }
 
         ClientPacketDistributor.sendToServer(new com.bobby.valorant.network.EquipFireballPacket());
+    }
+
+    private static void handleAbility3() {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null || minecraft.level == null) {
+            return;
+        }
+
+        var selectedAgent = AgentData.getSelectedAgent(minecraft.player);
+        if (selectedAgent != Agent.PHOENIX) {
+            return;
+        }
+
+        int charges = com.bobby.valorant.player.FireWallData.getCharges(minecraft.player);
+        if (charges <= 0) {
+            return;
+        }
+
+        ClientPacketDistributor.sendToServer(new com.bobby.valorant.network.EquipFireWallPacket());
     }
 }
 

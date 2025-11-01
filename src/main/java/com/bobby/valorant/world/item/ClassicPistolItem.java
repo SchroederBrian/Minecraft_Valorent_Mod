@@ -46,4 +46,9 @@ public class ClassicPistolItem extends GunItem {
     public int getMaxReserveAmmo() {
         return Config.COMMON.classicMaxReserveAmmo.get();
     }
+
+    @Override
+    public int getReloadTimeTicks() {
+        return Config.COMMON.classicReloadTimeTicks.get();
+    }
 }
