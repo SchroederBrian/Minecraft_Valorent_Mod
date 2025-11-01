@@ -19,3 +19,10 @@
 /kill @e
 /gamemode creative
 /gamemode survival
+/valorant blaze charges 10
+/valorant round start 10
+/valorant blaze charges 10
+/valorant round start 10
+/valorant round start 1
+/kill @e
+/valorant round start 1

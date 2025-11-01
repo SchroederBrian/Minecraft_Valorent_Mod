@@ -13,7 +13,7 @@ glintSpeed:0.5
 glintStrength:0.75
 prioritizeChunkUpdates:0
 fullscreen:false
-gamma:0.5
+gamma:1.0
 graphicsMode:1
 guiScale:2
 maxFps:120
@@ -41,13 +41,13 @@ realmsNotifications:true
 showSubtitles:false
 directionalAudio:false
 touchscreen:false
-bobView:true
+bobView:false
 toggleCrouch:false
 toggleSprint:false
 darkMojangStudiosBackground:false
 hideLightningFlashes:false
 hideSplashTexts:false
-mouseSensitivity:0.5
+mouseSensitivity:0.3415492957746479
 damageTiltStrength:1.0
 highContrast:false
 highContrastBlockOutline:false
