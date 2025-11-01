@@ -13,6 +13,15 @@ custom_gui {
 }
 
 custom_gui {
+  identifier = game
+  title = 
+  allow_esc = false
+  transparent_world_background = true
+  transparent_world_background_overlay = true
+  pause_game = false
+}
+
+custom_gui {
   identifier = credits
   title = Credits
   allow_esc = true

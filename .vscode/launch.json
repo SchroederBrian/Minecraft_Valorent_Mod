@@ -12,11 +12,11 @@
       "projectName": "valorant",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@C:\\Users\\bobby\\Downloads\\Minecraft valorent\\build\\moddev\\clientRunProgramArgs.txt"
+        "@C:\\Users\\Yuma\\Desktop\\MC Valo\\Minecraft_Valorent_Mod\\build\\moddev\\clientRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@C:\\Users\\bobby\\Downloads\\Minecraft valorent\\build\\moddev\\clientRunVmArgs.txt",
-        "-Dfml.modFolders\u003dvalorant%%C:\\Users\\bobby\\Downloads\\Minecraft valorent\\bin\\main"
+        "@C:\\Users\\Yuma\\Desktop\\MC Valo\\Minecraft_Valorent_Mod\\build\\moddev\\clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dvalorant%%C:\\Users\\Yuma\\Desktop\\MC Valo\\Minecraft_Valorent_Mod\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\run",
       "env": {},
@@ -34,11 +34,11 @@
       "projectName": "valorant",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@C:\\Users\\bobby\\Downloads\\Minecraft valorent\\build\\moddev\\dataRunProgramArgs.txt"
+        "@C:\\Users\\Yuma\\Desktop\\MC Valo\\Minecraft_Valorent_Mod\\build\\moddev\\dataRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@C:\\Users\\bobby\\Downloads\\Minecraft valorent\\build\\moddev\\dataRunVmArgs.txt",
-        "-Dfml.modFolders\u003dvalorant%%C:\\Users\\bobby\\Downloads\\Minecraft valorent\\bin\\main"
+        "@C:\\Users\\Yuma\\Desktop\\MC Valo\\Minecraft_Valorent_Mod\\build\\moddev\\dataRunVmArgs.txt",
+        "-Dfml.modFolders\u003dvalorant%%C:\\Users\\Yuma\\Desktop\\MC Valo\\Minecraft_Valorent_Mod\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\run",
       "env": {},
@@ -56,11 +56,11 @@
       "projectName": "valorant",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@C:\\Users\\bobby\\Downloads\\Minecraft valorent\\build\\moddev\\gameTestServerRunProgramArgs.txt"
+        "@C:\\Users\\Yuma\\Desktop\\MC Valo\\Minecraft_Valorent_Mod\\build\\moddev\\gameTestServerRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@C:\\Users\\bobby\\Downloads\\Minecraft valorent\\build\\moddev\\gameTestServerRunVmArgs.txt",
-        "-Dfml.modFolders\u003dvalorant%%C:\\Users\\bobby\\Downloads\\Minecraft valorent\\bin\\main"
+        "@C:\\Users\\Yuma\\Desktop\\MC Valo\\Minecraft_Valorent_Mod\\build\\moddev\\gameTestServerRunVmArgs.txt",
+        "-Dfml.modFolders\u003dvalorant%%C:\\Users\\Yuma\\Desktop\\MC Valo\\Minecraft_Valorent_Mod\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\run",
       "env": {},
@@ -78,11 +78,11 @@
       "projectName": "valorant",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@C:\\Users\\bobby\\Downloads\\Minecraft valorent\\build\\moddev\\serverRunProgramArgs.txt"
+        "@C:\\Users\\Yuma\\Desktop\\MC Valo\\Minecraft_Valorent_Mod\\build\\moddev\\serverRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@C:\\Users\\bobby\\Downloads\\Minecraft valorent\\build\\moddev\\serverRunVmArgs.txt",
-        "-Dfml.modFolders\u003dvalorant%%C:\\Users\\bobby\\Downloads\\Minecraft valorent\\bin\\main"
+        "@C:\\Users\\Yuma\\Desktop\\MC Valo\\Minecraft_Valorent_Mod\\build\\moddev\\serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dvalorant%%C:\\Users\\Yuma\\Desktop\\MC Valo\\Minecraft_Valorent_Mod\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\run",
       "env": {},
