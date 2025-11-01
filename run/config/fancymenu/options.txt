@@ -2,14 +2,14 @@
 
 I:default_gui_scale = '2';
 B:play_vanilla_menu_music = 'false';
-B:force_fullscreen = 'false';
+B:force_fullscreen = 'true';
 
 
 ##[customization]
 
 B:modpack_mode = 'false';
 B:show_customization_overlay = 'true';
-B:advanced_customization_mode = 'false';
+B:advanced_customization_mode = 'true';
 
 
 ##[loading]
@@ -18,7 +18,7 @@ S:preload_resources = '';
 S:custom_game_intro_skip_text = '';
 B:allow_game_intro_skip = 'true';
 S:game_intro_animation_name = '';
-B:game_intro_fade_out = 'true';
+B:game_intro_fade_out = 'false';
 
 
 ##[window]
@@ -61,9 +61,9 @@ D:anchor_overlay_hover_charging_time_seconds = '2.0';
 
 ##[ui]
 
-I:context_menu_hover_open_speed = '1';
+I:context_menu_hover_open_speed = '3';
 S:ui_theme = 'dark';
-F:ui_scale = '4.0';
+F:ui_scale = '1.0';
 B:play_ui_click_sounds = 'true';
 B:enable_ui_text_shadow = 'false';
 
