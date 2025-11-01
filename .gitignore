@@ -28,7 +28,7 @@ build/
 # Minecraft Dev (NeoForge/Fabric/Forge)
 # -----------------------
 # Standard-Run-Ordner ignorieren …
-#run/
+run/
 runs/
 run-data/
 
