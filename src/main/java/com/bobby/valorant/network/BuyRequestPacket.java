@@ -34,7 +34,12 @@ public record BuyRequestPacket(String itemName, boolean sell) implements CustomP
             if (packet.sell()) {
                 EconomyData.trySell(player, item, roundId, isBuy);
             } else {
-                EconomyData.tryBuy(player, item, roundId, isBuy);
+                boolean ok = EconomyData.tryBuy(player, item, roundId, isBuy);
+                if (ok) {
+                    com.bobby.valorant.util.SoundManager.playBuySuccessSound(player);
+                } else {
+                    com.bobby.valorant.util.SoundManager.playBuyFailureSound(player);
+                }
             }
         });
     }

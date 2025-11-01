@@ -87,11 +87,15 @@ public final class SpikeDefusingHandler {
                 return true;
             }
             System.out.println("[SpikeDefusing] Found planted spike, discarding it and calling defuseSpikeFull");
+            net.minecraft.world.phys.Vec3 soundPos = planted.position();
             planted.discard();
             RoundController.get(level).defuseSpikeFull();
 
             // Show defuse success title
             TitleMessages.show("SPIKE DEFUSED", "Defenders win the round", 0xFFFFD700, 0xFFFFFF00, 10, 1000, 10);
+
+            // Play defuse sound at spike location
+            com.bobby.valorant.util.SoundManager.playSpikeDefuseSound(level, soundPos.x, soundPos.y, soundPos.z);
 
             // Remove defuser from player
             removeDefuser(sp);

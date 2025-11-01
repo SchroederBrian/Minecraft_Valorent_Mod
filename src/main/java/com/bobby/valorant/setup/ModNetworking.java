@@ -18,6 +18,9 @@ import com.bobby.valorant.network.EquipFireballPacket;
 import com.bobby.valorant.network.SyncFireballChargesPacket;
 import com.bobby.valorant.network.EquipFireWallPacket;
 import com.bobby.valorant.network.RemoveFireWallPacket;
+import com.bobby.valorant.network.RemoveFireballPacket;
+import com.bobby.valorant.network.RemoveBlastPackPacket;
+import com.bobby.valorant.network.RemoveStimBeaconPacket;
 import com.bobby.valorant.network.SyncFireWallChargesPacket;
 import com.bobby.valorant.network.PlantSpikePacket;
 import com.bobby.valorant.network.PlantingProgressPacket;
@@ -28,6 +31,10 @@ import com.bobby.valorant.network.DefuseSpikePacket;
 import com.bobby.valorant.network.DefuseProgressPacket;
 import com.bobby.valorant.network.EquipSpikePacket;
 import com.bobby.valorant.network.ShowTitleOverlayPacket;
+import com.bobby.valorant.network.SelectAgentC2SPacket;
+import com.bobby.valorant.network.SyncAgentS2CPacket;
+import com.bobby.valorant.network.UseAbilityC2SPacket;
+import com.bobby.valorant.network.SyncAbilityStateS2CPacket;
 
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
@@ -49,10 +56,15 @@ public final class ModNetworking {
                 .playToServer(EquipFireballPacket.TYPE, EquipFireballPacket.STREAM_CODEC, EquipFireballPacket::handle)
                 .playToServer(EquipFireWallPacket.TYPE, EquipFireWallPacket.STREAM_CODEC, EquipFireWallPacket::handle)
                 .playToServer(RemoveFireWallPacket.TYPE, RemoveFireWallPacket.STREAM_CODEC, RemoveFireWallPacket::handle)
+                .playToServer(RemoveFireballPacket.TYPE, RemoveFireballPacket.STREAM_CODEC, RemoveFireballPacket::handle)
+                .playToServer(RemoveBlastPackPacket.TYPE, RemoveBlastPackPacket.STREAM_CODEC, RemoveBlastPackPacket::handle)
+                .playToServer(RemoveStimBeaconPacket.TYPE, RemoveStimBeaconPacket.STREAM_CODEC, RemoveStimBeaconPacket::handle)
                 .playToServer(PlantSpikePacket.TYPE, PlantSpikePacket.STREAM_CODEC, PlantSpikePacket::handle)
                 .playToServer(DefuseSpikePacket.TYPE, DefuseSpikePacket.STREAM_CODEC, DefuseSpikePacket::handle)
                 .playToServer(EquipSpikePacket.TYPE, EquipSpikePacket.STREAM_CODEC, EquipSpikePacket::handle)
                 .playToServer(ReloadWeaponPacket.TYPE, ReloadWeaponPacket.STREAM_CODEC, ReloadWeaponPacket::handle)
+                .playToServer(SelectAgentC2SPacket.TYPE, SelectAgentC2SPacket.STREAM_CODEC, SelectAgentC2SPacket::handle)
+                .playToServer(UseAbilityC2SPacket.TYPE, UseAbilityC2SPacket.STREAM_CODEC, UseAbilityC2SPacket::handle)
                 .playToClient(SyncWeaponAmmoPacket.TYPE, SyncWeaponAmmoPacket.STREAM_CODEC, SyncWeaponAmmoPacket::handle)
                 .playToClient(SyncCurveballChargesPacket.TYPE, SyncCurveballChargesPacket.STREAM_CODEC, SyncCurveballChargesPacket::handle)
                 .playToClient(SyncRoundStatePacket.TYPE, SyncRoundStatePacket.STREAM_CODEC, SyncRoundStatePacket::handle)
@@ -64,6 +76,8 @@ public final class ModNetworking {
                 .playToClient(SyncFireWallChargesPacket.TYPE, SyncFireWallChargesPacket.STREAM_CODEC, SyncFireWallChargesPacket::handle)
                 .playToClient(SyncReloadStatePacket.TYPE, SyncReloadStatePacket.STREAM_CODEC, SyncReloadStatePacket::handle)
                 .playToClient(ShowTitleOverlayPacket.TYPE, ShowTitleOverlayPacket.STREAM_CODEC, ShowTitleOverlayPacket::handle)
+                .playToClient(SyncAgentS2CPacket.TYPE, SyncAgentS2CPacket.STREAM_CODEC, SyncAgentS2CPacket::handle)
+                .playToClient(SyncAbilityStateS2CPacket.TYPE, SyncAbilityStateS2CPacket.STREAM_CODEC, SyncAbilityStateS2CPacket::handle)
                 .playToClient(PlantingProgressPacket.TYPE, PlantingProgressPacket.STREAM_CODEC, (pkt, ctx) -> {})
                 .playToClient(DefuseProgressPacket.TYPE, DefuseProgressPacket.STREAM_CODEC, (pkt, ctx) -> {});
     }

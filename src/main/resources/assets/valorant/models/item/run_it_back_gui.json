@@ -1,0 +1,6 @@
+{ 
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "valorant:item/run_it_back_icon"
+    }
+}

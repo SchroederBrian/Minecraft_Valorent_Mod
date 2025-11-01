@@ -33,6 +33,10 @@ public record RemoveCurveballPacket() implements CustomPacketPayload {
                     if (heldStack.is(ModItems.CURVEBALL.get())) {
                         ItemStack restore = AbilityEquipData.takeSaved(serverPlayer);
                         inv.setItem(selectedSlot, restore);
+                        Integer prev = AbilityEquipData.takeSavedSelectedSlot(serverPlayer);
+                        if (prev != null) {
+                            field.setInt(inv, prev);
+                        }
                         inv.setChanged();
                         ItemStack now = inv.getItem(selectedSlot);
                         Valorant.LOGGER.info("[CURVEBALL] After scroll removal now holding: {} (empty={})",

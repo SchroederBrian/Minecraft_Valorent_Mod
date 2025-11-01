@@ -36,8 +36,8 @@ public enum ShopItem {
     HEAVY_ODIN(Category.HEAVY, "Odin", 3200, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.NETHERITE_AXE); }},
 
     // Armor
-    ARMOR_LIGHT(Category.ARMOR, "Light Shields", 400, Slot.ARMOR) { public ItemStack giveStack() { return new ItemStack(Items.LEATHER_CHESTPLATE); }},
-    ARMOR_HEAVY(Category.ARMOR, "Heavy Shields", 1000, Slot.ARMOR) { public ItemStack giveStack() { return new ItemStack(Items.IRON_CHESTPLATE); }},
+    ARMOR_LIGHT(Category.ARMOR, "Light Shields", 400, Slot.ARMOR) { public ItemStack giveStack() { return new ItemStack(ModItems.SMALLARMOR.get()); }},
+    ARMOR_HEAVY(Category.ARMOR, "Heavy Shields", 1000, Slot.ARMOR) { public ItemStack giveStack() { return new ItemStack(ModItems.BIGARMOR.get()); }},
     ;
 
     public enum Slot { PRIMARY, SECONDARY, ARMOR, UTILITY }

@@ -5,45 +5,14 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public final class Config {
     public static final Common COMMON;
     public static final ModConfigSpec COMMON_SPEC;
-    public static final Client CLIENT;
-    public static final ModConfigSpec CLIENT_SPEC;
 
     static {
-        ModConfigSpec.Builder commonBuilder = new ModConfigSpec.Builder();
-        COMMON = new Common(commonBuilder);
-        COMMON_SPEC = commonBuilder.build();
-
-        ModConfigSpec.Builder clientBuilder = new ModConfigSpec.Builder();
-        CLIENT = new Client(clientBuilder);
-        CLIENT_SPEC = clientBuilder.build();
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+        COMMON = new Common(builder);
+        COMMON_SPEC = builder.build();
     }
 
     private Config() {}
-
-    public static final class Client {
-        public final ModConfigSpec.BooleanValue enableBuyOnH;
-        public final ModConfigSpec.BooleanValue useFancyMenuForBuy;
-        public final ModConfigSpec.ConfigValue<String> fancyMenuBuyIdentifier;
-        public final ModConfigSpec.BooleanValue fallbackToNativeBuyScreen;
-
-        Client(ModConfigSpec.Builder builder) {
-            builder.push("buy");
-
-            enableBuyOnH = builder.comment("Enable the H keybind to open the buy screen.")
-                    .define("enableBuyOnH", true);
-
-            useFancyMenuForBuy = builder.comment("Use FancyMenu for buy screen if available.")
-                    .define("useFancyMenuForBuy", true);
-
-            fancyMenuBuyIdentifier = builder.comment("FancyMenu layout identifier for buy screen.")
-                    .define("fancyMenuBuyIdentifier", "buyscreen");
-
-            fallbackToNativeBuyScreen = builder.comment("Fallback to native BuyScreen if FancyMenu fails or is unavailable.")
-                    .define("fallbackToNativeBuyScreen", false);
-
-            builder.pop();
-        }
-    }
 
     public static final class Common {
         public final ModConfigSpec.ConfigValue<Integer> curveballMaxCharges;
@@ -100,6 +69,13 @@ public final class Config {
         public final ModConfigSpec.ConfigValue<String> defaultAgent;
         public final ModConfigSpec.BooleanValue uniqueAgentsPerTeam;
         public final ModConfigSpec.BooleanValue mirrorPicksAcrossTeams;
+
+        // Agent skin override settings
+        public final ModConfigSpec.BooleanValue agentSkinsEnabled;
+        public final ModConfigSpec.ConfigValue<String> agentSkinsDefaultAgent;
+        public final ModConfigSpec.ConfigValue<Object> agentSkinsTextures;
+        public final ModConfigSpec.BooleanValue agentSkinsDisableCapes;
+        public final ModConfigSpec.ConfigValue<Object> agentAbilities;
 
         // HUD/Inventory settings
         public final ModConfigSpec.BooleanValue blockAllVanillaInventories;
@@ -163,6 +139,12 @@ public final class Config {
         public final ModConfigSpec.BooleanValue reloadRackSlide;
         public final ModConfigSpec.DoubleValue reloadRackSlideAmount;
 
+        // Sound settings
+        public final ModConfigSpec.BooleanValue soundEnabled;
+        public final ModConfigSpec.DoubleValue soundReloadVolume;
+        public final ModConfigSpec.DoubleValue soundSpikeVolume;
+        public final ModConfigSpec.DoubleValue soundUiVolume;
+
         Common(ModConfigSpec.Builder builder) {
             builder.push("curveball");
 
@@ -213,6 +195,50 @@ public final class Config {
             curveballFlashFadeTicks = builder
                     .comment("Fade-out duration after full-white completes (ticks)")
                     .define("fadeTicks", 120);
+            builder.pop();
+
+            // Agent abilities configuration (defaults per agent/slot)
+            builder.push("agent_abilities");
+            {
+                com.electronwill.nightconfig.core.Config table = com.electronwill.nightconfig.core.Config.inMemory();
+                // Phoenix
+                table.set("phoenix.c.charges", 1);
+                table.set("phoenix.q.charges", 1);
+                table.set("phoenix.e.charges", 1);
+                table.set("phoenix.x.ult_cost", 6);
+                // Brimstone
+                table.set("brimstone.c.charges", 1);
+                table.set("brimstone.q.charges", 1);
+                table.set("brimstone.e.charges", 3);
+                table.set("brimstone.x.ult_cost", 8);
+                // Jett
+                table.set("jett.c.charges", 2);
+                table.set("jett.q.charges", 1);
+                table.set("jett.e.charges", 1);
+                table.set("jett.x.ult_cost", 8);
+                // Omen
+                table.set("omen.c.charges", 2);
+                table.set("omen.q.charges", 1);
+                table.set("omen.e.charges", 2);
+                table.set("omen.x.ult_cost", 7);
+                // Raze
+                table.set("raze.c.charges", 1);
+                table.set("raze.q.charges", 2);
+                table.set("raze.e.charges", 1);
+                table.set("raze.x.ult_cost", 8);
+                // Sage
+                table.set("sage.c.charges", 1);
+                table.set("sage.q.charges", 2);
+                table.set("sage.e.charges", 1);
+                table.set("sage.x.ult_cost", 7);
+                // Sova
+                table.set("sova.c.charges", 1);
+                table.set("sova.q.charges", 2);
+                table.set("sova.e.charges", 1);
+                table.set("sova.x.ult_cost", 8);
+                agentAbilities = builder.comment("Mapping: agent.slot.* defaults (charges / ult_cost)")
+                        .define("defaults", table);
+            }
             builder.pop();
 
             builder.pop();
@@ -319,6 +345,28 @@ public final class Config {
             mirrorPicksAcrossTeams = builder.comment("If true, the same agent can be locked once per team (mirror picks allowed).")
                     .define("mirrorPicksAcrossTeams", true);
             
+            builder.pop();
+
+            // Agent skins configuration (data-first)
+            builder.push("agent_skins");
+            agentSkinsEnabled = builder.comment("Globally enable/disable overriding player skins with agent textures.")
+                    .define("enabled", true);
+            agentSkinsDefaultAgent = builder.comment("Agent to use when none is selected/known for skin rendering.")
+                    .define("default_agent", "phoenix");
+            agentSkinsDisableCapes = builder.comment("If true, capes and elytra textures/flags are disabled for players.")
+                    .define("disable_capes", true);
+            {
+                com.electronwill.nightconfig.core.Config table = com.electronwill.nightconfig.core.Config.inMemory();
+                table.set("phoenix", "valorant:textures/agent/phoenix.png");
+                table.set("jett", "valorant:textures/agent/jett.png");
+                table.set("sova", "valorant:textures/agent/sova.png");
+                table.set("sage", "valorant:textures/agent/sage.png");
+                table.set("brimstone", "valorant:textures/agent/brimstone.png");
+                table.set("raze", "valorant:textures/agent/raze.png");
+                table.set("omen", "valorant:textures/agent/omen.png");
+                agentSkinsTextures = builder.comment("Mapping: agent id -> texture resource location (namespace:path)")
+                        .define("textures", table);
+            }
             builder.pop();
 
             // HUD/Inventory configuration
@@ -444,6 +492,18 @@ public final class Config {
                     .defineInRange("rackSlideAmount", 0.15D, 0.0D, 0.5D);
             builder.pop();
 
+            // Sound configuration
+            builder.push("sound");
+            soundEnabled = builder.comment("Enable all custom Valorant sounds.")
+                    .define("enabled", true);
+            soundReloadVolume = builder.comment("Volume scale for reload sounds (0.0 - 1.0).")
+                    .defineInRange("reloadVolume", 1.0D, 0.0D, 1.0D);
+            soundSpikeVolume = builder.comment("Volume scale for spike plant/defuse sounds (0.0 - 1.0).")
+                    .defineInRange("spikeVolume", 1.0D, 0.0D, 1.0D);
+            soundUiVolume = builder.comment("Volume scale for UI sounds (buy success/failure) (0.0 - 1.0).")
+                    .defineInRange("uiVolume", 1.0D, 0.0D, 1.0D);
+            builder.pop();
+
             // Spike section (runtime flags)
             builder.push("spike");
             spikePlanted = builder.comment("Runtime flag set to true when Spike is planted. Server-updated.")
@@ -459,10 +519,4 @@ public final class Config {
             builder.pop();
         }
     }
-
-    // Client config accessors
-    public static boolean enableBuyOnH() { return CLIENT.enableBuyOnH.get(); }
-    public static boolean useFancyMenuForBuy() { return CLIENT.useFancyMenuForBuy.get(); }
-    public static String fancyMenuBuyIdentifier() { return CLIENT.fancyMenuBuyIdentifier.get(); }
-    public static boolean fallbackToNativeBuyScreen() { return CLIENT.fallbackToNativeBuyScreen.get(); }
 }

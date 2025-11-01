@@ -50,6 +50,15 @@ public final class ModKeyBindings {
             "key.categories.valorant"
     );
 
+    // Ultimate (X)
+    public static final KeyMapping USE_ULTIMATE = new KeyMapping(
+            "key.valorant.use_ultimate",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_X,
+            "key.categories.valorant"
+    );
+
     public static final KeyMapping RELOAD_WEAPON = new KeyMapping(
             "key.valorant.reload_weapon",
             KeyConflictContext.IN_GAME,
@@ -64,15 +73,6 @@ public final class ModKeyBindings {
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_B,
-            "key.categories.valorant"
-    );
-
-    // Buy screen (H) - FancyMenu integration
-    public static final KeyMapping OPEN_BUY_FANCY = new KeyMapping(
-            "key.valorant.open_buy_fancy",
-            KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_H,
             "key.categories.valorant"
     );
 
@@ -121,8 +121,8 @@ public final class ModKeyBindings {
         event.register(USE_ABILITY_1);
         event.register(USE_ABILITY_2);
         event.register(USE_ABILITY_3);
+        event.register(USE_ULTIMATE);
         event.register(OPEN_SHOP);
-        event.register(OPEN_BUY_FANCY);
         event.register(SELECT_RIFLE);
         event.register(SELECT_PISTOL);
         event.register(SELECT_KNIFE);

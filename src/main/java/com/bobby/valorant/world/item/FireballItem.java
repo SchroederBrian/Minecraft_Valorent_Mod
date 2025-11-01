@@ -3,9 +3,14 @@ package com.bobby.valorant.world.item;
 import com.bobby.valorant.Config;
 import com.bobby.valorant.Valorant;
 import com.bobby.valorant.player.AbilityEquipData;
-import com.bobby.valorant.player.FireballData;
+import com.bobby.valorant.player.AbilityStateData;
+import com.bobby.valorant.ability.Ability;
+import com.bobby.valorant.ability.Abilities;
+import com.bobby.valorant.player.AgentData;
+import com.bobby.valorant.world.agent.Agent;
 import com.bobby.valorant.registry.ModEntityTypes;
 import com.bobby.valorant.world.entity.FireballEntity;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,10 +38,20 @@ public class FireballItem extends Item {
         if (sp.getCooldowns().isOnCooldown(stack)) {
             return InteractionResult.FAIL;
         }
-        if (!FireballData.tryConsumeCharge(sp)) {
+        // Consume ability charge for Q slot
+        Agent agent = AgentData.getSelectedAgent(sp);
+        var set = Abilities.getForAgent(agent);
+        Ability ability = set.q();
+        if (ability == null || !AbilityStateData.tryConsume(sp, ability)) {
             player.displayClientMessage(Component.translatable("message.valorant.fireball.no_charges"), true);
             return InteractionResult.FAIL;
         }
+        // Sync ability state
+        int c = set.c() != null ? AbilityStateData.getCharges(sp, set.c()) : 0;
+        int q = AbilityStateData.getCharges(sp, ability);
+        int eCharges = set.e() != null ? AbilityStateData.getCharges(sp, set.e()) : 0;
+        int x = AbilityStateData.getUltPoints(sp);
+        PacketDistributor.sendToPlayer(sp, new com.bobby.valorant.network.SyncAbilityStateS2CPacket(c, q, eCharges, x));
         ServerLevel serverLevel = (ServerLevel) level;
         FireballEntity orb = ModEntityTypes.FIREBALL.get().create(serverLevel, EntitySpawnReason.TRIGGERED);
         if (orb == null) return InteractionResult.FAIL;
