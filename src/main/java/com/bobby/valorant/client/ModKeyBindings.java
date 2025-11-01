@@ -41,6 +41,15 @@ public final class ModKeyBindings {
             "key.categories.valorant"
     );
 
+    // Ability 3 (c) - Fire Wall
+    public static final KeyMapping USE_ABILITY_3 = new KeyMapping(
+            "key.valorant.use_ability_3",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_C,
+            "key.categories.valorant"
+    );
+
     public static final KeyMapping RELOAD_WEAPON = new KeyMapping(
             "key.valorant.reload_weapon",
             KeyConflictContext.IN_GAME,
@@ -102,6 +111,7 @@ public final class ModKeyBindings {
         event.register(OPEN_AGENT_MENU);
         event.register(USE_ABILITY_1);
         event.register(USE_ABILITY_2);
+        event.register(USE_ABILITY_3);
         event.register(OPEN_SHOP);
         event.register(SELECT_RIFLE);
         event.register(SELECT_PISTOL);

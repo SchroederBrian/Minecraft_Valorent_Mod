@@ -49,6 +49,20 @@ public final class Config {
         public final ModConfigSpec.ConfigValue<String> fireballMollyPrimaryParticle;
         public final ModConfigSpec.ConfigValue<String> fireballMollySecondaryParticle;
 
+        // Fire Wall settings
+        public final ModConfigSpec.IntValue firewallMaxCharges;
+        public final ModConfigSpec.IntValue firewallKillRechargeThreshold;
+        public final ModConfigSpec.IntValue firewallThrowCooldownTicks;
+        public final ModConfigSpec.DoubleValue firewallMaxRange;
+        public final ModConfigSpec.DoubleValue firewallGrowthSpeed;
+        public final ModConfigSpec.DoubleValue firewallSegmentSpacing;
+        public final ModConfigSpec.DoubleValue firewallCurveSensitivity;
+        public final ModConfigSpec.IntValue firewallDurationTicks;
+        public final ModConfigSpec.DoubleValue firewallDamagePerTick;
+        public final ModConfigSpec.ConfigValue<String> firewallParticleType;
+        public final ModConfigSpec.DoubleValue firewallYOffset;
+        public final ModConfigSpec.DoubleValue firewallRotationOffsetDegrees;
+
         // Agent settings
         public final ModConfigSpec.BooleanValue agentSelectionEnabled;
         public final ModConfigSpec.IntValue agentSelectionKeyBinding;
@@ -83,6 +97,7 @@ public final class Config {
         public final ModConfigSpec.IntValue classicMuzzleParticles;
         public final ModConfigSpec.IntValue classicMagazineSize;
         public final ModConfigSpec.IntValue classicMaxReserveAmmo;
+        public final ModConfigSpec.IntValue classicReloadTimeTicks;
 
         public final ModConfigSpec.DoubleValue ghostDamage;
         public final ModConfigSpec.DoubleValue ghostRange;
@@ -92,6 +107,7 @@ public final class Config {
         public final ModConfigSpec.IntValue ghostMuzzleParticles;
         public final ModConfigSpec.IntValue ghostMagazineSize;
         public final ModConfigSpec.IntValue ghostMaxReserveAmmo;
+        public final ModConfigSpec.IntValue ghostReloadTimeTicks;
 
         public final ModConfigSpec.DoubleValue vandalRifleDamage;
         public final ModConfigSpec.DoubleValue vandalRifleRange;
@@ -101,9 +117,20 @@ public final class Config {
         public final ModConfigSpec.IntValue vandalRifleMuzzleParticles;
         public final ModConfigSpec.IntValue vandalRifleMagazineSize;
         public final ModConfigSpec.IntValue vandalRifleMaxReserveAmmo;
+        public final ModConfigSpec.IntValue vandalRifleReloadTimeTicks;
 
         // Commands / particles
         public final ModConfigSpec.IntValue particleCommandDefaultDurationTicks;
+
+        // Reload animation settings
+        public final ModConfigSpec.BooleanValue reloadAnimationEnabled;
+        public final ModConfigSpec.DoubleValue reloadHandSwingAmount;
+        public final ModConfigSpec.DoubleValue reloadMagazineScale;
+        public final ModConfigSpec.DoubleValue reloadLeftHandMovement;
+        public final ModConfigSpec.BooleanValue reloadShowEjectedMagazine;
+        public final ModConfigSpec.DoubleValue reloadEjectedMagazineOffset;
+        public final ModConfigSpec.BooleanValue reloadRackSlide;
+        public final ModConfigSpec.DoubleValue reloadRackSlideAmount;
 
         Common(ModConfigSpec.Builder builder) {
             builder.push("curveball");
@@ -202,6 +229,47 @@ public final class Config {
 
             builder.pop();
 
+            // Fire Wall configuration
+            builder.push("firewall");
+
+            firewallMaxCharges = builder.comment("Maximum Fire Wall charges a player can hold at once.")
+                    .defineInRange("maxCharges", 1, 1, 5);
+
+            firewallKillRechargeThreshold = builder.comment("Number of kills required to restore one Fire Wall charge.")
+                    .defineInRange("killRechargeThreshold", 3, 1, 10);
+
+            firewallThrowCooldownTicks = builder.comment("Cooldown in ticks applied after using Fire Wall.")
+                    .defineInRange("throwCooldownTicks", 20, 0, 20 * 30);
+
+            firewallMaxRange = builder.comment("Maximum range in blocks for Fire Wall.")
+                    .defineInRange("maxRange", 18.0D, 18.0D, 18.0D);
+
+            firewallGrowthSpeed = builder.comment("Speed at which wall segments are placed (ticks per segment).")
+                    .defineInRange("growthSpeed", 0.1D, 0.1D, 0.1D);
+
+            firewallSegmentSpacing = builder.comment("Distance between wall segments in blocks.")
+                    .defineInRange("segmentSpacing", 0.5D, 0.5D, 0.5D);
+
+            firewallCurveSensitivity = builder.comment("How sensitive the wall is to player head movement (degrees per tick).")
+                    .defineInRange("curveSensitivity", 0.1D, 0.1D, 0.1D);
+
+            firewallDurationTicks = builder.comment("Duration in ticks that the fire wall lasts.")
+                    .defineInRange("durationTicks", 300, 20, 20 * 60);
+
+            firewallDamagePerTick = builder.comment("Damage dealt per tick to entities touching the wall.")
+                    .defineInRange("damagePerTick", 2.0D, 0.0D, 10.0D);
+
+            firewallParticleType = builder.comment("Particle type for fire wall effect.")
+                    .define("particleType", "FLAME");
+
+            firewallYOffset = builder.comment("Vertical offset added to each wall segment position (blocks).")
+                    .defineInRange("yOffset", -1.8D, -1.8D, -1.8D);
+
+            firewallRotationOffsetDegrees = builder.comment("Additional yaw rotation (degrees) applied to each wall segment.")
+                    .defineInRange("rotationOffsetDegrees", 0.0D, -180.0D, 180.0D);
+
+            builder.pop();
+
             // Agent configuration
             builder.push("agent");
             
@@ -212,7 +280,7 @@ public final class Config {
                     .defineInRange("selectionKeyBinding", 77, 0, 255); // 77 = M key
             
             defaultAgent = builder.comment("Default agent ID to use when player has no selection.")
-                    .define("defaultAgent", "jett");
+                    .define("defaultAgent", "phoenix");
 
             uniqueAgentsPerTeam = builder.comment("If true, each agent can be locked by at most one player per team.")
                     .define("uniqueAgentsPerTeam", true);
@@ -266,6 +334,8 @@ public final class Config {
                     .defineInRange("magazineSize", 12, 1, 100);
             classicMaxReserveAmmo = builder.comment("Maximum reserve ammo for Classic pistol.")
                     .defineInRange("maxReserveAmmo", 36, 0, 500);
+            classicReloadTimeTicks = builder.comment("Reload time in ticks for Classic pistol (40 ticks = 2.0 seconds).")
+                    .defineInRange("reloadTimeTicks", 40, 1, 20 * 30);
             builder.pop();
 
             // Ghost
@@ -286,6 +356,8 @@ public final class Config {
                     .defineInRange("magazineSize", 15, 1, 100);
             ghostMaxReserveAmmo = builder.comment("Maximum reserve ammo for Ghost pistol.")
                     .defineInRange("maxReserveAmmo", 45, 0, 500);
+            ghostReloadTimeTicks = builder.comment("Reload time in ticks for Ghost pistol (45 ticks = 2.25 seconds).")
+                    .defineInRange("reloadTimeTicks", 45, 1, 20 * 30);
             builder.pop();
 
             // Vandal Rifle
@@ -306,6 +378,8 @@ public final class Config {
                     .defineInRange("magazineSize", 25, 1, 100);
             vandalRifleMaxReserveAmmo = builder.comment("Maximum reserve ammo for Vandal Rifle.")
                     .defineInRange("maxReserveAmmo", 75, 0, 500);
+            vandalRifleReloadTimeTicks = builder.comment("Reload time in ticks for Vandal Rifle (50 ticks = 2.5 seconds).")
+                    .defineInRange("reloadTimeTicks", 50, 1, 20 * 30);
             builder.pop();
 
             builder.pop();
@@ -317,6 +391,26 @@ public final class Config {
                     .comment("Default duration for /valorant particle command (ticks)")
                     .defineInRange("defaultDurationTicks", 200, 1, 20 * 60 * 10);
             builder.pop();
+            builder.pop();
+
+            // Reload animation settings
+            builder.push("reloadAnimation");
+            reloadAnimationEnabled = builder.comment("Enable first-person reload animations for both hands.")
+                    .define("enabled", true);
+            reloadHandSwingAmount = builder.comment("Amount of hand swing/movement during reload animation.")
+                    .defineInRange("handSwingAmount", 0.3D, 0.0D, 2.0D);
+            reloadMagazineScale = builder.comment("Scale of the magazine item shown during reload animation.")
+                    .defineInRange("magazineScale", 0.8D, 0.1D, 2.0D);
+            reloadLeftHandMovement = builder.comment("Movement amplitude of the left hand during magazine swap.")
+                    .defineInRange("leftHandMovement", 0.5D, 0.0D, 2.0D);
+            reloadShowEjectedMagazine = builder.comment("Show ejected magazine during reload animation.")
+                    .define("showEjectedMagazine", true);
+            reloadEjectedMagazineOffset = builder.comment("Distance the ejected magazine flies out.")
+                    .defineInRange("ejectedMagazineOffset", 0.8D, 0.1D, 2.0D);
+            reloadRackSlide = builder.comment("Enable slide racking animation at the end of reload.")
+                    .define("rackSlide", true);
+            reloadRackSlideAmount = builder.comment("How far back the slide is pulled during racking.")
+                    .defineInRange("rackSlideAmount", 0.15D, 0.0D, 0.5D);
             builder.pop();
 
             // Spike section (runtime flags)

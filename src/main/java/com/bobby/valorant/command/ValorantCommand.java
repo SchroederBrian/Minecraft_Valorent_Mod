@@ -107,6 +107,25 @@ public final class ValorantCommand {
                                         )
                                 )
                         )
+                        .then(Commands.literal("blaze")
+                                .then(Commands.literal("charges")
+                                        .requires(source -> source.hasPermission(2))
+                                        .then(Commands.argument("amount", IntegerArgumentType.integer(0))
+                                                .executes(context -> {
+                                                    ServerPlayer player = context.getSource().getPlayerOrException();
+                                                    int amount = IntegerArgumentType.getInteger(context, "amount");
+                                                    return setBlazeCharges(context.getSource(), List.of(player), amount);
+                                                })
+                                                .then(Commands.argument("players", EntityArgument.players())
+                                                        .executes(context -> {
+                                                            int amount = IntegerArgumentType.getInteger(context, "amount");
+                                                            Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
+                                                            return setBlazeCharges(context.getSource(), players, amount);
+                                                        })
+                                                )
+                                        )
+                                )
+                        )
                         .then(Commands.literal("credits").requires(s -> s.hasPermission(2))
                                 .then(Commands.literal("set")
                                         .then(Commands.argument("amount", IntegerArgumentType.integer(0))
@@ -343,6 +362,17 @@ public final class ValorantCommand {
         }
 
         Component message = Component.translatable("commands.valorant.fireball.charges.set", amount, players.size());
+        source.sendSuccess(() -> message, true);
+
+        return players.size();
+    }
+
+    private static int setBlazeCharges(CommandSourceStack source, Collection<ServerPlayer> players, int amount) {
+        for (ServerPlayer player : players) {
+            com.bobby.valorant.player.FireWallData.setCharges(player, amount);
+        }
+
+        Component message = Component.translatable("commands.valorant.wall.charges.set", amount, players.size());
         source.sendSuccess(() -> message, true);
 
         return players.size();

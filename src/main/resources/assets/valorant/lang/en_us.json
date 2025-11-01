@@ -43,6 +43,8 @@
   "category.valorant.valorant": "Valorant",
 
   "commands.valorant.curveball.charges.set": "Set curveball charges to %s for %s player(s)",
+  "commands.valorant.wall.charges.set": "Set wall charges to %s for %s player(s)",
+  "commands.valorant.fireball.charges.set": "Set fireball charges to %s for %s player(s)",
   
   "agent.valorant.jett": "Jett",
   "agent.valorant.reyna": "Reyna",

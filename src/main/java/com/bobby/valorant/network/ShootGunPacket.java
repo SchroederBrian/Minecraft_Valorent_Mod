@@ -1,6 +1,7 @@
 package com.bobby.valorant.network;
 
 import com.bobby.valorant.Valorant;
+import com.bobby.valorant.player.ReloadStateData;
 import com.bobby.valorant.world.item.GunItem;
 import com.bobby.valorant.world.item.WeaponAmmoData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -22,6 +23,11 @@ public record ShootGunPacket() implements CustomPacketPayload {
 
     public static void handle(ShootGunPacket packet, IPayloadContext context) {
         if (!(context.player() instanceof ServerPlayer sp)) {
+            return;
+        }
+
+        // Block shooting while reloading
+        if (ReloadStateData.isReloading(sp)) {
             return;
         }
         // Prefer main hand; fallback to offhand

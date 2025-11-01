@@ -1,6 +1,7 @@
 package com.bobby.valorant.network;
 
 import com.bobby.valorant.Valorant;
+import com.bobby.valorant.player.ReloadStateData;
 import com.bobby.valorant.world.item.IWeapon;
 import com.bobby.valorant.world.item.WeaponAmmoData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -51,6 +52,11 @@ public record ReloadWeaponPacket() implements CustomPacketPayload {
             return;
         }
 
+        // Check if already reloading
+        if (ReloadStateData.isReloading(sp)) {
+            return; // Can't start another reload while one is in progress
+        }
+
         int currentAmmo = WeaponAmmoData.getCurrentAmmo(weaponStack);
         int magSize = weapon.getMagazineSize();
 
@@ -63,19 +69,12 @@ public record ReloadWeaponPacket() implements CustomPacketPayload {
             return; // No ammo to reload
         }
 
-        int needed = magSize - currentAmmo;
-        int toReload = Math.min(needed, reserveAmmo);
-
-        WeaponAmmoData.setCurrentAmmo(weaponStack, currentAmmo + toReload);
-        WeaponAmmoData.setReserveAmmo(weaponStack, reserveAmmo - toReload);
+        // Start reload timer
+        int reloadTimeTicks = weapon.getReloadTimeTicks();
+        ReloadStateData.startReload(sp, weaponSlot, reloadTimeTicks);
 
         // Play reload sound
         com.bobby.valorant.util.SoundManager.playReloadSound(sp);
-
-        // Sync the updated ammo back to the client
-        int newCurrentAmmo = WeaponAmmoData.getCurrentAmmo(weaponStack);
-        int newReserveAmmo = WeaponAmmoData.getReserveAmmo(weaponStack);
-        PacketDistributor.sendToPlayer(sp, new SyncWeaponAmmoPacket(weaponSlot, newCurrentAmmo, newReserveAmmo));
     }
 
     @Override

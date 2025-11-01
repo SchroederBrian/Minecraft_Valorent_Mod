@@ -1,6 +1,7 @@
 package com.bobby.valorant.client.hud;
 
 import com.bobby.valorant.player.FireballData;
+import com.bobby.valorant.player.ReloadStateData;
 import com.bobby.valorant.world.item.WeaponAmmoData;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
@@ -240,7 +241,11 @@ public final class HudOverlay {
 
 		// Draw slots with new modern style
 		// Slot 1: C (Placeholder)
-		drawModernAbilitySlot(g, baseX, baseY, slotW, slotH, null, "C", 1, 1, false, 0);
+		ItemStack firewallIcon = new ItemStack(com.bobby.valorant.registry.ModItems.WALLSEGMENT.get());
+		int fwCharges = com.bobby.valorant.player.FireWallData.getCharges(player);
+		int maxFwCharges = com.bobby.valorant.Config.COMMON.firewallMaxCharges.get();
+		String cKey = getKeyLabel("C", com.bobby.valorant.client.ModKeyBindings.USE_ABILITY_3);
+		drawModernAbilitySlot(g, baseX, baseY, slotW, slotH, firewallIcon, cKey, fwCharges, maxFwCharges, false, 0);
 
 		// Slot 2: Q (Curveball)
 		drawModernAbilitySlot(g, baseX + slotW + gap, baseY, slotW, slotH, curveballIcon, qKey, cbCharges, maxCbCharges, false, 0);
@@ -341,7 +346,6 @@ public final class HudOverlay {
 		// Ammo text
 		String clipAmmo = String.valueOf(WeaponAmmoData.getCurrentAmmo(heldItem));
 		String reserveAmmo = String.valueOf(WeaponAmmoData.getReserveAmmo(heldItem));
-		String ammoText = clipAmmo + " / " + reserveAmmo;
 
 		// Use a larger font for ammo count
 		// Note: mc.font doesn't support scaling directly. For a true Valorant look, a custom font renderer or scaling would be needed.
@@ -357,6 +361,31 @@ public final class HudOverlay {
 
 		// Weapon icon on the right
 		guiGraphics.renderItem(heldItem, x + cardWidth - 40, y + (cardHeight - 16) / 2);
+
+		// Reload progress indicator
+		if (ReloadStateData.isReloading(player)) {
+			float progress = ReloadStateData.getReloadProgress(player);
+
+			// Draw progress bar above the ammo card
+			int barWidth = cardWidth;
+			int barHeight = 4;
+			int barX = x;
+			int barY = y - barHeight - 2;
+
+			// Background
+			guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x80000000);
+
+			// Progress fill
+			int fillWidth = (int) (barWidth * progress);
+			guiGraphics.fill(barX, barY, barX + fillWidth, barY + barHeight, 0xFFFFD700);
+
+			// "RELOADING" text
+			String reloadText = "RELOADING";
+			int textWidth = mc.font.width(reloadText);
+			int textX = barX + (barWidth - textWidth) / 2;
+			int textY = barY - 12;
+			guiGraphics.drawString(mc.font, reloadText, textX, textY, 0xFFFFD700, false);
+		}
 	}
 }
 
