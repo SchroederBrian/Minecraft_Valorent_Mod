@@ -3,7 +3,6 @@ package com.bobby.valorant.spike;
 import com.bobby.valorant.registry.ModItems;
 import com.bobby.valorant.round.RoundController;
 import com.bobby.valorant.server.TitleMessages;
-import com.bobby.valorant.player.AbilityEquipData;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,6 +25,7 @@ public final class SpikeDefusingHandler {
     private static final double DEFUSE_RADIUS = 1.0D;
     private static final Map<UUID, Integer> defuseTicks = new HashMap<>();
     private static final Map<UUID, Integer> defuseCooldown = new HashMap<>(); // ignore START while > 0
+    private static final Map<UUID, Vec3> defuseStartPos = new HashMap<>();
 
     public static void startDefuse(ServerPlayer player) {
         // Ignore if in short cooldown window after a cancel
@@ -51,6 +51,7 @@ public final class SpikeDefusingHandler {
         }
 
         defuseTicks.put(player.getUUID(), DEFUSE_TICKS);
+        defuseStartPos.put(player.getUUID(), player.position());
         // Give defuser in hotbar slot 4 (index 3)
         player.getInventory().setItem(3, ModItems.DEFUSER.get().getDefaultInstance());
     }
@@ -60,6 +61,7 @@ public final class SpikeDefusingHandler {
         defuseCooldown.put(player.getUUID(), 12); // small cooldown to prevent immediate re-start from queued inputs
         // Remove defuser when canceling defuse
         removeDefuser(player);
+        defuseStartPos.remove(player.getUUID());
     }
 
     public static boolean isDefusing(ServerPlayer player) {
@@ -101,6 +103,7 @@ public final class SpikeDefusingHandler {
             removeDefuser(sp);
 
             // switch to weapon before defusing
+            defuseStartPos.remove(sp.getUUID());
             return true;
         });
     }
@@ -126,6 +129,10 @@ public final class SpikeDefusingHandler {
                 return;
             }
         }
+    }
+
+    public static Vec3 getDefuseStartPos(ServerPlayer player) {
+        return defuseStartPos.get(player.getUUID());
     }
 }
 

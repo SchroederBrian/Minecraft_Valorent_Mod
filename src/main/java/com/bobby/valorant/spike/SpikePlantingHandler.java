@@ -22,6 +22,7 @@ public final class SpikePlantingHandler {
     private SpikePlantingHandler() {}
 
     private static final Map<UUID, Integer> plantingTicks = new HashMap<>();
+    private static final Map<UUID, Vec3> plantingStartPos = new HashMap<>();
 
     private static int getPlantTicks() {
         return com.bobby.valorant.Config.COMMON.spikePlantHoldTicks.get();
@@ -40,12 +41,14 @@ public final class SpikePlantingHandler {
             return;
         }
         plantingTicks.put(player.getUUID(), getPlantTicks());
+        plantingStartPos.put(player.getUUID(), player.position());
         // Start planting sound loop for this player
         com.bobby.valorant.util.SoundManager.startSpikePlantingSound(player);
     }
 
     public static void cancelPlanting(ServerPlayer player) {
         plantingTicks.remove(player.getUUID());
+        plantingStartPos.remove(player.getUUID());
         // Stop planting sound if canceled
         com.bobby.valorant.util.SoundManager.stopSpikePlantingSound(player);
     }
@@ -92,6 +95,7 @@ public final class SpikePlantingHandler {
             if (!consumeSpike(sp)) return true;
             // Stop the planting loop sound on success
             com.bobby.valorant.util.SoundManager.stopSpikePlantingSound(sp);
+            plantingStartPos.remove(sp.getUUID());
             spawnPlanted(level, sp.position());
             broadcastPlantedTitle(level);
             com.bobby.valorant.Config.COMMON.spikePlanted.set(true);
@@ -99,6 +103,10 @@ public final class SpikePlantingHandler {
             switchToWeapon(sp);
             return true;
         });
+    }
+
+    public static Vec3 getPlantStartPos(ServerPlayer player) {
+        return plantingStartPos.get(player.getUUID());
     }
 
     private static boolean consumeSpike(ServerPlayer sp) {

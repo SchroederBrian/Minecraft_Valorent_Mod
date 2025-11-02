@@ -35,6 +35,8 @@ public final class SpikeClientEvents {
 
     // Track client-side planting state
     private static boolean isPlanting = false;
+    private static net.minecraft.world.phys.Vec3 plantStartPosClient = null;
+    private static net.minecraft.world.phys.Vec3 defuseStartPosClient = null;
 
     // Track if spike has been defused this round (client-side knowledge)
     private static boolean spikeDefused = false;
@@ -88,6 +90,7 @@ public final class SpikeClientEvents {
                 System.out.println("[SpikeClient] Canceling defusing - reason: " +
                     (!slot4Item.is(ModItems.DEFUSER.get()) ? "defuser missing" : "key released"));
                 isDefusing = false;
+                defuseStartPosClient = null;
                 requireDefuseKeyRelease = true; // block re-starts until key fully released
                 TitleOverlay.hide(); // Hide the overlay when defusing is cancelled
                 ClientPacketDistributor.sendToServer(new DefuseSpikePacket(DefuseSpikePacket.Action.CANCEL));
@@ -119,6 +122,7 @@ public final class SpikeClientEvents {
                 System.out.println("[SpikeClient] Canceling planting - reason: " +
                     (!held.is(ModItems.SPIKE.get()) ? "spike not held" : "mouse released"));
                 isPlanting = false;
+                plantStartPosClient = null;
                 TitleOverlay.hide(); // Hide the overlay when planting is cancelled
                 ClientPacketDistributor.sendToServer(new PlantSpikePacket(PlantSpikePacket.Action.CANCEL));
             }
@@ -156,12 +160,21 @@ public final class SpikeClientEvents {
             // Released this tick while defusing -> cancel once
             System.out.println("[SpikeClient] Key released -> cancel defusing");
             isDefusing = false;
+            defuseStartPosClient = null;
             requireDefuseKeyRelease = false;
             TitleOverlay.hide();
             ClientPacketDistributor.sendToServer(new DefuseSpikePacket(DefuseSpikePacket.Action.CANCEL));
         }
         defuseKeyWasDown = keyDown;
 
+        // Lock client by snapping X/Z to start position (camera/yaw free)
+        if (isPlanting && com.bobby.valorant.Config.COMMON.lockMovementWhilePlanting.get() && plantStartPosClient != null) {
+            player.setPos(plantStartPosClient.x, player.getY(), plantStartPosClient.z);
+            player.setSprinting(false);
+        } else if (isDefusing && com.bobby.valorant.Config.COMMON.lockMovementWhileDefusing.get() && defuseStartPosClient != null) {
+            player.setPos(defuseStartPosClient.x, player.getY(), defuseStartPosClient.z);
+            player.setSprinting(false);
+        }
     }
 
     private static boolean tryStartDefuse() {
@@ -191,6 +204,7 @@ public final class SpikeClientEvents {
         // Defusing takes 7 seconds (7000ms), overlay stays visible until action completes
         TitleOverlay.showWithProgress("Defusing Spike", "Hold position", 10, 1000, 10, 0xFFFFD700, 0xFFFFFF00, 0.0f, 7000L, ModItems.DEFUSER.get().getDefaultInstance());
         isDefusing = true; // Track that we're now defusing
+        defuseStartPosClient = player.position();
         return true;
     }
 
@@ -214,6 +228,7 @@ public final class SpikeClientEvents {
             long plantDurationMs = plantTicks * 50L;
             TitleOverlay.showWithProgress("Planting Spike", "Hold position", 10, 1200, 10, 0xFFFFD700, 0xFFFFFF00, 0.0f, plantDurationMs, ModItems.SPIKE.get().getDefaultInstance());
             isPlanting = true;
+            plantStartPosClient = player.position();
             event.setCanceled(true);
         } else {
             // Not allowed: optionally show a brief client message

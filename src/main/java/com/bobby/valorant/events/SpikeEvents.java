@@ -4,11 +4,9 @@ import com.bobby.valorant.Valorant;
 import com.bobby.valorant.registry.ModItems;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = Valorant.MODID)
@@ -23,6 +21,27 @@ public final class SpikeEvents {
         var sb = server.getScoreboard();
         var team = sb.getPlayersTeam(sp.getScoreboardName());
         boolean isAttackerTeam = team != null && "A".equals(team.getName());
+
+        // Server-side movement lock while planting or defusing (camera free)
+        boolean planting = com.bobby.valorant.spike.SpikePlantingHandler.isPlanting(sp);
+        boolean defusing = com.bobby.valorant.spike.SpikeDefusingHandler.isDefusing(sp);
+        if (planting && com.bobby.valorant.Config.COMMON.lockMovementWhilePlanting.get()) {
+            var start = com.bobby.valorant.spike.SpikePlantingHandler.getPlantStartPos(sp);
+            if (start != null) {
+                sp.setPos(start.x, sp.getY(), start.z);
+            }
+            var vel = sp.getDeltaMovement();
+            sp.setDeltaMovement(0.0D, vel.y, 0.0D);
+            sp.setSprinting(false);
+        } else if (defusing && com.bobby.valorant.Config.COMMON.lockMovementWhileDefusing.get()) {
+            var start = com.bobby.valorant.spike.SpikeDefusingHandler.getDefuseStartPos(sp);
+            if (start != null) {
+                sp.setPos(start.x, sp.getY(), start.z);
+            }
+            var vel = sp.getDeltaMovement();
+            sp.setDeltaMovement(0.0D, vel.y, 0.0D);
+            sp.setSprinting(false);
+        }
 
         int size = sp.getInventory().getContainerSize();
         if (isAttackerTeam) {
