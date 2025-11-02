@@ -52,6 +52,22 @@ public final class ValorantCommand {
                                                 })
                                         )
                                 )
+                                .then(Commands.literal("lock")
+                                        .then(Commands.argument("agent", StringArgumentType.word())
+                                                .executes(ctx -> {
+                                                    ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                                    String agentId = StringArgumentType.getString(ctx, "agent");
+                                                    return lockAgents(ctx.getSource(), java.util.List.of(sp), agentId);
+                                                })
+                                                .then(Commands.argument("players", EntityArgument.players())
+                                                        .executes(ctx -> {
+                                                            String agentId = StringArgumentType.getString(ctx, "agent");
+                                                            Collection<ServerPlayer> players = EntityArgument.getPlayers(ctx, "players");
+                                                            return lockAgents(ctx.getSource(), players, agentId);
+                                                        })
+                                                )
+                                        )
+                                )
                         )
                         .then(Commands.literal("particle")
                                 .requires(source -> source.hasPermission(2))
@@ -453,6 +469,43 @@ public final class ValorantCommand {
         }
         final int result = count[0];
         source.sendSuccess(() -> net.minecraft.network.chat.Component.literal("Unlocked agent for " + result + " player(s)"), false);
+        return result;
+    }
+
+    private static int lockAgents(CommandSourceStack source, Collection<ServerPlayer> players, String agentId) {
+        Agent agent = Agent.byId(agentId);
+        if (agent == Agent.UNSELECTED) {
+            source.sendFailure(net.minecraft.network.chat.Component.literal("Unknown agent: " + agentId));
+            return 0;
+        }
+
+        int[] count = new int[] { 0 };
+        for (ServerPlayer target : players) {
+            var server = target.getServer();
+            if (server == null) continue;
+            AgentLockManager manager = AgentLockManager.get(server);
+            boolean ok = manager.tryLock(target, agent);
+            if (ok) {
+                AgentData.setSelectedAgent(target, agent);
+
+                // Broadcast updated locks to all players
+                java.util.Map<java.util.UUID, String> playerAgentMap = new java.util.HashMap<>();
+                manager.getPlayerToLocked().forEach((uuid, a) -> playerAgentMap.put(uuid, a.getId()));
+                SyncAgentLocksPacket locks = new SyncAgentLocksPacket(playerAgentMap);
+                for (ServerPlayer p : server.getPlayerList().getPlayers()) {
+                    net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(p, locks);
+                    // Broadcast the locked player's selection
+                    net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(p, new SyncAgentS2CPacket(target.getUUID(), agent.getId()));
+                }
+                count[0]++;
+            } else {
+                target.displayClientMessage(net.minecraft.network.chat.Component.literal("Agent already locked by your team"), true);
+            }
+        }
+        final int result = count[0];
+        if (result > 0) {
+            source.sendSuccess(() -> net.minecraft.network.chat.Component.literal("Locked agent " + agent.getDisplayName().getString() + " for " + result + " player(s)"), false);
+        }
         return result;
     }
 }

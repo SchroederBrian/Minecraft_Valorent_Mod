@@ -2,7 +2,7 @@ type = user_variables
 
 variable {
   name = any-agent-locked
-  value = 0
+  value = 1
   reset_on_launch = false
 }
 
@@ -14,13 +14,13 @@ variable {
 
 variable {
   name = selected-agent
-  value = 0
+  value = omen
   reset_on_launch = false
 }
 
 variable {
   name = omen-locked
-  value = 0
+  value = 1
   reset_on_launch = false
 }
 
