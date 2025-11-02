@@ -21,6 +21,7 @@ variable {
 variable {
   name = any-agent-locked
   value = 1
+  value = 1
   reset_on_launch = false
 }
 
@@ -50,7 +51,7 @@ variable {
 
 variable {
   name = omen-locked
-  value = 1
+  value = 0
   reset_on_launch = false
 }
 
