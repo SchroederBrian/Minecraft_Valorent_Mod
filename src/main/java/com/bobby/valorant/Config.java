@@ -156,6 +156,7 @@ public final class Config {
         public final ModConfigSpec.DoubleValue soundUiVolume;
         public final ModConfigSpec.DoubleValue soundWeaponVolume;
         public final ModConfigSpec.DoubleValue soundAnnouncerVolume;
+        public final ModConfigSpec.BooleanValue soundDisableBackgroundMusic;
 
         // Ability shop (per-agent C/Q/E pricing and caps)
         public final ModConfigSpec.ConfigValue<Object> abilityShop;
@@ -600,6 +601,8 @@ public final class Config {
                     .defineInRange("weaponVolume", 1.0D, 0.0D, 1.0D);
             soundAnnouncerVolume = builder.comment("Volume scale for announcer sounds (0.0 - 1.0).")
                     .defineInRange("announcerVolume", 1.0D, 0.0D, 1.0D);
+            soundDisableBackgroundMusic = builder.comment("Disable Minecraft's background music while playing.")
+                    .define("disableBackgroundMusic", true);
             builder.pop();
 
             // Spike section (runtime flags)
