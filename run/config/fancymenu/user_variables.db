@@ -20,7 +20,7 @@ variable {
 
 variable {
   name = any-agent-locked
-  value = 0
+  value = 1
   reset_on_launch = false
 }
 
@@ -32,7 +32,7 @@ variable {
 
 variable {
   name = brimstone-locked
-  value = 0
+  value = 1
   reset_on_launch = false
 }
 
@@ -44,7 +44,7 @@ variable {
 
 variable {
   name = selected-agent
-  value = 0
+  value = brimstone
   reset_on_launch = false
 }
 
