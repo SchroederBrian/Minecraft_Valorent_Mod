@@ -41,8 +41,12 @@ public record UseAbilityC2SPacket(Ability.Slot slot) implements CustomPacketPayl
             int points = AbilityStateData.getUltPoints(sp);
             if (ability.ultCost() <= 0 || points < ability.ultCost()) return;
             AbilityStateData.setUltPoints(sp, points - ability.ultCost());
+        } else {
+            // For other abilities (C/Q/E), check if player has charges before equipping
+            int charges = AbilityStateData.getCharges(sp, ability);
+            if (charges <= 0) return;
+            // Charges will be consumed when the item is actually used
         }
-        // For other abilities (C/Q/E), charges are consumed when the item is used, not on equip
 
         net.minecraft.server.level.ServerLevel level = (net.minecraft.server.level.ServerLevel) sp.level();
         ability.effect().execute(sp, AbilityUseContext.of(level));

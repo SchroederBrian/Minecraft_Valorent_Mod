@@ -478,7 +478,7 @@ public final class ValorantCommand {
             source.sendFailure(net.minecraft.network.chat.Component.literal("Unknown agent: " + agentId));
             return 0;
         }
-
+ 
         int[] count = new int[] { 0 };
         for (ServerPlayer target : players) {
             var server = target.getServer();
