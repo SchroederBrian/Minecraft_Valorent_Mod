@@ -1,4 +1,4 @@
-package com.bobby.valorant.command;
+package com.bobby.valorant.client.command;
 
 import com.bobby.valorant.Config;
 import com.bobby.valorant.ability.Abilities;
@@ -161,114 +161,6 @@ public final class ValorantCommand {
             Commands.literal("spawnarea").requires(s -> s.hasPermission(2))
                 .then(spawnareaRecord)
                 .then(spawnareaReload);
-
-        // -------- /valorant bombsite --------
-        var bombsiteRecordStart =
-            Commands.literal("start")
-                .then(
-                    Commands.argument("site", StringArgumentType.word())
-                        .executes(ctx -> {
-                            ServerPlayer sp = ctx.getSource().getPlayerOrException();
-                            String site = StringArgumentType.getString(ctx, "site");
-                            boolean ok = com.bobby.valorant.spawn.BombSiteRecording.start(sp, site, null);
-                            if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Bomb site recording started for site " + site.toUpperCase()), false);
-                            else ctx.getSource().sendFailure(Component.literal("Failed to start recording"));
-                            return ok ? 1 : 0;
-                        })
-                        .then(
-                            Commands.argument("y", IntegerArgumentType.integer())
-                                .executes(ctx -> {
-                                    ServerPlayer sp = ctx.getSource().getPlayerOrException();
-                                    String site = StringArgumentType.getString(ctx, "site");
-                                    int y = IntegerArgumentType.getInteger(ctx, "y");
-                                    boolean ok = com.bobby.valorant.spawn.BombSiteRecording.start(sp, site, y);
-                                    if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Bomb site recording started for site " + site.toUpperCase() + " at y=" + y), false);
-                                    else ctx.getSource().sendFailure(Component.literal("Failed to start recording"));
-                                    return ok ? 1 : 0;
-                                })
-                        )
-                );
-
-        var bombsiteRecord =
-            Commands.literal("record")
-                .then(bombsiteRecordStart)
-                .then(
-                    Commands.literal("add")
-                        .executes(ctx -> {
-                            ServerPlayer sp = ctx.getSource().getPlayerOrException();
-                            boolean ok = com.bobby.valorant.spawn.BombSiteRecording.addPoint(sp);
-                            if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Point added at your current XZ"), false);
-                            else ctx.getSource().sendFailure(Component.literal("No active recording; use /valorant bombsite record start"));
-                            return ok ? 1 : 0;
-                        })
-                )
-                .then(
-                    Commands.literal("undo")
-                        .executes(ctx -> {
-                            ServerPlayer sp = ctx.getSource().getPlayerOrException();
-                            boolean ok = com.bobby.valorant.spawn.BombSiteRecording.undo(sp);
-                            if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Removed last point"), false);
-                            else ctx.getSource().sendFailure(Component.literal("Nothing to undo or no active recording"));
-                            return ok ? 1 : 0;
-                        })
-                )
-                .then(
-                    Commands.literal("clear")
-                        .executes(ctx -> {
-                            ServerPlayer sp = ctx.getSource().getPlayerOrException();
-                            boolean ok = com.bobby.valorant.spawn.BombSiteRecording.clear(sp);
-                            if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Cleared all points"), false);
-                            else ctx.getSource().sendFailure(Component.literal("No active recording"));
-                            return ok ? 1 : 0;
-                        })
-                )
-                .then(
-                    Commands.literal("sety")
-                        .then(
-                            Commands.argument("y", IntegerArgumentType.integer())
-                                .executes(ctx -> {
-                                    ServerPlayer sp = ctx.getSource().getPlayerOrException();
-                                    int y = IntegerArgumentType.getInteger(ctx, "y");
-                                    boolean ok = com.bobby.valorant.spawn.BombSiteRecording.setY(sp, y);
-                                    if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Recording Y set to " + y), false);
-                                    else ctx.getSource().sendFailure(Component.literal("No active recording"));
-                                    return ok ? 1 : 0;
-                                })
-                        )
-                )
-                .then(
-                    Commands.literal("save")
-                        .executes(ctx -> {
-                            ServerPlayer sp = ctx.getSource().getPlayerOrException();
-                            boolean ok = com.bobby.valorant.spawn.BombSiteRecording.save(sp);
-                            if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Bomb site saved and synced"), true);
-                            else ctx.getSource().sendFailure(Component.literal("Need at least 3 points or no active recording"));
-                            return ok ? 1 : 0;
-                        })
-                )
-                .then(
-                    Commands.literal("cancel")
-                        .executes(ctx -> {
-                            ServerPlayer sp = ctx.getSource().getPlayerOrException();
-                            boolean ok = com.bobby.valorant.spawn.BombSiteRecording.cancel(sp);
-                            if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Recording canceled"), false);
-                            else ctx.getSource().sendFailure(Component.literal("No active recording"));
-                            return ok ? 1 : 0;
-                        })
-                )
-                .then(
-                    Commands.literal("status")
-                        .executes(ctx -> {
-                            ServerPlayer sp = ctx.getSource().getPlayerOrException();
-                            String status = com.bobby.valorant.spawn.BombSiteRecording.status(sp);
-                            ctx.getSource().sendSuccess(() -> Component.literal(status), false);
-                            return 1;
-                        })
-                );
-
-        var bombsite =
-            Commands.literal("bombsite").requires(s -> s.hasPermission(2))
-                .then(bombsiteRecord);
 
         // -------- /valorant agent --------
         var agentUnlock =
@@ -712,7 +604,6 @@ public final class ValorantCommand {
         dispatcher.register(
             Commands.literal("valorant")
                 .then(spawnarea)
-                .then(bombsite)
                 .then(agent)
                 .then(particle)
                 .then(fireballCharges)

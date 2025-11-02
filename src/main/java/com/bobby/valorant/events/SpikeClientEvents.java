@@ -2,6 +2,8 @@ package com.bobby.valorant.events;
 
 import com.bobby.valorant.Valorant;
 import com.bobby.valorant.client.ModKeyBindings;
+import com.bobby.valorant.round.RoundState;
+import com.bobby.valorant.spawn.client.SpawnAreaClientState;
 import com.bobby.valorant.client.hud.TitleOverlay;
 import com.bobby.valorant.network.DefuseSpikePacket;
 import com.bobby.valorant.network.EquipSpikePacket;
@@ -107,6 +109,11 @@ public final class SpikeClientEvents {
                 shouldCancel = true;
             }
 
+            // Cancel if player moved outside plant sites while holding
+            if (!isInsideAnyClientSite(player)) {
+                shouldCancel = true;
+            }
+
             if (shouldCancel) {
                 // Cancel planting
                 System.out.println("[SpikeClient] Canceling planting - reason: " +
@@ -199,15 +206,24 @@ public final class SpikeClientEvents {
         if (!event.isAttack()) return;
         ItemStack held = player.getMainHandItem();
         if (!held.is(ModItems.SPIKE.get())) return;
-        // Start planting on attack interaction
-        System.out.println("[SpikeClient] Starting planting - sending START packet");
-        ClientPacketDistributor.sendToServer(new PlantSpikePacket(PlantSpikePacket.Action.START));
-        // Get planting duration from config (convert ticks to milliseconds: ticks * 50)
-        int plantTicks = com.bobby.valorant.Config.COMMON.spikePlantHoldTicks.get();
-        long plantDurationMs = plantTicks * 50L;
-        TitleOverlay.showWithProgress("Planting Spike", "Hold position", 10, 1200, 10, 0xFFFFD700, 0xFFFFFF00, 0.0f, plantDurationMs, ModItems.SPIKE.get().getDefaultInstance());
-        isPlanting = true; // Track that we're now planting
-        event.setCanceled(true);
+        // Only show overlay and start if allowed: round running and not in buy, team A, inside site
+        boolean roundRunning = RoundState.isRunning() && !RoundState.isBuyPhase();
+        var team = player.getTeam();
+        boolean isAttacker = team != null && "A".equals(team.getName());
+        boolean inSite = isInsideAnyClientSite(player);
+        if (roundRunning && isAttacker && inSite) {
+            System.out.println("[SpikeClient] Starting planting - sending START packet");
+            ClientPacketDistributor.sendToServer(new PlantSpikePacket(PlantSpikePacket.Action.START));
+            int plantTicks = com.bobby.valorant.Config.COMMON.spikePlantHoldTicks.get();
+            long plantDurationMs = plantTicks * 50L;
+            TitleOverlay.showWithProgress("Planting Spike", "Hold position", 10, 1200, 10, 0xFFFFD700, 0xFFFFFF00, 0.0f, plantDurationMs, ModItems.SPIKE.get().getDefaultInstance());
+            isPlanting = true;
+            event.setCanceled(true);
+        } else {
+            // Not allowed: optionally show a brief client message
+            player.displayClientMessage(net.minecraft.network.chat.Component.literal("Cannot plant here"), true);
+            event.setCanceled(true);
+        }
     }
 
     private static void dropSpikeFromInventory(LocalPlayer player) {
@@ -220,6 +236,33 @@ public final class SpikeClientEvents {
                 return;
             }
         }
+    }
+
+    private static boolean isInsideAnyClientSite(LocalPlayer player) {
+        java.util.List<net.minecraft.core.BlockPos> sa = SpawnAreaClientState.vertsSiteA;
+        java.util.List<net.minecraft.core.BlockPos> sb = SpawnAreaClientState.vertsSiteB;
+        java.util.List<net.minecraft.core.BlockPos> sc = SpawnAreaClientState.vertsSiteC;
+        double x = player.getX();
+        double z = player.getZ();
+        return (sa != null && pointInPoly(sa, x, z))
+                || (sb != null && pointInPoly(sb, x, z))
+                || (sc != null && pointInPoly(sc, x, z));
+    }
+
+    private static boolean pointInPoly(java.util.List<net.minecraft.core.BlockPos> vertices, double x, double z) {
+        if (vertices == null || vertices.size() < 3) return false;
+        boolean inside = false;
+        int n = vertices.size();
+        for (int i = 0, j = n - 1; i < n; j = i++) {
+            double xi = vertices.get(i).getX();
+            double zi = vertices.get(i).getZ();
+            double xj = vertices.get(j).getX();
+            double zj = vertices.get(j).getZ();
+            boolean intersect = ((zi > z) != (zj > z)) &&
+                    (x < (xj - xi) * (z - zi) / (zj - zi + 1e-9) + xi);
+            if (intersect) inside = !inside;
+        }
+        return inside;
     }
 
     private static int findHotbarSlot(LocalPlayer player, ItemStack match) {

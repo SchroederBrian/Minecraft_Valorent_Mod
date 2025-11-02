@@ -2,7 +2,6 @@ package com.bobby.valorant.events;
 
 import com.bobby.valorant.Valorant;
 import com.bobby.valorant.client.ModKeyBindings;
-import com.bobby.valorant.compat.fancymenu.FancyMenuIntegration;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

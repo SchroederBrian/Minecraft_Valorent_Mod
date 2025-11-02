@@ -51,6 +51,22 @@ public final class RoundController {
         phase = Phase.BUY;
         remainingSeconds = seconds > 0 ? seconds : BUY_SECONDS;
         roundCounter++;
+			// Teleport players to their team spawn areas (if configured)
+			for (ServerPlayer sp : level.players()) {
+				var server = sp.getServer();
+				if (server == null) continue;
+				net.minecraft.world.scores.Scoreboard sb = server.getScoreboard();
+				net.minecraft.world.scores.PlayerTeam team = sb.getPlayersTeam(sp.getScoreboardName());
+				if (team == null) continue;
+				String teamId = "A".equals(team.getName()) ? "A" : "V";
+				var area = com.bobby.valorant.spawn.SpawnAreaManager.get(level, teamId);
+				if (area != null && sp.connection != null) {
+					var pos = com.bobby.valorant.spawn.SpawnAreaManager.chooseRandomPointInside(area, level, level.random);
+					if (pos != null) {
+						sp.connection.teleport(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, sp.getYRot(), sp.getXRot());
+					}
+				}
+			}
         // Reset spike planted and defused flags at round start
         com.bobby.valorant.Config.COMMON.spikePlanted.set(false);
         spikeDefused = false;
