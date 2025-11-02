@@ -4,6 +4,7 @@ import com.bobby.valorant.registry.ModEntityTypes;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.renderer.entity.ArmorStandRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -30,6 +31,7 @@ public class ValorantClient {
             EntityRenderers.register(ModEntityTypes.CURVEBALL_ORB.get(), ThrownItemRenderer::new);
             EntityRenderers.register(ModEntityTypes.FIREBALL.get(), ThrownItemRenderer::new);
             EntityRenderers.register(ModEntityTypes.PLANTED_SPIKE.get(), ThrownItemRenderer::new);
+            EntityRenderers.register(ModEntityTypes.DROPPED_WEAPON_STAND.get(), ArmorStandRenderer::new);
 
             // Optionally unbind vanilla inventory key
             if (Config.COMMON.blockAllVanillaInventories.get()) {

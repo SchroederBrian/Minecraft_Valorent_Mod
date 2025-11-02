@@ -16,20 +16,6 @@ public final class SpikeEvents {
     private SpikeEvents() {}
 
     @SubscribeEvent
-    public static void onPlayerDeathDropSpike(LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer sp)) return;
-        int size = sp.getInventory().getContainerSize();
-        for (int i = 0; i < size; i++) {
-            ItemStack s = sp.getInventory().getItem(i);
-            if (s.is(ModItems.SPIKE.get())) {
-                ItemEntity ent = new ItemEntity(sp.level(), sp.getX(), sp.getY() + 0.5, sp.getZ(), s.copyWithCount(1));
-                sp.level().addFreshEntity(ent);
-                sp.getInventory().setItem(i, ItemStack.EMPTY);
-            }
-        }
-    }
-
-    @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer sp)) return;
         var server = sp.getServer();
@@ -48,16 +34,6 @@ public final class SpikeEvents {
                 }
             }
             return;
-        }
-
-        // Defenders must not hold Spike -> drop and remove
-        for (int i = 0; i < size; i++) {
-            ItemStack s = sp.getInventory().getItem(i);
-            if (s.is(ModItems.SPIKE.get())) {
-                ItemEntity ent = new ItemEntity(sp.level(), sp.getX(), sp.getY() + 0.5, sp.getZ(), s.copyWithCount(1));
-                sp.level().addFreshEntity(ent);
-                sp.getInventory().setItem(i, ItemStack.EMPTY);
-            }
         }
 
         // Defenders should not have defusers unless actively defusing

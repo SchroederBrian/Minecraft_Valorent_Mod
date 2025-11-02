@@ -76,42 +76,21 @@ public final class ModKeyBindings {
             "key.categories.valorant"
     );
 
-    // Quick weapon selects (Z/X/C by default)
-    public static final KeyMapping SELECT_RIFLE = new KeyMapping(
-            "key.valorant.select_rifle",
-            KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_Z,
-            "key.categories.valorant"
-    );
-    public static final KeyMapping SELECT_PISTOL = new KeyMapping(
-            "key.valorant.select_pistol",
-            KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_X,
-            "key.categories.valorant"
-    );
-    public static final KeyMapping SELECT_KNIFE = new KeyMapping(
-            "key.valorant.select_knife",
-            KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_C,
-            "key.categories.valorant"
-    );
-
     // Spike/Defuser keys
-    public static final KeyMapping DROP_SPIKE = new KeyMapping(
-            "key.valorant.drop_spike",
-            KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_G,
-            "key.categories.valorant"
-    );
     public static final KeyMapping EQUIP_SPIKE_OR_DEFUSE = new KeyMapping(
             "key.valorant.equip_spike_or_defuse",
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_4,
+            "key.categories.valorant"
+    );
+
+    // Drop/Pickup weapon key
+    public static final KeyMapping DROP_PICKUP_WEAPON = new KeyMapping(
+            "key.valorant.drop_pickup_weapon",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_G,
             "key.categories.valorant"
     );
 
@@ -122,12 +101,10 @@ public final class ModKeyBindings {
         event.register(USE_ABILITY_2);
         event.register(USE_ABILITY_3);
         event.register(USE_ULTIMATE);
+        event.register(RELOAD_WEAPON);
         event.register(OPEN_SHOP);
-        event.register(SELECT_RIFLE);
-        event.register(SELECT_PISTOL);
-        event.register(SELECT_KNIFE);
-        event.register(DROP_SPIKE);
         event.register(EQUIP_SPIKE_OR_DEFUSE);
+        event.register(DROP_PICKUP_WEAPON);
     }
 }
 

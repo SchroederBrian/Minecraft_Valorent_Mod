@@ -24,19 +24,6 @@ public final class WeaponClientEvents {
         LocalPlayer player = mc.player;
         var conn = mc.getConnection();
         if (player == null || conn == null) return;
-
-        if (ModKeyBindings.SELECT_RIFLE.consumeClick()) {
-            int slot = findHotbarSlot(player, ModItems.VANDAL_RIFLE.get().getDefaultInstance());
-            if (slot >= 0) conn.send(new ServerboundSetCarriedItemPacket(slot));
-        }
-        if (ModKeyBindings.SELECT_PISTOL.consumeClick()) {
-            int slot = findHotbarSlot(player, ModItems.GHOST.get().getDefaultInstance());
-            if (slot >= 0) conn.send(new ServerboundSetCarriedItemPacket(slot));
-        }
-        if (ModKeyBindings.SELECT_KNIFE.consumeClick()) {
-            int slot = findHotbarSlot(player, ModItems.KNIFE.get().getDefaultInstance());
-            if (slot >= 0) conn.send(new ServerboundSetCarriedItemPacket(slot));
-        }
     }
 
     @SubscribeEvent

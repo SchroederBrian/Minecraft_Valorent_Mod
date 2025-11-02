@@ -31,3 +31,4 @@ run/
 !run/fancymenu_data/**
 !run/mods/
 !run/mods/**
+run/config/fancymenu/user_variables.db

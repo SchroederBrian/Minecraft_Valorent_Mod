@@ -21,6 +21,7 @@ variable {
 variable {
   name = any-agent-locked
   value = 1
+  value = 1
   reset_on_launch = false
 }
 
@@ -44,7 +45,7 @@ variable {
 
 variable {
   name = selected-agent
-  value = phoenix
+  value = omen
   reset_on_launch = false
 }
 
