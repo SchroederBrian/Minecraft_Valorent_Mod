@@ -147,6 +147,9 @@ public final class Config {
         public final ModConfigSpec.IntValue vandalRifleMaxReserveAmmo;
         public final ModConfigSpec.IntValue vandalRifleReloadTimeTicks;
 
+        // Knife settings
+        public final ModConfigSpec.DoubleValue knifeSpeedMultiplier;
+
         // Commands / particles
         public final ModConfigSpec.IntValue particleCommandDefaultDurationTicks;
 
@@ -381,11 +384,11 @@ public final class Config {
 
                 // Target slot mapping (id/tag -> slot index)
                 com.electronwill.nightconfig.core.Config slotMap = com.electronwill.nightconfig.core.Config.inMemory();
-                // Examples: pistols to hotbar 0, rifles to 1
-                slotMap.set("#valorant:classic", 1);
-                slotMap.set("#valorant:ghost", 1);
-                slotMap.set("#valorant:spike", 3);
-                slotMap.set("#valorant:vandal", 0);
+                // Rifles to hotbar slot 1, pistols to slot 2, spike to slot 4
+                slotMap.set("valorant:vandal", 0);    // Rifle
+                slotMap.set("valorant:classic", 1);   // Pistol
+                slotMap.set("valorant:ghost", 1);     // Pistol
+                slotMap.set("valorant:spike", 3);     // Spike
 
                 itemTargetSlots = builder.comment("Mapping from item id or tag to target inventory slot index")
                         .define("itemTargetSlots", slotMap);
@@ -643,6 +646,12 @@ public final class Config {
                     .defineInRange("maxReserveAmmo", 75, 0, 500);
             vandalRifleReloadTimeTicks = builder.comment("Reload time in ticks for Vandal Rifle (50 ticks = 2.5 seconds).")
                     .defineInRange("reloadTimeTicks", 50, 1, 20 * 30);
+            builder.pop();
+
+            // Knife configuration
+            builder.push("knife");
+            knifeSpeedMultiplier = builder.comment("Movement speed multiplier when holding knife (1.0 = normal speed, 1.2 = 20% faster).")
+                    .defineInRange("speedMultiplier", 1.2D, 0.1D, 5.0D);
             builder.pop();
 
             builder.pop();
