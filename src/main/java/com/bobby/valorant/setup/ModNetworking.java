@@ -35,6 +35,8 @@ import com.bobby.valorant.network.ShowTitleOverlayPacket;
 import com.bobby.valorant.network.SelectAgentC2SPacket;
 import com.bobby.valorant.network.SyncAgentS2CPacket;
 import com.bobby.valorant.network.UseAbilityC2SPacket;
+import com.bobby.valorant.network.PickupWeaponPacket;
+import com.bobby.valorant.network.DropWeaponPacket;
 import com.bobby.valorant.network.SyncAbilityStateS2CPacket;
 
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -67,6 +69,8 @@ public final class ModNetworking {
                 .playToServer(ReloadWeaponPacket.TYPE, ReloadWeaponPacket.STREAM_CODEC, ReloadWeaponPacket::handle)
                 .playToServer(SelectAgentC2SPacket.TYPE, SelectAgentC2SPacket.STREAM_CODEC, SelectAgentC2SPacket::handle)
                 .playToServer(UseAbilityC2SPacket.TYPE, UseAbilityC2SPacket.STREAM_CODEC, UseAbilityC2SPacket::handle)
+                .playToServer(DropWeaponPacket.TYPE, DropWeaponPacket.STREAM_CODEC, DropWeaponPacket::handle)
+                .playToServer(PickupWeaponPacket.TYPE, PickupWeaponPacket.STREAM_CODEC, PickupWeaponPacket::handle)
                 .playToClient(SyncWeaponAmmoPacket.TYPE, SyncWeaponAmmoPacket.STREAM_CODEC, SyncWeaponAmmoPacket::handle)
                 .playToClient(SyncCurveballChargesPacket.TYPE, SyncCurveballChargesPacket.STREAM_CODEC, SyncCurveballChargesPacket::handle)
                 .playToClient(SyncRoundStatePacket.TYPE, SyncRoundStatePacket.STREAM_CODEC, SyncRoundStatePacket::handle)

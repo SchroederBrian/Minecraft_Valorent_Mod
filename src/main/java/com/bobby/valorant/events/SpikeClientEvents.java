@@ -124,10 +124,6 @@ public final class SpikeClientEvents {
             }
         }
 
-        if (ModKeyBindings.DROP_SPIKE.consumeClick()) {
-            dropSpikeFromInventory(player);
-        }
-
         // If we cancelled recently, wait for the key to be released before accepting another press
         if (requireDefuseKeyRelease) {
             if (!ModKeyBindings.EQUIP_SPIKE_OR_DEFUSE.isDown()) {
@@ -223,18 +219,6 @@ public final class SpikeClientEvents {
             // Not allowed: optionally show a brief client message
             player.displayClientMessage(net.minecraft.network.chat.Component.literal("Cannot plant here"), true);
             event.setCanceled(true);
-        }
-    }
-
-    private static void dropSpikeFromInventory(LocalPlayer player) {
-        int size = player.getInventory().getContainerSize();
-        for (int i = 0; i < size; i++) {
-            ItemStack s = player.getInventory().getItem(i);
-            if (s.is(ModItems.SPIKE.get())) {
-                player.drop(s.copyWithCount(1), true, false);
-                player.getInventory().setItem(i, ItemStack.EMPTY);
-                return;
-            }
         }
     }
 

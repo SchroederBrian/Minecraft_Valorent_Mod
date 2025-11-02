@@ -6,9 +6,9 @@ import com.bobby.valorant.round.RoundController;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -23,17 +23,20 @@ public final class ServerWeaponEvents {
     @SubscribeEvent
     public static void onDeathRemoveWeapons(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer sp)) return;
-        // Drop Spike if present
+
+        Vec3 deathPos = new Vec3(sp.getX(), sp.getY(), sp.getZ());
+
+        // Drop Spike if present using armor stand system
         int invSize = sp.getInventory().getContainerSize();
         for (int i = 0; i < invSize; i++) {
             ItemStack s = sp.getInventory().getItem(i);
             if (s.is(ModItems.SPIKE.get())) {
-                ItemEntity ent = new ItemEntity(sp.level(), sp.getX(), sp.getY() + 0.5, sp.getZ(), s.copyWithCount(1));
-                sp.level().addFreshEntity(ent);
+                com.bobby.valorant.drop.DropPickupApi.dropItemAtPosition((net.minecraft.server.level.ServerLevel) sp.level(), deathPos, s.copyWithCount(1));
                 sp.getInventory().setItem(i, ItemStack.EMPTY);
             }
         }
-        // Find first primary (rifle-like) to drop manually
+
+        // Find first primary (rifle-like) to drop using armor stand system
         ItemStack toDrop = ItemStack.EMPTY;
         int dropSlot = -1;
         int size = sp.getInventory().getContainerSize();
@@ -43,8 +46,7 @@ public final class ServerWeaponEvents {
             if (isPrimaryWeapon(s)) { toDrop = s.copy(); dropSlot = i; break; }
         }
         if (!toDrop.isEmpty()) {
-            ItemEntity ent = new ItemEntity(sp.level(), sp.getX(), sp.getY() + 0.5, sp.getZ(), toDrop.copyWithCount(1));
-            sp.level().addFreshEntity(ent);
+            com.bobby.valorant.drop.DropPickupApi.dropItemAtPosition((net.minecraft.server.level.ServerLevel) sp.level(), deathPos, toDrop.copyWithCount(1));
             // remove from inventory so it doesn't also persist
             if (dropSlot >= 0) sp.getInventory().setItem(dropSlot, ItemStack.EMPTY);
         }
@@ -100,7 +102,7 @@ public final class ServerWeaponEvents {
     @SubscribeEvent
     public static void onDrops(LivingDropsEvent event) {
         if (event.getEntity() instanceof ServerPlayer) {
-            // Remove all default drops; we already spawned the rifle in onDeathRemoveWeapons
+            // Remove all default drops; we already spawned weapons/spike using armor stands in onDeathRemoveWeapons
             event.getDrops().clear();
         }
     }

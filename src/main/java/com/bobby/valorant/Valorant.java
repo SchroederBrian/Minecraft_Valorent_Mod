@@ -10,13 +10,16 @@ import com.bobby.valorant.setup.ModNetworking;
 import com.mojang.logging.LogUtils;
 
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Valorant.MODID)
+@net.neoforged.fml.common.EventBusSubscriber(modid = Valorant.MODID)
 public class Valorant {
     // Define mod id in a common place for everything to reference
     public static final String MODID = "valorant";
@@ -39,5 +42,11 @@ public class Valorant {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
+    }
+
+    @SubscribeEvent
+    public static void onEntityAttributeCreation(EntityAttributeCreationEvent event) {
+        // Register attributes for our custom entities
+        event.put(ModEntityTypes.DROPPED_WEAPON_STAND.get(), net.minecraft.world.entity.decoration.ArmorStand.createAttributes().build());
     }
 }

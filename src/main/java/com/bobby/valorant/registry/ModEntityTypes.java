@@ -4,6 +4,7 @@ import com.bobby.valorant.Valorant;
 import com.bobby.valorant.world.entity.CurveballOrb;
 import com.bobby.valorant.world.entity.FireballEntity;
 import com.bobby.valorant.world.entity.PlantedSpikeEntity;
+import com.bobby.valorant.drop.DroppedWeaponStandEntity;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -21,6 +22,7 @@ public final class ModEntityTypes {
     private static final ResourceKey<EntityType<?>> CURVEBALL_ORB_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "curveball_orb"));
     private static final ResourceKey<EntityType<?>> FIREBALL_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "fireball"));
     private static final ResourceKey<EntityType<?>> PLANTED_SPIKE_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "plantedspike"));
+    private static final ResourceKey<EntityType<?>> DROPPED_WEAPON_STAND_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "dropped_weapon_stand"));
     public static final DeferredHolder<EntityType<?>, EntityType<CurveballOrb>> CURVEBALL_ORB = ENTITY_TYPES.register("curveball_orb",
             () -> EntityType.Builder.<CurveballOrb>of(CurveballOrb::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F)
@@ -41,6 +43,13 @@ public final class ModEntityTypes {
                     .clientTrackingRange(64)
                     .updateInterval(1)
                     .build(PLANTED_SPIKE_KEY));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<DroppedWeaponStandEntity>> DROPPED_WEAPON_STAND = ENTITY_TYPES.register("dropped_weapon_stand",
+            () -> EntityType.Builder.<DroppedWeaponStandEntity>of(DroppedWeaponStandEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 1.0F)
+                    .clientTrackingRange(64)
+                    .updateInterval(1)
+                    .build(DROPPED_WEAPON_STAND_KEY));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);

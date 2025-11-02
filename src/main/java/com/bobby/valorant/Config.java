@@ -161,6 +161,24 @@ public final class Config {
         // Ability shop (per-agent C/Q/E pricing and caps)
         public final ModConfigSpec.ConfigValue<Object> abilityShop;
 
+        // Drop/Pickup system
+        public final ModConfigSpec.ConfigValue<Object> droppableWhitelist; // list<String> ids/tags
+        public final ModConfigSpec.ConfigValue<Object> itemTargetSlots;    // map<String,int>
+        public final ModConfigSpec.DoubleValue pickupRange;
+        public final ModConfigSpec.ConfigValue<String> uiPromptText;
+        public final ModConfigSpec.IntValue uiPromptOffsetX;
+        public final ModConfigSpec.IntValue uiPromptOffsetY;
+        public final ModConfigSpec.IntValue autoDespawnTicks;
+        public final ModConfigSpec.DoubleValue classicDropYOffset;
+        public final ModConfigSpec.DoubleValue ghostDropYOffset;
+        public final ModConfigSpec.DoubleValue spikeDropYOffset;
+        public final ModConfigSpec.DoubleValue vandalDropYOffset;
+        public final ModConfigSpec.BooleanValue enableDropSfx;
+        public final ModConfigSpec.BooleanValue enablePickupSfx;
+        public final ModConfigSpec.BooleanValue enableParticles;
+        public final ModConfigSpec.BooleanValue allowStackDrop;
+        public final ModConfigSpec.BooleanValue enableGlow;
+
         Common(ModConfigSpec.Builder builder) {
             builder.push("curveball");
 
@@ -338,6 +356,66 @@ public final class Config {
 
             builder.pop();
             
+            // Drop/Pickup configuration
+            builder.push("dropPickup");
+            {
+                // Whitelist list
+                java.util.List<String> wl = new java.util.ArrayList<>();
+                wl.add("valorant:classic");
+                wl.add("valorant:ghost");
+                wl.add("valorant:spike");
+                wl.add("valorant:vandal");
+                droppableWhitelist = builder.comment("Whitelist of droppable items by id or tag (#namespace:id)")
+                        .define("droppableWhitelist", wl);
+
+                // Target slot mapping (id/tag -> slot index)
+                com.electronwill.nightconfig.core.Config slotMap = com.electronwill.nightconfig.core.Config.inMemory();
+                // Examples: pistols to hotbar 0, rifles to 1
+                slotMap.set("#valorant:classic", 1);
+                slotMap.set("#valorant:ghost", 1);
+                slotMap.set("#valorant:spike", 3);
+                slotMap.set("#valorant:vandal", 0);
+
+                itemTargetSlots = builder.comment("Mapping from item id or tag to target inventory slot index")
+                        .define("itemTargetSlots", slotMap);
+
+                pickupRange = builder.comment("Maximum pickup range (blocks)")
+                        .defineInRange("pickupRange", 2.0D, 2.0D, 2.0D);
+
+                uiPromptText = builder.comment("Prompt text; {item} replaced with item name; [Use] with key label")
+                        .define("uiPromptText", "Press [Use] to pick up {item}");
+                uiPromptOffsetX = builder.comment("Prompt X offset from screen center (pixels)")
+                        .defineInRange("uiPromptOffsetX", 0, -500, 500);
+                uiPromptOffsetY = builder.comment("Prompt Y offset from screen center (pixels)")
+                        .defineInRange("uiPromptOffsetY", 80, 80, 80);
+
+                autoDespawnTicks = builder.comment("Auto-despawn timer for dropped stands (0 disables)")
+                        .defineInRange("autoDespawnTicks", 0 * 60 * 5, 0, 0 * 60 * 60);
+
+                // Item-specific Y offsets for dropped items
+                classicDropYOffset = builder.comment("Y offset added when dropping Classic pistol")
+                        .defineInRange("classicDropYOffset", 1.50D, 1.50D, 1.50D);
+                ghostDropYOffset = builder.comment("Y offset added when dropping Ghost pistol")
+                        .defineInRange("ghostDropYOffset", 1.50D, 1.50D, 1.50D);
+                spikeDropYOffset = builder.comment("Y offset added when dropping Spike")
+                        .defineInRange("spikeDropYOffset", 1.50D, 1.50D, 1.50D);
+                vandalDropYOffset = builder.comment("Y offset added when dropping Vandal rifle")
+                        .defineInRange("vandalDropYOffset", 1.50D, 1.50D, 1.50D);
+
+                enableDropSfx = builder.comment("Play sound on drop")
+                        .define("enableDropSfx", true);
+                enablePickupSfx = builder.comment("Play sound on pickup")
+                        .define("enablePickupSfx", true);
+                enableParticles = builder.comment("Enable particles on drop/pickup events")
+                        .define("enableParticles", true);
+
+                allowStackDrop = builder.comment("Allow dropping entire stacks (otherwise always 1)")
+                        .define("allowStackDrop", false);
+                enableGlow = builder.comment("Enable glow/outline on dropped stands")
+                        .define("enableGlow", false);
+            }
+            builder.pop();
+
             // Fireball configuration
             builder.push("fireball");
 

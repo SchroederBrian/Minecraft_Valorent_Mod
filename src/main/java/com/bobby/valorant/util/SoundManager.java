@@ -68,7 +68,6 @@ public class SoundManager {
             soundPath = "classic.reload";
         }
         float vol = com.bobby.valorant.Config.COMMON.soundReloadVolume.get().floatValue();
-        debug("ReloadSound", player, soundPath, vol, 1.0f);
         playResolvedForPlayer(player, soundPath, SoundSource.PLAYERS, vol, 1.0f);
     }
 
@@ -82,7 +81,6 @@ public class SoundManager {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundReloadVolume.get().floatValue();
         String path = soundLocation.getPath();
-        debug("ReloadSound(type)", player, path, vol, 1.0f);
         playResolvedForPlayer(player, path, SoundSource.PLAYERS, vol, 1.0f);
     }
 
@@ -90,14 +88,12 @@ public class SoundManager {
     public static void playSpikePlantSound(net.minecraft.server.level.ServerLevel level, double x, double y, double z) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundSpikeVolume.get().floatValue();
-        debug("SpikePlantSound", level, x, y, z, "spike.plant", vol, 1.0f);
         playResolvedAt(level, x, y, z, "spike.plant", SoundSource.BLOCKS, vol, 1.0f);
     }
 
     public static void playSpikeDefuseSound(net.minecraft.server.level.ServerLevel level, double x, double y, double z) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundSpikeVolume.get().floatValue();
-        debug("SpikeDefuseSound", level, x, y, z, "spike.defuse", vol, 1.0f);
         playResolvedAt(level, x, y, z, "spike.defuse", SoundSource.BLOCKS, vol, 1.0f);
     }
 
@@ -105,7 +101,6 @@ public class SoundManager {
     public static void startSpikePlantingSound(ServerPlayer player) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundSpikeVolume.get().floatValue();
-        debug("SpikePlantingStart", player, "spike.plant", vol, 1.0f);
         playResolvedForPlayer(player, "spike.plant", SoundSource.PLAYERS, vol, 1.0f);
     }
 
@@ -122,14 +117,12 @@ public class SoundManager {
     public static void playBuySuccessSound(ServerPlayer player) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue();
-        debug("BuySuccessSound", player, "ui.buy_success", vol, 1.0f);
         playResolvedForPlayer(player, "ui.buy_success", SoundSource.PLAYERS, vol, 1.0f);
     }
 
     public static void playBuyFailureSound(ServerPlayer player) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue() * 0.5f;
-        debug("BuyFailureSound", player, "ui.buy_failure", vol, 1.0f);
         playResolvedForPlayer(player, "ui.buy_failure", SoundSource.PLAYERS, vol, 1.0f);
     }
 
@@ -138,7 +131,6 @@ public class SoundManager {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundWeaponVolume.get().floatValue();
         String soundPath = getWeaponShotSoundPath(weaponType, player.level().getRandom().nextInt(4) + 1);
-        debug("WeaponShotSound", player, soundPath, vol, 1.0f);
         playResolvedForPlayer(player, soundPath, SoundSource.PLAYERS, vol, 1.0f);
     }
 
@@ -147,7 +139,6 @@ public class SoundManager {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundWeaponVolume.get().floatValue();
         String soundPath = getWeaponEquipSoundPath(weaponType, player.level().getRandom().nextInt(2) + 1);
-        debug("WeaponEquipSound", player, soundPath, vol, 1.0f);
         playResolvedForPlayer(player, soundPath, SoundSource.PLAYERS, vol, 1.0f);
     }
 
@@ -155,14 +146,12 @@ public class SoundManager {
     public static void playAnnouncer30SecondsLeft(ServerLevel level) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundAnnouncerVolume.get().floatValue();
-        debug("Announcer30Seconds", level, 0, 0, 0, "announcer.30_seconds_left", vol, 1.0f);
         playResolvedAt(level, 0, 0, 0, "announcer.30_seconds_left", SoundSource.VOICE, vol, 1.0f);
     }
 
     public static void playAnnouncer10SecondsLeft(ServerLevel level) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundAnnouncerVolume.get().floatValue();
-        debug("Announcer10Seconds", level, 0, 0, 0, "announcer.10_seconds_left", vol, 1.0f);
         playResolvedAt(level, 0, 0, 0, "announcer.10_seconds_left", SoundSource.VOICE, vol, 1.0f);
     }
 
@@ -170,21 +159,18 @@ public class SoundManager {
     public static void playSpikePlantedSound(ServerLevel level) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue();
-        debug("SpikePlantedSound", level, 0, 0, 0, "ui.spike_planted", vol, 1.0f);
         playResolvedAt(level, 0, 0, 0, "ui.spike_planted", SoundSource.VOICE, vol, 1.0f);
     }
 
     public static void playSpikeDefusedSound(ServerLevel level) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue();
-        debug("SpikeDefusedSound", level, 0, 0, 0, "ui.spike_defused", vol, 1.0f);
         playResolvedAt(level, 0, 0, 0, "ui.spike_defused", SoundSource.VOICE, vol, 1.0f);
     }
 
     public static void playRoundStartCountdownSound(ServerLevel level) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue();
-        debug("RoundStartCountdown", level, 0, 0, 0, "ui.round_start_countdown", vol, 1.0f);
         playResolvedAt(level, 0, 0, 0, "ui.round_start_countdown", SoundSource.VOICE, vol, 1.0f);
     }
 
@@ -192,7 +178,6 @@ public class SoundManager {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue();
         String soundPath = isAttackers ? "ui.attackers_win" : "ui.defenders_win";
-        debug("MatchVictorySound", level, 0, 0, 0, soundPath, vol, 1.0f);
         playResolvedAt(level, 0, 0, 0, soundPath, SoundSource.VOICE, vol, 1.0f);
     }
 
@@ -200,28 +185,24 @@ public class SoundManager {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue();
         String soundPath = level.getRandom().nextBoolean() ? "ui.match_victory_1" : "ui.match_victory_2";
-        debug("MatchVictoryRandom", level, 0, 0, 0, soundPath, vol, 1.0f);
         playResolvedAt(level, 0, 0, 0, soundPath, SoundSource.VOICE, vol, 1.0f);
     }
 
     public static void playAgentSelectSound(ServerPlayer player) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue();
-        debug("AgentSelectSound", player, "ui.select_agent", vol, 1.0f);
         playResolvedForPlayer(player, "ui.select_agent", SoundSource.PLAYERS, vol, 1.0f);
     }
 
     public static void playAgentLockInSound(ServerPlayer player) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue();
-        debug("AgentLockInSound", player, "ui.lock_in", vol, 1.0f);
         playResolvedForPlayer(player, "ui.lock_in", SoundSource.PLAYERS, vol, 1.0f);
     }
 
     public static void playAgentHoverSound(ServerPlayer player) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue() * 0.3f;
-        debug("AgentHoverSound", player, "ui.hover_over_agent", vol, 1.0f);
         playResolvedForPlayer(player, "ui.hover_over_agent", SoundSource.PLAYERS, vol, 1.0f);
     }
 
@@ -253,7 +234,6 @@ public class SoundManager {
             return opt.get().value();
         }
         // Not found; log and return null
-        Valorant.LOGGER.warn("[Sound] SoundEvent not found in registry: {}", id);
         return null;
     }
 
@@ -264,7 +244,6 @@ public class SoundManager {
             var level = (net.minecraft.server.level.ServerLevel) player.level();
             level.playSound(null, player.getX(), player.getY(), player.getZ(), event, source, volume, pitch);
         } else {
-            Valorant.LOGGER.warn("[Sound] Skipping play (player) for missing event: {} (vol={}, pitch={})", path, volume, pitch);
         }
     }
 
@@ -273,28 +252,6 @@ public class SoundManager {
         if (event != null) {
             level.playSound(null, x, y, z, event, source, volume, pitch);
         } else {
-            Valorant.LOGGER.warn("[Sound] Skipping play (world) for missing event: {} at {},{},{} (vol={}, pitch={})", path, x, y, z, volume, pitch);
         }
-    }
-
-    private static void debug(String label, ServerPlayer player, String path, float volume, float pitch) {
-        Valorant.LOGGER.info("[Sound:{}] player={}, id=valorant:{}, vol={}, pitch={}, enabled={}",
-                label,
-                player.getGameProfile().getName(),
-                path,
-                volume,
-                pitch,
-                com.bobby.valorant.Config.COMMON.soundEnabled.get());
-    }
-
-    private static void debug(String label, net.minecraft.server.level.ServerLevel level, double x, double y, double z, String path, float volume, float pitch) {
-        Valorant.LOGGER.info("[Sound:{}] level={}, pos=({},{},{}), id=valorant:{}, vol={}, pitch={}, enabled={}",
-                label,
-                level.dimension().location(),
-                x, y, z,
-                path,
-                volume,
-                pitch,
-                com.bobby.valorant.Config.COMMON.soundEnabled.get());
     }
 }

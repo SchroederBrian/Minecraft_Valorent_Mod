@@ -35,8 +35,6 @@ public final class SpawnAreaClientRenderer {
         ParticleOptions particle = buildParticle(spawnType, spawnColor);
         double spacing = Config.COMMON.spawnAreaParticleSpacing.get();
 
-        System.out.println("[SpawnRenderer] Spawn particle type: " + spawnType + ", color: " + Integer.toHexString(spawnColor) + ", built: " + particle.getClass().getSimpleName());
-
         renderPerimeter(mc, particle, spacing, SpawnAreaClientState.vertsA, SpawnAreaClientState.yA, 0xFF00FF);
         renderPerimeter(mc, particle, spacing, SpawnAreaClientState.vertsV, SpawnAreaClientState.yV, 0x00FFFF);
 
@@ -44,7 +42,6 @@ public final class SpawnAreaClientRenderer {
         String siteType = Config.COMMON.bombSiteParticleType.get();
         int siteColor = Config.COMMON.bombSiteParticleColor.get();
         ParticleOptions siteParticle = buildParticle(siteType, siteColor);
-        System.out.println("[SpawnRenderer] Bomb site particle type: " + siteType + ", color: " + Integer.toHexString(siteColor) + ", built: " + siteParticle.getClass().getSimpleName());
 
         renderPerimeter(mc, siteParticle, spacing, SpawnAreaClientState.vertsSiteA, SpawnAreaClientState.ySiteA, 0xFF0000);
         renderPerimeter(mc, siteParticle, spacing, SpawnAreaClientState.vertsSiteB, SpawnAreaClientState.ySiteB, 0x00FF00);

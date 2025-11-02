@@ -40,7 +40,54 @@ public final class HudOverlay {
 		renderSpikeIndicator(guiGraphics, mc, player, screenWidth, screenHeight);
 
 		// Render title overlay (last to draw on top)
+		renderPickupPrompt(guiGraphics);
 		TitleOverlay.render(guiGraphics);
+	}
+
+	private static void renderPickupPrompt(GuiGraphics g) {
+		net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+		net.minecraft.client.multiplayer.ClientLevel level = mc.level;
+		net.minecraft.world.entity.player.Player player = mc.player;
+		if (level == null || player == null) return;
+
+		if (!com.bobby.valorant.Config.COMMON.showValorantHud.get()) return;
+		double range = com.bobby.valorant.Config.COMMON.pickupRange.get();
+
+		// Find nearest DroppedWeaponStandEntity within range and line-of-sight
+		net.minecraft.world.phys.Vec3 eye = player.getEyePosition();
+		net.minecraft.world.phys.Vec3 look = player.getLookAngle();
+		net.minecraft.world.phys.AABB box = player.getBoundingBox().inflate(range);
+		java.util.List<com.bobby.valorant.drop.DroppedWeaponStandEntity> nearby = level.getEntitiesOfClass(com.bobby.valorant.drop.DroppedWeaponStandEntity.class, box);
+		com.bobby.valorant.drop.DroppedWeaponStandEntity best = null;
+		double bestDist2 = Double.MAX_VALUE;
+		for (com.bobby.valorant.drop.DroppedWeaponStandEntity e : nearby) {
+			if (e.isRemoved()) continue;
+			net.minecraft.world.item.ItemStack head = e.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD);
+			if (head.isEmpty()) continue;
+			net.minecraft.world.phys.Vec3 target = new net.minecraft.world.phys.Vec3(e.getX(), e.getY() + 0.4, e.getZ());
+			double dist2 = eye.distanceToSqr(target);
+			if (dist2 > range * range) continue;
+			// Simple LoS check
+			net.minecraft.world.level.ClipContext ctx = new net.minecraft.world.level.ClipContext(eye, target, net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, player);
+			net.minecraft.world.phys.BlockHitResult hit = level.clip(ctx);
+			boolean unobstructed = hit == null || hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS || hit.getLocation().distanceToSqr(eye) >= dist2 - 1.0E-3;
+			if (!unobstructed) continue;
+			// Prefer the closest
+			if (dist2 < bestDist2) { bestDist2 = dist2; best = e; }
+		}
+
+		if (best == null) return;
+		net.minecraft.world.item.ItemStack head = best.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD);
+		if (head.isEmpty()) return;
+
+		String key = com.bobby.valorant.client.ModKeyBindings.DROP_PICKUP_WEAPON.getTranslatedKeyMessage().getString();
+		String base = com.bobby.valorant.Config.COMMON.uiPromptText.get();
+		String text = base.replace("{item}", head.getHoverName().getString()).replace("[Use]", key);
+		int sw = mc.getWindow().getGuiScaledWidth();
+		int sh = mc.getWindow().getGuiScaledHeight();
+		int x = sw / 2 + com.bobby.valorant.Config.COMMON.uiPromptOffsetX.get();
+		int y = sh / 2 + com.bobby.valorant.Config.COMMON.uiPromptOffsetY.get();
+		g.drawCenteredString(mc.font, text, x, y, 0xFFFFFFFF);
 	}
 
 	private static void renderSpikeIndicator(GuiGraphics guiGraphics, net.minecraft.client.Minecraft mc, Player player, int sw, int sh) {
