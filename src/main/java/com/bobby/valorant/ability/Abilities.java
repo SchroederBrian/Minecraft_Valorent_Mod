@@ -31,7 +31,7 @@ public final class Abilities {
                 .displayName(Component.literal("Blaze"))
                 .description(Component.literal("Create a wall of fire."))
                 .iconSupplier(() -> new ItemStack(ModItems.WALLSEGMENT.get()))
-                .baseCharges(1)
+                .baseCharges(0)
                 .cooldownSeconds(0)
                 .effect(com.bobby.valorant.ability.effects.AbilityEffects::phoenixBlaze)
                 .build();
@@ -41,7 +41,7 @@ public final class Abilities {
                 .displayName(Component.literal("Hot Hands"))
                 .description(Component.literal("Throw a fireball."))
                 .iconSupplier(() -> new ItemStack(ModItems.FIREBALL.get()))
-                .baseCharges(1)
+                .baseCharges(0)
                 .cooldownSeconds(0)
                 .effect(com.bobby.valorant.ability.effects.AbilityEffects::phoenixHotHands)
                 .build();
@@ -70,13 +70,13 @@ public final class Abilities {
         Ability br_c = Ability.builder().id("brim_c_stim").slot(Ability.Slot.C)
                 .displayName(Component.literal("Stim Beacon")).description(Component.literal("Buff allies."))
                 .iconSupplier(() -> new ItemStack(ModItems.STIMBEACONHAND.get()))
-                .baseCharges(1).effect(com.bobby.valorant.ability.effects.AbilityEffects::brimStimBeacon).build();
+                .baseCharges(0).effect(com.bobby.valorant.ability.effects.AbilityEffects::brimStimBeacon).build();
         Ability br_q = Ability.builder().id("brim_q_incendiary").slot(Ability.Slot.Q)
                 .displayName(Component.literal("Incendiary")).description(Component.literal("Launch molly."))
-                .baseCharges(1).effect((sp, ctx) -> {}).build();
+                .baseCharges(0).effect((sp, ctx) -> {}).build();
         Ability br_e = Ability.builder().id("brim_e_sky_smoke").slot(Ability.Slot.E)
                 .displayName(Component.literal("Sky Smoke")).description(Component.literal("Place smokes."))
-                .baseCharges(3).effect((sp, ctx) -> {}).build();
+                .baseCharges(0).effect((sp, ctx) -> {}).build();
         Ability br_x = Ability.builder().id("brim_x_orbital").slot(Ability.Slot.X)
                 .displayName(Component.literal("Orbital Strike")).description(Component.literal("Call laser."))
                 .iconSupplier(() -> ItemStack.EMPTY)
@@ -86,10 +86,10 @@ public final class Abilities {
         // Jett (placeholder icons)
         Ability j_c = Ability.builder().id("jett_c_cloudburst").slot(Ability.Slot.C)
                 .displayName(Component.literal("Cloudburst")).description(Component.literal("Smoke."))
-                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(2).effect((sp, ctx) -> {}).build();
+                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(0).effect((sp, ctx) -> {}).build();
         Ability j_q = Ability.builder().id("jett_q_updraft").slot(Ability.Slot.Q)
                 .displayName(Component.literal("Updraft")).description(Component.literal("Upwards dash."))
-                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(1).effect((sp, ctx) -> {}).build();
+                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(0).effect((sp, ctx) -> {}).build();
         Ability j_e = Ability.builder().id("jett_e_tailwind").slot(Ability.Slot.E)
                 .displayName(Component.literal("Tailwind")).description(Component.literal("Dash."))
                 .iconSupplier(() -> ItemStack.EMPTY).baseCharges(1).effect((sp, ctx) -> {}).build();
@@ -102,10 +102,10 @@ public final class Abilities {
         // Omen (placeholder icons)
         Ability o_c = Ability.builder().id("omen_c_shrouded").slot(Ability.Slot.C)
                 .displayName(Component.literal("Shrouded Step")).description(Component.literal("Short TP."))
-                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(2).effect((sp, ctx) -> {}).build();
+                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(0).effect((sp, ctx) -> {}).build();
         Ability o_q = Ability.builder().id("omen_q_paranoia").slot(Ability.Slot.Q)
                 .displayName(Component.literal("Paranoia")).description(Component.literal("Cone blind."))
-                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(1).effect((sp, ctx) -> {}).build();
+                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(0).effect((sp, ctx) -> {}).build();
         Ability o_e = Ability.builder().id("omen_e_dark_cover").slot(Ability.Slot.E)
                 .displayName(Component.literal("Dark Cover")).description(Component.literal("Smokes."))
                 .iconSupplier(() -> ItemStack.EMPTY).baseCharges(2).effect((sp, ctx) -> {}).build();
@@ -117,11 +117,11 @@ public final class Abilities {
         // Raze
         Ability rz_c = Ability.builder().id("raze_c_boom_bot").slot(Ability.Slot.C)
                 .displayName(Component.literal("Boom Bot")).description(Component.literal("Seek bot."))
-                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(1).effect((sp, ctx) -> {}).build();
+                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(0).effect((sp, ctx) -> {}).build();
         Ability rz_q = Ability.builder().id("raze_q_blast_pack").slot(Ability.Slot.Q)
                 .displayName(Component.literal("Blast Pack")).description(Component.literal("Satchel."))
                 .iconSupplier(() -> new ItemStack(ModItems.BLAST_PACK.get()))
-                .baseCharges(2).effect(com.bobby.valorant.ability.effects.AbilityEffects::razeBlastPack).build();
+                .baseCharges(0).effect(com.bobby.valorant.ability.effects.AbilityEffects::razeBlastPack).build();
         Ability rz_e = Ability.builder().id("raze_e_paint_shells").slot(Ability.Slot.E)
                 .displayName(Component.literal("Paint Shells")).description(Component.literal("Grenade."))
                 .iconSupplier(() -> ItemStack.EMPTY).baseCharges(1).effect((sp, ctx) -> {}).build();
@@ -133,10 +133,10 @@ public final class Abilities {
         // Sage
         Ability sg_c = Ability.builder().id("sage_c_barrier").slot(Ability.Slot.C)
                 .displayName(Component.literal("Barrier Orb")).description(Component.literal("Wall."))
-                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(1).effect((sp, ctx) -> {}).build();
+                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(0).effect((sp, ctx) -> {}).build();
         Ability sg_q = Ability.builder().id("sage_q_slow").slot(Ability.Slot.Q)
                 .displayName(Component.literal("Slow Orb")).description(Component.literal("Slow field."))
-                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(2).effect((sp, ctx) -> {}).build();
+                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(0).effect((sp, ctx) -> {}).build();
         Ability sg_e = Ability.builder().id("sage_e_heal").slot(Ability.Slot.E)
                 .displayName(Component.literal("Healing Orb")).description(Component.literal("Heal."))
                 .iconSupplier(() -> ItemStack.EMPTY).baseCharges(1).effect((sp, ctx) -> {}).build();
@@ -148,10 +148,10 @@ public final class Abilities {
         // Sova
         Ability sv_c = Ability.builder().id("sova_c_drone").slot(Ability.Slot.C)
                 .displayName(Component.literal("Owl Drone")).description(Component.literal("Drone."))
-                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(1).effect((sp, ctx) -> {}).build();
+                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(0).effect((sp, ctx) -> {}).build();
         Ability sv_q = Ability.builder().id("sova_q_shock").slot(Ability.Slot.Q)
                 .displayName(Component.literal("Shock Bolt")).description(Component.literal("Shock arrow."))
-                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(2).effect((sp, ctx) -> {}).build();
+                .iconSupplier(() -> ItemStack.EMPTY).baseCharges(0).effect((sp, ctx) -> {}).build();
         Ability sv_e = Ability.builder().id("sova_e_recon").slot(Ability.Slot.E)
                 .displayName(Component.literal("Recon Bolt")).description(Component.literal("Scan arrow."))
                 .iconSupplier(() -> ItemStack.EMPTY).baseCharges(1).effect((sp, ctx) -> {}).build();

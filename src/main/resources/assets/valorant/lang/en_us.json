@@ -41,6 +41,12 @@
 
   "message.valorant.curveball.no_charges": "Curveball unavailable",
   
+  "shop.category.abilities": "Abilities",
+  "shop.buy": "BUY",
+  "shop.sell": "SELL",
+  "shop.price": "Price",
+  "shop.charges": "Charges",
+  
   "screen.valorant.agent_selection": "Agent Selection",
   "gui.valorant.close": "Close",
   "gui.valorant.selected_agent": "Selected Agent: %s",

@@ -1,5 +1,10 @@
 package com.bobby.valorant.economy;
 
+import com.bobby.valorant.ability.Abilities;
+import com.bobby.valorant.ability.Ability;
+import com.bobby.valorant.player.AbilityStateData;
+import com.bobby.valorant.player.AgentData;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -17,6 +22,7 @@ public final class EconomyData {
     private static final String LOSS_STREAK = "LossStreak";
     private static final String ROUND_ID = "RoundId";
     private static final String PURCHASES = "Purchases"; // comma-list of enum names
+    private static final String ABILITY_PURCHASES = "AbilityPurchases"; // format: id=count,id2=count
 
     public static int getCredits(Player p) {
         return root(p).getIntOr(CREDITS, 800); // start credits default
@@ -77,6 +83,85 @@ public final class EconomyData {
         // sync to client
         syncCredits(sp);
         return true;
+    }
+
+    public static boolean tryBuyAbility(ServerPlayer sp, Ability ability, int price, int maxCharges, int currentRoundId, boolean isBuyPhase) {
+        if (!isBuyPhase) return false;
+        if (price < 0) return false;
+        int credits = getCredits(sp);
+        if (credits < price) return false;
+        int cur = AbilityStateData.getCharges(sp, ability);
+        if (cur >= maxCharges) return false;
+        if (price > 0) setCredits(sp, credits - price);
+        AbilityStateData.setCharges(sp, ability, cur + 1);
+        // track refundable ability purchases this round
+        setRoundId(sp, currentRoundId);
+        java.util.Map<String, Integer> map = getAbilityPurchases(sp);
+        map.put(ability.id(), map.getOrDefault(ability.id(), 0) + 1);
+        setAbilityPurchases(sp, map);
+        // sync credits and ability state snapshot
+        syncCredits(sp);
+        syncAbilityState(sp);
+        return true;
+    }
+
+    public static boolean trySellAbility(ServerPlayer sp, Ability ability, int price, int currentRoundId, boolean isBuyPhase) {
+        if (!isBuyPhase) return false;
+        if (getRoundId(sp) != currentRoundId) return false;
+        java.util.Map<String, Integer> map = getAbilityPurchases(sp);
+        Integer count = map.get(ability.id());
+        if (count == null || count <= 0) return false;
+        int cur = AbilityStateData.getCharges(sp, ability);
+        if (cur <= 0) return false;
+        AbilityStateData.setCharges(sp, ability, Math.max(0, cur - 1));
+        if (price > 0) setCredits(sp, getCredits(sp) + price);
+        if (count == 1) map.remove(ability.id()); else map.put(ability.id(), count - 1);
+        setAbilityPurchases(sp, map);
+        syncCredits(sp);
+        syncAbilityState(sp);
+        return true;
+    }
+
+    private static void syncAbilityState(ServerPlayer sp) {
+        var agent = AgentData.getSelectedAgent(sp);
+        var set = Abilities.getForAgent(agent);
+        int c = set.c() != null ? AbilityStateData.getCharges(sp, set.c()) : 0;
+        int q = set.q() != null ? AbilityStateData.getCharges(sp, set.q()) : 0;
+        int e = set.e() != null ? AbilityStateData.getCharges(sp, set.e()) : 0;
+        int x = AbilityStateData.getUltPoints(sp);
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(sp, new com.bobby.valorant.network.SyncAbilityStateS2CPacket(c, q, e, x));
+    }
+
+    private static java.util.Map<String, Integer> getAbilityPurchases(Player p) {
+        String s = root(p).getStringOr(ABILITY_PURCHASES, "");
+        java.util.Map<String, Integer> map = new java.util.HashMap<>();
+        if (!s.isEmpty()) {
+            String[] parts = s.split(",");
+            for (String part : parts) {
+                if (part.isEmpty()) continue;
+                int eq = part.indexOf('=');
+                if (eq <= 0) continue;
+                String id = part.substring(0, eq);
+                try {
+                    int count = Integer.parseInt(part.substring(eq + 1));
+                    if (count > 0) map.put(id, count);
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        return map;
+    }
+
+    private static void setAbilityPurchases(Player p, java.util.Map<String, Integer> map) {
+        if (map.isEmpty()) {
+            root(p).putString(ABILITY_PURCHASES, "");
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (java.util.Map.Entry<String, Integer> e : map.entrySet()) {
+            if (sb.length() > 0) sb.append(',');
+            sb.append(e.getKey()).append('=').append(Math.max(0, e.getValue()));
+        }
+        root(p).putString(ABILITY_PURCHASES, sb.toString());
     }
 
     private static boolean slotFreeOrReplace(ServerPlayer sp, ShopItem item) {

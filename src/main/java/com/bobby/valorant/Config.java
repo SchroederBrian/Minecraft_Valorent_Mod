@@ -91,6 +91,15 @@ public final class Config {
         // Teams
         public final ModConfigSpec.IntValue maxTeamSize;
 
+		// Spawn areas (team polygons and particle rendering)
+		public final ModConfigSpec.ConfigValue<String> spawnAreaConfigPath;
+		public final ModConfigSpec.ConfigValue<String> spawnAreaParticleType;
+		public final ModConfigSpec.DoubleValue spawnAreaParticleSpacing;
+		public final ModConfigSpec.IntValue spawnAreaParticleTickInterval;
+		public final ModConfigSpec.ConfigValue<String> bombSiteParticleType;
+		public final ModConfigSpec.IntValue spawnAreaParticleColor;
+		public final ModConfigSpec.IntValue bombSiteParticleColor;
+
         // Spike runtime signal
         public final ModConfigSpec.BooleanValue spikePlanted;
         public final ModConfigSpec.DoubleValue plantedSpikeYOffset;
@@ -148,6 +157,9 @@ public final class Config {
         public final ModConfigSpec.DoubleValue soundWeaponVolume;
         public final ModConfigSpec.DoubleValue soundAnnouncerVolume;
         public final ModConfigSpec.BooleanValue soundDisableBackgroundMusic;
+
+        // Ability shop (per-agent C/Q/E pricing and caps)
+        public final ModConfigSpec.ConfigValue<Object> abilityShop;
 
         Common(ModConfigSpec.Builder builder) {
             builder.push("curveball");
@@ -242,6 +254,85 @@ public final class Config {
                 table.set("sova.x.ult_cost", 8);
                 agentAbilities = builder.comment("Mapping: agent.slot.* defaults (charges / ult_cost)")
                         .define("defaults", table);
+            }
+            builder.pop();
+
+            // Ability shop configuration (data-first, per agent/slot)
+            builder.push("ability_shop");
+            {
+                com.electronwill.nightconfig.core.Config shop = com.electronwill.nightconfig.core.Config.inMemory();
+                // Brimstone
+                shop.set("brimstone.c.price", 200);
+                shop.set("brimstone.c.max", 1);
+                shop.set("brimstone.c.purchasable", true);
+                shop.set("brimstone.q.price", 250);
+                shop.set("brimstone.q.max", 1);
+                shop.set("brimstone.q.purchasable", true);
+                shop.set("brimstone.e.price", 100);
+                shop.set("brimstone.e.max", 3);
+                shop.set("brimstone.e.purchasable", true);
+                // Jett
+                shop.set("jett.c.price", 200);
+                shop.set("jett.c.max", 2);
+                shop.set("jett.c.purchasable", true);
+                shop.set("jett.q.price", 150);
+                shop.set("jett.q.max", 1);
+                shop.set("jett.q.purchasable", true);
+                shop.set("jett.e.price", 0);
+                shop.set("jett.e.max", 1);
+                shop.set("jett.e.purchasable", false);
+                // Omen
+                shop.set("omen.c.price", 100);
+                shop.set("omen.c.max", 2);
+                shop.set("omen.c.purchasable", true);
+                shop.set("omen.q.price", 250);
+                shop.set("omen.q.max", 1);
+                shop.set("omen.q.purchasable", true);
+                shop.set("omen.e.price", 0);
+                shop.set("omen.e.max", 2);
+                shop.set("omen.e.purchasable", false);
+                // Phoenix
+                shop.set("phoenix.c.price", 150);
+                shop.set("phoenix.c.max", 1);
+                shop.set("phoenix.c.purchasable", true);
+                shop.set("phoenix.q.price", 200);
+                shop.set("phoenix.q.max", 1);
+                shop.set("phoenix.q.purchasable", true);
+                shop.set("phoenix.e.price", 0);
+                shop.set("phoenix.e.max", 1);
+                shop.set("phoenix.e.purchasable", false);
+                // Raze
+                shop.set("raze.c.price", 300);
+                shop.set("raze.c.max", 1);
+                shop.set("raze.c.purchasable", true);
+                shop.set("raze.q.price", 200);
+                shop.set("raze.q.max", 2);
+                shop.set("raze.q.purchasable", true);
+                shop.set("raze.e.price", 0);
+                shop.set("raze.e.max", 1);
+                shop.set("raze.e.purchasable", false);
+                // Sage
+                shop.set("sage.c.price", 300);
+                shop.set("sage.c.max", 1);
+                shop.set("sage.c.purchasable", true);
+                shop.set("sage.q.price", 200);
+                shop.set("sage.q.max", 2);
+                shop.set("sage.q.purchasable", true);
+                shop.set("sage.e.price", 0);
+                shop.set("sage.e.max", 1);
+                shop.set("sage.e.purchasable", false);
+                // Sova
+                shop.set("sova.c.price", 400);
+                shop.set("sova.c.max", 1);
+                shop.set("sova.c.purchasable", true);
+                shop.set("sova.q.price", 150);
+                shop.set("sova.q.max", 2);
+                shop.set("sova.q.purchasable", true);
+                shop.set("sova.e.price", 0);
+                shop.set("sova.e.max", 1);
+                shop.set("sova.e.purchasable", false);
+                abilityShop = builder.comment("Per-agent ability shop settings: <agent>.<slot>.price/max/purchasable")
+                        .define("settings", shop);
             }
             builder.pop();
 
@@ -528,6 +619,24 @@ public final class Config {
             builder.push("teams");
             maxTeamSize = builder.comment("Maximum players per team (A and V).")
                     .defineInRange("maxTeamSize", 5, 1, 10);
+            builder.pop();
+
+			// Spawn areas configuration
+			builder.push("spawnAreas");
+			spawnAreaConfigPath = builder.comment("Path to JSON file describing team spawn polygons per dimension.")
+					.define("configPath", "config/valorant/spawn_areas.json");
+			spawnAreaParticleType = builder.comment("Particle id used to outline spawn area perimeters (e.g., FLAME, GLOW, ASH).")
+					.define("particle", "DUST");
+			spawnAreaParticleSpacing = builder.comment("Spacing in blocks between perimeter particles when rendering spawn areas.")
+					.defineInRange("particleSpacing", 0.5D, 0.1D, 5.0D);
+			spawnAreaParticleTickInterval = builder.comment("How often (in ticks) to render the perimeter particles (lower = more frequent).")
+					.defineInRange("particleTickInterval", 10, 1, 200);
+			bombSiteParticleType = builder.comment("Particle id used to outline bomb site perimeters (A/B/C).")
+					.define("bombSiteParticle", "DUST");
+			spawnAreaParticleColor = builder.comment("RGB hex color used when particle supports color (e.g., DUST). Format: 0xRRGGBB")
+					.defineInRange("spawnColor", 0x00FFFF, 0x000000, 0xFFFFFF);
+			bombSiteParticleColor = builder.comment("RGB hex color used when particle supports color (e.g., DUST). Format: 0xRRGGBB")
+					.defineInRange("bombColor", 0xFF0000, 0x000000, 0xFFFFFF);
             builder.pop();
         }
     }

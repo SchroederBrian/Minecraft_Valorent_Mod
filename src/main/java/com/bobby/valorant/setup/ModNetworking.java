@@ -8,6 +8,7 @@ import com.bobby.valorant.network.SyncRoundStatePacket;
 import com.bobby.valorant.network.SyncCreditsPacket;
 import com.bobby.valorant.network.ThrowCurveballPacket;
 import com.bobby.valorant.network.BuyRequestPacket;
+import com.bobby.valorant.network.BuyAbilityRequestPacket;
 import com.bobby.valorant.network.EquipCurveballPacket;
 import com.bobby.valorant.network.TriggerFlashPacket;
 import com.bobby.valorant.network.SyncUltimatePointsPacket;
@@ -50,6 +51,7 @@ public final class ModNetworking {
                 .playToServer(GiveCurveballPacket.TYPE, GiveCurveballPacket.STREAM_CODEC, GiveCurveballPacket::handle)
                 .playToServer(RemoveCurveballPacket.TYPE, RemoveCurveballPacket.STREAM_CODEC, RemoveCurveballPacket::handle)
                 .playToServer(BuyRequestPacket.TYPE, BuyRequestPacket.STREAM_CODEC, BuyRequestPacket::handle)
+                .playToServer(BuyAbilityRequestPacket.TYPE, BuyAbilityRequestPacket.STREAM_CODEC, BuyAbilityRequestPacket::handle)
                 .playToServer(EquipCurveballPacket.TYPE, EquipCurveballPacket.STREAM_CODEC, EquipCurveballPacket::handle)
                 .playToServer(ShootGunPacket.TYPE, ShootGunPacket.STREAM_CODEC, ShootGunPacket::handle)
                 .playToServer(LockAgentRequestPacket.TYPE, LockAgentRequestPacket.STREAM_CODEC, LockAgentRequestPacket::handle)
@@ -76,6 +78,7 @@ public final class ModNetworking {
                 .playToClient(SyncFireWallChargesPacket.TYPE, SyncFireWallChargesPacket.STREAM_CODEC, SyncFireWallChargesPacket::handle)
                 .playToClient(SyncReloadStatePacket.TYPE, SyncReloadStatePacket.STREAM_CODEC, SyncReloadStatePacket::handle)
                 .playToClient(ShowTitleOverlayPacket.TYPE, ShowTitleOverlayPacket.STREAM_CODEC, ShowTitleOverlayPacket::handle)
+				.playToClient(com.bobby.valorant.network.SyncSpawnAreasS2CPacket.TYPE, com.bobby.valorant.network.SyncSpawnAreasS2CPacket.STREAM_CODEC, com.bobby.valorant.network.SyncSpawnAreasS2CPacket::handle)
                 .playToClient(SyncAgentS2CPacket.TYPE, SyncAgentS2CPacket.STREAM_CODEC, SyncAgentS2CPacket::handle)
                 .playToClient(SyncAbilityStateS2CPacket.TYPE, SyncAbilityStateS2CPacket.STREAM_CODEC, SyncAbilityStateS2CPacket::handle)
                 .playToClient(PlantingProgressPacket.TYPE, PlantingProgressPacket.STREAM_CODEC, (pkt, ctx) -> {})

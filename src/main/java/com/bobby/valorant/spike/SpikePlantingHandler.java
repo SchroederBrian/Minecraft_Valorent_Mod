@@ -33,6 +33,12 @@ public final class SpikePlantingHandler {
         var server = player.getServer(); if (server == null) return;
         var team = server.getScoreboard().getPlayersTeam(player.getScoreboardName());
         if (team == null || !"A".equals(team.getName())) return; // MVP: attackers = A
+
+        // Require player to be inside any bomb site polygon (A/B/C)
+        if (!isInAnyBombSite(level, player.position())) {
+            player.displayClientMessage(net.minecraft.network.chat.Component.literal("You must be inside a bomb site to plant."), true);
+            return;
+        }
         plantingTicks.put(player.getUUID(), getPlantTicks());
         // Start planting sound loop for this player
         com.bobby.valorant.util.SoundManager.startSpikePlantingSound(player);
@@ -42,6 +48,32 @@ public final class SpikePlantingHandler {
         plantingTicks.remove(player.getUUID());
         // Stop planting sound if canceled
         com.bobby.valorant.util.SoundManager.stopSpikePlantingSound(player);
+    }
+
+    private static boolean isInAnyBombSite(ServerLevel level, Vec3 pos) {
+        com.bobby.valorant.spawn.SpawnArea a = com.bobby.valorant.spawn.SpawnAreaManager.getBombSite(level, "A");
+        com.bobby.valorant.spawn.SpawnArea b = com.bobby.valorant.spawn.SpawnAreaManager.getBombSite(level, "B");
+        com.bobby.valorant.spawn.SpawnArea c = com.bobby.valorant.spawn.SpawnAreaManager.getBombSite(level, "C");
+        return (a != null && pointInPoly(a, pos.x, pos.z))
+                || (b != null && pointInPoly(b, pos.x, pos.z))
+                || (c != null && pointInPoly(c, pos.x, pos.z));
+    }
+
+    private static boolean pointInPoly(com.bobby.valorant.spawn.SpawnArea area, double x, double z) {
+        java.util.List<net.minecraft.core.BlockPos> vertices = area.vertices;
+        if (vertices == null || vertices.size() < 3) return false;
+        boolean inside = false;
+        int n = vertices.size();
+        for (int i = 0, j = n - 1; i < n; j = i++) {
+            double xi = vertices.get(i).getX();
+            double zi = vertices.get(i).getZ();
+            double xj = vertices.get(j).getX();
+            double zj = vertices.get(j).getZ();
+            boolean intersect = ((zi > z) != (zj > z)) &&
+                    (x < (xj - xi) * (z - zi) / (zj - zi + 1e-9) + xi);
+            if (intersect) inside = !inside;
+        }
+        return inside;
     }
 
     public static boolean isPlanting(ServerPlayer player) {
