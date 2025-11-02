@@ -27,6 +27,17 @@ public final class Config {
         public final ModConfigSpec.DoubleValue curveballFlashConeAngleDegrees;
         public final ModConfigSpec.BooleanValue curveballAffectsThrower;
         
+        // Molly Launcher settings
+        public final ModConfigSpec.DoubleValue mollyLauncherDamage;
+        public final ModConfigSpec.DoubleValue mollyLauncherRange;
+        public final ModConfigSpec.DoubleValue mollyLauncherSpreadDegrees;
+        public final ModConfigSpec.IntValue mollyLauncherCooldownTicks;
+        public final ModConfigSpec.IntValue mollyLauncherTracerParticles;
+        public final ModConfigSpec.IntValue mollyLauncherMuzzleParticles;
+        public final ModConfigSpec.IntValue mollyLauncherMagazineSize;
+        public final ModConfigSpec.IntValue mollyLauncherMaxReserveAmmo;
+        public final ModConfigSpec.IntValue mollyLauncherReloadTimeTicks;
+
         // Flash timing controls
         public final ModConfigSpec.IntValue curveballFlashWindupTicks;
         public final ModConfigSpec.IntValue curveballFlashFullTicks;
@@ -637,6 +648,28 @@ public final class Config {
 					.defineInRange("spawnColor", 0x00FFFF, 0x000000, 0xFFFFFF);
 			bombSiteParticleColor = builder.comment("RGB hex color used when particle supports color (e.g., DUST). Format: 0xRRGGBB")
 					.defineInRange("bombColor", 0xFF0000, 0x000000, 0xFFFFFF);
+            builder.pop();
+
+            // Molly Launcher
+            builder.push("molly_launcher");
+            mollyLauncherDamage = builder.comment("Damage per shot for Molly Launcher.")
+                    .defineInRange("damage", 10.0D, 0.0D, 100.0D);
+            mollyLauncherRange = builder.comment("Max range in blocks for Molly Launcher.")
+                    .defineInRange("range", 100.0D, 1.0D, 256.0D);
+            mollyLauncherSpreadDegrees = builder.comment("Random spread in degrees for Molly Launcher.")
+                    .defineInRange("spreadDegrees", 0.75D, 0.0D, 15.0D);
+            mollyLauncherCooldownTicks = builder.comment("Cooldown (fire rate) in ticks for Molly Launcher.")
+                    .defineInRange("cooldownTicks", 4, 0, 40);
+            mollyLauncherTracerParticles = builder.comment("Tracer particle steps for Molly Launcher (visual only).")
+                    .defineInRange("tracerSteps", 24, 1, 128);
+            mollyLauncherMuzzleParticles = builder.comment("Muzzle particle count for Molly Launcher (visual only).")
+                    .defineInRange("muzzleParticles", 6, 1, 32);
+            mollyLauncherMagazineSize = builder.comment("Magazine size for Molly Launcher.")
+                    .defineInRange("magazineSize", 25, 1, 100);
+            mollyLauncherMaxReserveAmmo = builder.comment("Maximum reserve ammo for Molly Launcher.")
+                    .defineInRange("maxReserveAmmo", 75, 0, 500);
+            mollyLauncherReloadTimeTicks = builder.comment("Reload time in ticks for Molly Launcher (50 ticks = 2.5 seconds).")
+                    .defineInRange("reloadTimeTicks", 50, 1, 20 * 30);
             builder.pop();
         }
     }
