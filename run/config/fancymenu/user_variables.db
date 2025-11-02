@@ -21,19 +21,18 @@ variable {
 variable {
   name = any-agent-locked
   value = 1
-  value = 1
   reset_on_launch = false
 }
 
 variable {
   name = phoenix-locked
-  value = 1
+  value = 0
   reset_on_launch = false
 }
 
 variable {
   name = brimstone-locked
-  value = 0
+  value = 1
   reset_on_launch = false
 }
 
@@ -45,7 +44,7 @@ variable {
 
 variable {
   name = selected-agent
-  value = omen
+  value = brimstone
   reset_on_launch = false
 }
 
