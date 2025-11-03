@@ -13,14 +13,32 @@ variable {
 }
 
 variable {
+  name = test
+  value = # test<br> ## test1<br> ### test3<br>
+  reset_on_launch = false
+}
+
+variable {
   name = sage-locked
   value = 0
   reset_on_launch = false
 }
 
 variable {
+  name = v-p1-name
+  value = Yvmx
+  reset_on_launch = false
+}
+
+variable {
   name = any-agent-locked
   value = 1
+  reset_on_launch = false
+}
+
+variable {
+  name = v-p2-name
+  value = Yvmx
   reset_on_launch = false
 }
 
