@@ -31,6 +31,15 @@ custom_gui {
 }
 
 custom_gui {
+  identifier = gameselection
+  title = 
+  allow_esc = false
+  transparent_world_background = false
+  transparent_world_background_overlay = true
+  pause_game = true
+}
+
+custom_gui {
   identifier = credits
   title = Credits
   allow_esc = true
