@@ -1,43 +1,43 @@
 package com.bobby.valorant.setup;
 
-import com.bobby.valorant.network.ChangeHotbarSlotPacket;
-import com.bobby.valorant.network.GiveCurveballPacket;
-import com.bobby.valorant.network.RemoveCurveballPacket;
-import com.bobby.valorant.network.SyncCurveballChargesPacket;
-import com.bobby.valorant.network.SyncRoundStatePacket;
-import com.bobby.valorant.network.SyncCreditsPacket;
-import com.bobby.valorant.network.ThrowCurveballPacket;
-import com.bobby.valorant.network.BuyRequestPacket;
 import com.bobby.valorant.network.BuyAbilityRequestPacket;
+import com.bobby.valorant.network.BuyRequestPacket;
+import com.bobby.valorant.network.ChangeHotbarSlotPacket;
+import com.bobby.valorant.network.DefuseProgressPacket;
+import com.bobby.valorant.network.DefuseSpikePacket;
+import com.bobby.valorant.network.DropWeaponPacket;
 import com.bobby.valorant.network.EquipCurveballPacket;
-import com.bobby.valorant.network.TriggerFlashPacket;
-import com.bobby.valorant.network.SyncUltimatePointsPacket;
-import com.bobby.valorant.network.LockAgentRequestPacket;
-import com.bobby.valorant.network.SyncAgentLocksPacket;
-import com.bobby.valorant.network.ShootGunPacket;
-import com.bobby.valorant.network.EquipFireballPacket;
-import com.bobby.valorant.network.SyncFireballChargesPacket;
 import com.bobby.valorant.network.EquipFireWallPacket;
-import com.bobby.valorant.network.RemoveFireWallPacket;
-import com.bobby.valorant.network.RemoveFireballPacket;
-import com.bobby.valorant.network.RemoveBlastPackPacket;
-import com.bobby.valorant.network.RemoveStimBeaconPacket;
-import com.bobby.valorant.network.SyncFireWallChargesPacket;
+import com.bobby.valorant.network.EquipFireballPacket;
+import com.bobby.valorant.network.EquipSpikePacket;
+import com.bobby.valorant.network.GiveCurveballPacket;
+import com.bobby.valorant.network.LockAgentRequestPacket;
+import com.bobby.valorant.network.PickupWeaponPacket;
 import com.bobby.valorant.network.PlantSpikePacket;
 import com.bobby.valorant.network.PlantingProgressPacket;
 import com.bobby.valorant.network.ReloadWeaponPacket;
-import com.bobby.valorant.network.SyncReloadStatePacket;
-import com.bobby.valorant.network.SyncWeaponAmmoPacket;
-import com.bobby.valorant.network.DefuseSpikePacket;
-import com.bobby.valorant.network.DefuseProgressPacket;
-import com.bobby.valorant.network.EquipSpikePacket;
-import com.bobby.valorant.network.ShowTitleOverlayPacket;
+import com.bobby.valorant.network.RemoveBlastPackPacket;
+import com.bobby.valorant.network.RemoveCurveballPacket;
+import com.bobby.valorant.network.RemoveFireWallPacket;
+import com.bobby.valorant.network.RemoveFireballPacket;
+import com.bobby.valorant.network.RemoveStimBeaconPacket;
 import com.bobby.valorant.network.SelectAgentC2SPacket;
-import com.bobby.valorant.network.SyncAgentS2CPacket;
-import com.bobby.valorant.network.UseAbilityC2SPacket;
-import com.bobby.valorant.network.PickupWeaponPacket;
-import com.bobby.valorant.network.DropWeaponPacket;
+import com.bobby.valorant.network.ShootGunPacket;
+import com.bobby.valorant.network.ShowTitleOverlayPacket;
 import com.bobby.valorant.network.SyncAbilityStateS2CPacket;
+import com.bobby.valorant.network.SyncAgentLocksPacket;
+import com.bobby.valorant.network.SyncAgentS2CPacket;
+import com.bobby.valorant.network.SyncCreditsPacket;
+import com.bobby.valorant.network.SyncCurveballChargesPacket;
+import com.bobby.valorant.network.SyncFireWallChargesPacket;
+import com.bobby.valorant.network.SyncFireballChargesPacket;
+import com.bobby.valorant.network.SyncReloadStatePacket;
+import com.bobby.valorant.network.SyncRoundStatePacket;
+import com.bobby.valorant.network.SyncUltimatePointsPacket;
+import com.bobby.valorant.network.SyncWeaponAmmoPacket;
+import com.bobby.valorant.network.ThrowCurveballPacket;
+import com.bobby.valorant.network.TriggerFlashPacket;
+import com.bobby.valorant.network.UseAbilityC2SPacket;
 
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
@@ -85,6 +85,7 @@ public final class ModNetworking {
 				.playToClient(com.bobby.valorant.network.SyncSpawnAreasS2CPacket.TYPE, com.bobby.valorant.network.SyncSpawnAreasS2CPacket.STREAM_CODEC, com.bobby.valorant.network.SyncSpawnAreasS2CPacket::handle)
                 .playToClient(SyncAgentS2CPacket.TYPE, SyncAgentS2CPacket.STREAM_CODEC, SyncAgentS2CPacket::handle)
                 .playToClient(SyncAbilityStateS2CPacket.TYPE, SyncAbilityStateS2CPacket.STREAM_CODEC, SyncAbilityStateS2CPacket::handle)
+                .playToClient(com.bobby.valorant.network.KillfeedMessageS2CPacket.TYPE, com.bobby.valorant.network.KillfeedMessageS2CPacket.STREAM_CODEC, com.bobby.valorant.network.KillfeedMessageS2CPacket::handle)
                 .playToClient(PlantingProgressPacket.TYPE, PlantingProgressPacket.STREAM_CODEC, (pkt, ctx) -> {})
                 .playToClient(DefuseProgressPacket.TYPE, DefuseProgressPacket.STREAM_CODEC, (pkt, ctx) -> {});
     }

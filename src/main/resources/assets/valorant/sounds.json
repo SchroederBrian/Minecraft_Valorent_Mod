@@ -155,6 +155,16 @@
       "valorant:ui/spike-planted"
     ]
   },
+  "announcer.spike_planted_1": {
+    "sounds": [
+      "valorant:announcer/spike-planted-1"
+    ]
+  },
+  "announcer.spike_planted_2": {
+    "sounds": [
+      "valorant:announcer/spike-planted-2"
+    ]
+  },
   "ui.spike_defused": {
     "sounds": [
       "valorant:ui/spike-defused"

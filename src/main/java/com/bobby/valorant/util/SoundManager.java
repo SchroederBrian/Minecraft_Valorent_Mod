@@ -146,26 +146,28 @@ public class SoundManager {
     public static void playAnnouncer30SecondsLeft(ServerLevel level) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundAnnouncerVolume.get().floatValue();
-        playResolvedAt(level, 0, 0, 0, "announcer.30_seconds_left", SoundSource.VOICE, vol, 1.0f);
+        playResolvedForAll(level, "announcer.30_seconds_left", SoundSource.VOICE, vol, 1.0f);
     }
 
     public static void playAnnouncer10SecondsLeft(ServerLevel level) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundAnnouncerVolume.get().floatValue();
-        playResolvedAt(level, 0, 0, 0, "announcer.10_seconds_left", SoundSource.VOICE, vol, 1.0f);
+        playResolvedForAll(level, "announcer.10_seconds_left", SoundSource.VOICE, vol, 1.0f);
     }
 
     // UI sounds
     public static void playSpikePlantedSound(ServerLevel level) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
-        float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue();
-        playResolvedAt(level, 0, 0, 0, "ui.spike_planted", SoundSource.VOICE, vol, 1.0f);
+        float vol = com.bobby.valorant.Config.COMMON.soundAnnouncerVolume.get().floatValue();
+        String soundPath = level.getRandom().nextBoolean() ? "announcer.spike_planted_1" : "announcer.spike_planted_2";
+        System.out.println("Playing spike planted sound: " + soundPath);
+        playResolvedForAll(level, soundPath, SoundSource.VOICE, vol, 1.0f);
     }
 
     public static void playSpikeDefusedSound(ServerLevel level) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
-        float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue();
-        playResolvedAt(level, 0, 0, 0, "ui.spike_defused", SoundSource.VOICE, vol, 1.0f);
+        float vol = com.bobby.valorant.Config.COMMON.soundAnnouncerVolume.get().floatValue();
+        playResolvedForAll(level, "ui.spike_defused", SoundSource.VOICE, vol, 1.0f);
     }
 
     public static void playRoundStartCountdownSound(ServerLevel level) {
@@ -176,16 +178,16 @@ public class SoundManager {
 
     public static void playMatchVictorySound(ServerLevel level, boolean isAttackers) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
-        float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue();
+        float vol = com.bobby.valorant.Config.COMMON.soundAnnouncerVolume.get().floatValue();
         String soundPath = isAttackers ? "ui.attackers_win" : "ui.defenders_win";
-        playResolvedAt(level, 0, 0, 0, soundPath, SoundSource.VOICE, vol, 1.0f);
+        playResolvedForAll(level, soundPath, SoundSource.VOICE, vol, 1.0f);
     }
 
     public static void playMatchVictorySound(ServerLevel level) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
-        float vol = com.bobby.valorant.Config.COMMON.soundUiVolume.get().floatValue();
+        float vol = com.bobby.valorant.Config.COMMON.soundAnnouncerVolume.get().floatValue();
         String soundPath = level.getRandom().nextBoolean() ? "ui.match_victory_1" : "ui.match_victory_2";
-        playResolvedAt(level, 0, 0, 0, soundPath, SoundSource.VOICE, vol, 1.0f);
+        playResolvedForAll(level, soundPath, SoundSource.VOICE, vol, 1.0f);
     }
 
     public static void playAgentSelectSound(ServerPlayer player) {
@@ -231,10 +233,21 @@ public class SoundManager {
         ResourceLocation id = getSoundLocation(path);
         var opt = BuiltInRegistries.SOUND_EVENT.get(id);
         if (opt.isPresent()) {
+            Valorant.LOGGER.debug("[SoundManager] Successfully resolved sound event for path: {}", path);
             return opt.get().value();
         }
-        // Not found; log and return null
+        Valorant.LOGGER.warn("[SoundManager] Could not resolve sound event for path: {}", path);
         return null;
+    }
+
+    private static void playResolvedForAll(ServerLevel level, String path, SoundSource source, float volume, float pitch) {
+        SoundEvent event = resolveEvent(path);
+        if (event == null) return;
+        var server = level.getServer();
+        if (server == null) return;
+        for (ServerPlayer sp : server.getPlayerList().getPlayers()) {
+            level.playSound(null, sp.getX(), sp.getY(), sp.getZ(), event, source, volume, pitch);
+        }
     }
 
     private static void playResolvedForPlayer(ServerPlayer player, String path, SoundSource source, float volume, float pitch) {

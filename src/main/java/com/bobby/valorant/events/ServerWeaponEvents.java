@@ -86,6 +86,21 @@ public final class ServerWeaponEvents {
             sp.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 20 * 60 * 60, 0, false, false));
             sp.setInvisible(true);
         });
+
+        // Broadcast killfeed message if killed by a player
+        var src = event.getSource();
+        if (src != null && src.getEntity() instanceof ServerPlayer killer) {
+            String killerName = killer.getScoreboardName();
+            String victimName = sp.getScoreboardName();
+            net.minecraft.world.item.ItemStack weapon = killer.getMainHandItem();
+            net.minecraft.resources.ResourceLocation wid = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(weapon.getItem());
+            String weaponId = wid != null ? wid.toString() : "";
+
+            com.bobby.valorant.network.KillfeedMessageS2CPacket pkt = new com.bobby.valorant.network.KillfeedMessageS2CPacket(killerName, victimName, weaponId);
+            for (ServerPlayer p : sp.getServer().getPlayerList().getPlayers()) {
+                net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(p, pkt);
+            }
+        }
     }
 
     @SubscribeEvent

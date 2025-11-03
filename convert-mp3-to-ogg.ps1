@@ -17,7 +17,7 @@ if (Test-Path $TempDir) {
 New-Item -ItemType Directory -Path $TempDir | Out-Null
 
 # Define supported input extensions
-$exts = @("*.mp3", "*.wav", "*.ogg")
+$exts = @("*.mp3", "*.wav")
 
 foreach ($ext in $exts) {
     Get-ChildItem -Path $ScriptDir -Filter $ext -Recurse -File | ForEach-Object {

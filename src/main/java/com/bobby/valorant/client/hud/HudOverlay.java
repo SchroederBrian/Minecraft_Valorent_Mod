@@ -41,6 +41,7 @@ public final class HudOverlay {
 
 		// Render title overlay (last to draw on top)
 		renderPickupPrompt(guiGraphics);
+		KillfeedOverlay.render(guiGraphics);
 		TitleOverlay.render(guiGraphics);
 	}
 
@@ -428,48 +429,20 @@ public final class HudOverlay {
 		}
 	}
 
-	private static void renderSpikeSymbol(GuiGraphics g, int x, int y) {
-		int spikeColor = 0xFFE74C3C; // Valorant red color
-		int highlightColor = 0xFFFFA500; // Orange highlight
-		int shadowColor = 0xCC8B0000; // Dark red shadow
-
-		// Spike/bomb body (circle base)
-		for (int px = 0; px < 32; px++) {
-			for (int py = 0; py < 32; py++) {
-				int relX = px - 16;
-				int relY = py - 16;
-				float dist = (float) Math.sqrt(relX * relX + relY * relY);
-
-				// Main body (circle with radius ~12)
-				if (dist <= 12) {
-					// Add some texture to the body
-					if ((px + py) % 3 == 0 && dist > 8) {
-						g.fill(x + px, y + py, x + px + 1, y + py + 1, shadowColor);
-					} else {
-						g.fill(x + px, y + py, x + px + 1, y + py + 1, spikeColor);
-					}
-				}
-
-				// Spike protrusion (top)
-				if (relY < -8 && Math.abs(relX) <= 4 && dist <= 14) {
-					g.fill(x + px, y + py, x + px + 1, y + py + 1, spikeColor);
-				}
-
-				// Fuse/spark on top
-				if (relY < -12 && Math.abs(relX) <= 2) {
-					g.fill(x + px, y + py, x + px + 1, y + py + 1, highlightColor);
-				}
-			}
-		}
-
-		// Add some highlight pixels on the right side
-		for (int i = 0; i < 8; i++) {
-			int hx = x + 16 + 4 + (i % 3);
-			int hy = y + 16 - 8 + i;
-			if (hx < x + 32 && hy < y + 32) {
-				g.fill(hx, hy, hx + 1, hy + 1, highlightColor);
-			}
-		}
+	private static void renderSpikeSymbol(GuiGraphics g, int x, int y, int width, int height, int rotationDeg) {
+		// Render the actual Spike item icon scaled to the configured width/height, rotated around center
+		net.minecraft.world.item.ItemStack spikeStack = com.bobby.valorant.registry.ModItems.SPIKE.get().getDefaultInstance();
+		var pose = g.pose();
+		pose.pushMatrix();
+		float cx = x + width / 2.0f;
+		float cy = y + height / 2.0f;
+		pose.translate(cx, cy);
+		if (rotationDeg != 0) pose.rotate((float) Math.toRadians(rotationDeg));
+		float sx = Math.max(0.01f, width / 4);
+		float sy = Math.max(0.01f, height / 4);
+		pose.scale(sx, sy);
+		g.renderItem(spikeStack, -8, -8);
+		pose.popMatrix();
 	}
 
 	private static void renderSpikePlantInfo(GuiGraphics g, int sw) {
@@ -479,16 +452,20 @@ public final class HudOverlay {
 		}
 
 		// Position below timer chip with slight offset
-		int symbolSize = 32;
+		int symbolW = Math.max(8, com.bobby.valorant.Config.COMMON.spikeIconWidth.get());
+		int symbolH = Math.max(8, com.bobby.valorant.Config.COMMON.spikeIconHeight.get());
 		int cx = sw / 2;
 		int timerY = 8; // Same y position as timer chip
 		int timerH = 24; // Same height as timer chip
 
-		// Position below timer with small gap and slight right offset
-		int symbolX = cx - symbolSize / 2 + 8;
-		int symbolY = timerY + timerH + 2 + 4; // Below timer + gap
+		// Position below timer with configurable offsets
+		int offX = com.bobby.valorant.Config.COMMON.spikeIconOffsetX.get();
+		int offY = com.bobby.valorant.Config.COMMON.spikeIconOffsetY.get();
+		int rotation = com.bobby.valorant.Config.COMMON.spikeIconRotationDegrees.get();
+		int symbolX = cx - symbolW / 2 + offX;
+		int symbolY = timerY + timerH + 2 + offY; // Below timer + gap
 
-		renderSpikeSymbol(g, symbolX, symbolY);
+		renderSpikeSymbol(g, symbolX, symbolY, symbolW, symbolH, rotation);
 	}
 
 }

@@ -128,8 +128,6 @@ public final class RoundController {
             if (position != null) {
                 com.bobby.valorant.spike.SpikePlantingHandler.spawnPlanted(level, position);
                 com.bobby.valorant.Config.COMMON.spikePlanted.set(true);
-                // Play spike planted sound
-                SoundManager.playSpikePlantedSound(level);
             }
 
             EconomyManager.onSpikePlanted(level, attackersOnLeft);
@@ -183,13 +181,6 @@ public final class RoundController {
                     }
                 }
                 case ROUND -> {
-                    // Announcer sounds at specific times
-                    if (remainingSeconds == 30) {
-                        SoundManager.playAnnouncer30SecondsLeft(level);
-                    } else if (remainingSeconds == 10) {
-                        SoundManager.playAnnouncer10SecondsLeft(level);
-                    }
-
                     if (remainingSeconds <= 0) {
                         // Time over -> defenders win if no plant
                         awardDefenders();
@@ -209,6 +200,14 @@ public final class RoundController {
                     }
                 }
                 default -> {}
+            }
+            // Announcer sounds at specific times for both ROUND and PLANTED phases
+            if (phase == Phase.ROUND || phase == Phase.PLANTED) {
+                if (remainingSeconds == 30) {
+                    SoundManager.playAnnouncer30SecondsLeft(level);
+                } else if (remainingSeconds == 10) {
+                    SoundManager.playAnnouncer10SecondsLeft(level);
+                }
             }
 
             syncNow();

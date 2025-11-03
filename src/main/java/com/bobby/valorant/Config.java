@@ -94,6 +94,24 @@ public final class Config {
         public final ModConfigSpec.BooleanValue showValorantHud;
         public final ModConfigSpec.DoubleValue hudScale;
 
+        // Killfeed settings
+        public final ModConfigSpec.BooleanValue killfeedEnabled;
+        public final ModConfigSpec.IntValue killfeedDurationTicks;
+        public final ModConfigSpec.IntValue killfeedMaxMessages;
+        public final ModConfigSpec.IntValue killfeedOffsetRight;
+        public final ModConfigSpec.IntValue killfeedOffsetDown;
+        public final ModConfigSpec.IntValue killfeedLineSpacing;
+        public final ModConfigSpec.IntValue killfeedKillerBgColor;
+        public final ModConfigSpec.IntValue killfeedVictimBgColor;
+        public final ModConfigSpec.IntValue killfeedTextColor;
+
+        // Spike icon (plant indicator under timer)
+        public final ModConfigSpec.IntValue spikeIconWidth;
+        public final ModConfigSpec.IntValue spikeIconHeight;
+        public final ModConfigSpec.IntValue spikeIconRotationDegrees;
+        public final ModConfigSpec.IntValue spikeIconOffsetX;
+        public final ModConfigSpec.IntValue spikeIconOffsetY;
+
         // Title overlay settings
         public final ModConfigSpec.IntValue titleFadeInTicks;
         public final ModConfigSpec.IntValue titleStayTicks;
@@ -579,6 +597,42 @@ public final class Config {
                     .defineInRange("fadeOutTicks", 10, 0, 100);
             builder.pop();
 
+            // Killfeed settings
+            builder.push("killfeed");
+            killfeedEnabled = builder.comment("Enable the Valorant-style killfeed overlay (top-right).")
+                    .define("enabled", true);
+            killfeedDurationTicks = builder.comment("How long each killfeed entry stays visible (ticks). 60 = 3s.")
+                    .defineInRange("durationTicks", 60, 1, 20 * 30);
+            killfeedMaxMessages = builder.comment("Maximum number of stacked killfeed messages to display.")
+                    .defineInRange("maxMessages", 3, 1, 10);
+            killfeedOffsetRight = builder.comment("Right margin (pixels) from the screen edge for killfeed.")
+                    .defineInRange("offsetRight", 16, 0, 1000);
+            killfeedOffsetDown = builder.comment("Vertical offset (pixels) below the top team bar.")
+                    .defineInRange("offsetDown", 6, 0, 1000);
+            killfeedLineSpacing = builder.comment("Vertical spacing (pixels) between killfeed rows.")
+                    .defineInRange("lineSpacing", 4, 0, 100);
+            killfeedKillerBgColor = builder.comment("ARGB color for killer+weapon chip background.")
+                    .defineInRange("killerBgColor", 0xFF2ECC71, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            killfeedVictimBgColor = builder.comment("ARGB color for victim chip background.")
+                    .defineInRange("victimBgColor", 0xFFE74C3C, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            killfeedTextColor = builder.comment("ARGB text color used on killfeed chips.")
+                    .defineInRange("textColor", 0xFFFFFFFF, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            builder.pop();
+
+            // Spike icon under timer
+            builder.push("spikeIcon");
+            spikeIconWidth = builder.comment("Spike icon width in pixels (rendered under timer)")
+                    .defineInRange("width", 1, 1, 1);
+            spikeIconHeight = builder.comment("Spike icon height in pixels (rendered under timer)")
+                    .defineInRange("height", 1, 1, 1);
+            spikeIconRotationDegrees = builder.comment("Spike icon rotation around center (degrees)")
+                    .defineInRange("rotationDegrees", 135, 135, 135);
+            spikeIconOffsetX = builder.comment("Spike icon X offset from horizontal center (pixels)")
+                    .defineInRange("offsetX", 0, 0, 0);
+            spikeIconOffsetY = builder.comment("Spike icon Y offset below the timer chip (pixels)")
+                    .defineInRange("offsetY", 20, 20, 20);
+            builder.pop();
+
             builder.pop();
 
             // Weapons configuration
@@ -692,15 +746,15 @@ public final class Config {
             soundEnabled = builder.comment("Enable all custom Valorant sounds.")
                     .define("enabled", true);
             soundReloadVolume = builder.comment("Volume scale for reload sounds (0.0 - 1.0).")
-                    .defineInRange("reloadVolume", 1.0D, 0.0D, 1.0D);
+                    .defineInRange("reloadVolume", 1.0D, 1.0D, 1.0D);
             soundSpikeVolume = builder.comment("Volume scale for spike plant/defuse sounds (0.0 - 1.0).")
-                    .defineInRange("spikeVolume", 1.0D, 0.0D, 1.0D);
+                    .defineInRange("spikeVolume", 1.0D, 1.0D, 1.0D);
             soundUiVolume = builder.comment("Volume scale for UI sounds (buy success/failure) (0.0 - 1.0).")
-                    .defineInRange("uiVolume", 1.0D, 0.0D, 1.0D);
+                    .defineInRange("uiVolume", 1.0D, 1.0D, 1.0D);
             soundWeaponVolume = builder.comment("Volume scale for weapon sounds (shots, equips) (0.0 - 1.0).")
-                    .defineInRange("weaponVolume", 1.0D, 0.0D, 1.0D);
+                    .defineInRange("weaponVolume", 1.0D, 1.0D, 1.0D);
             soundAnnouncerVolume = builder.comment("Volume scale for announcer sounds (0.0 - 1.0).")
-                    .defineInRange("announcerVolume", 1.0D, 0.0D, 1.0D);
+                    .defineInRange("announcerVolume", 1.0D, 1.0D, 1.0D);
             soundDisableBackgroundMusic = builder.comment("Disable Minecraft's background music while playing.")
                     .define("disableBackgroundMusic", true);
             builder.pop();

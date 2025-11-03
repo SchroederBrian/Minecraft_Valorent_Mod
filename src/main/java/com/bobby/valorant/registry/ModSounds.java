@@ -20,6 +20,8 @@ public final class ModSounds {
     // Announcer sounds
     public static final DeferredHolder<SoundEvent, SoundEvent> ANNOUNCER_30_SECONDS_LEFT = register("announcer.30_seconds_left");
     public static final DeferredHolder<SoundEvent, SoundEvent> ANNOUNCER_10_SECONDS_LEFT = register("announcer.10_seconds_left");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ANNOUNCER_SPIKE_PLANTED_1 = register("announcer.spike_planted_1");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ANNOUNCER_SPIKE_PLANTED_2 = register("announcer.spike_planted_2");
 
     // Classic weapon sounds
     public static final DeferredHolder<SoundEvent, SoundEvent> CLASSIC_RELOAD = register("classic.reload");
