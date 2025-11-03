@@ -115,6 +115,8 @@ public final class Config {
         public final ModConfigSpec.BooleanValue spikePlanted;
         public final ModConfigSpec.DoubleValue plantedSpikeYOffset;
         public final ModConfigSpec.IntValue spikePlantHoldTicks;
+        public final ModConfigSpec.BooleanValue lockMovementWhilePlanting;
+        public final ModConfigSpec.BooleanValue lockMovementWhileDefusing;
 
         // Weapons:
         public final ModConfigSpec.DoubleValue classicDamage;
@@ -711,6 +713,10 @@ public final class Config {
                     .defineInRange("plantedSpikeYOffset", -1.6D, -1.6D, -1.60D);
             spikePlantHoldTicks = builder.comment("Ticks required to plant the spike (20 ticks = 1 second).")
                     .defineInRange("plantHoldTicks", 88, 88, 88);
+            lockMovementWhilePlanting = builder.comment("If true, lock player horizontal movement while planting the spike.")
+                    .define("lockMovementWhilePlanting", true);
+            lockMovementWhileDefusing = builder.comment("If true, lock player horizontal movement while defusing the spike.")
+                    .define("lockMovementWhileDefusing", true);
             builder.pop();
 
             // Team settings

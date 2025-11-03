@@ -2,8 +2,6 @@ package com.bobby.valorant.world.item;
 
 import com.bobby.valorant.Config;
 
-import net.minecraft.world.item.Item;
-
 public class MollyLauncherItem extends GunItem {
     public MollyLauncherItem(Properties properties) {
         super(properties);
