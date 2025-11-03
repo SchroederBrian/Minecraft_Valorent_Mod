@@ -32,6 +32,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.core.registries.BuiltInRegistries;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -758,6 +763,49 @@ public final class ValorantCommand {
                         )
                 );
 
+        // -------- /valorant test --------
+        var testCommand =
+                Commands.literal("test").requires(s -> s.hasPermission(2))
+                        .executes(ctx -> {
+                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                            String playerName = player.getGameProfile().getName();
+                            UUID playerUUID = player.getUUID();
+
+                            Path assetsDir = Paths.get("run", "config", "fancymenu", "assets");
+                            Path htmlFile = assetsDir.resolve("player_info.html");
+
+                            try {
+                                // Create directories if they don't exist
+                                Files.createDirectories(assetsDir);
+
+                                // Delete file if it exists
+                                if (Files.exists(htmlFile)) {
+                                    Files.delete(htmlFile);
+                                }
+
+                                // Create and write to the new file
+                                try (BufferedWriter writer = Files.newBufferedWriter(htmlFile)) {
+                                    writer.write("<!DOCTYPE html>\n");
+                                    writer.write("<html>\n");
+                                    writer.write("<head>\n");
+                                    writer.write("<title>Player Info</title>\n");
+                                    writer.write("</head>\n");
+                                    writer.write("<body>\n");
+                                    writer.write("<h1>" + playerName + "</h1>\n");
+                                    writer.write("<img src=\"https://crafatar.com/avatars/" + playerUUID.toString() + "?size=128&overlay\" alt=\"Player Head\">\n");
+                                    writer.write("</body>\n");
+                                    writer.write("</html>\n");
+                                }
+
+                                ctx.getSource().sendSuccess(() -> Component.literal("Generated player_info.html for " + playerName), false);
+                                return 1;
+                            } catch (IOException e) {
+                                com.bobby.valorant.Valorant.LOGGER.error("Failed to generate player html file", e);
+                                ctx.getSource().sendFailure(Component.literal("Failed to generate HTML file: " + e.getMessage()));
+                                return 0;
+                            }
+                        });
+
         // -------- root /valorant --------
         dispatcher.register(
             Commands.literal("valorant")
@@ -773,6 +821,7 @@ public final class ValorantCommand {
                 .then(round)
                 .then(wallTest)
                 .then(killfeedTest)
+                .then(testCommand)
         );
     }
 
