@@ -3,19 +3,14 @@ type = fancymenu_layout
 layout-meta {
   identifier = %fancymenu:universal_layout%
   render_custom_elements_behind_vanilla = false
-  last_edited_time = 1762172922441
+  last_edited_time = 1762173736039
   is_enabled = true
   randommode = false
   randomgroup = 1
   randomonlyfirsttime = false
   layout_index = 0
   universal_layout_blacklist = buyscreen_layout;bob_buyscreen;com.bobby.valorant.client.BuyScreen;buyscreen;gameselection;pause_screen;
-  [loading_requirement_container_meta:6e9acc91-4fd7-42e1-b35f-259bbb0c21b8-1762172914171] = [groups:][instances:]
-}
-
-customization {
-  action = setopenaudio
-  path = [source:local]/config/fancymenu/assets/music/menuopen.ogg
+  [loading_requirement_container_meta:12d1977d-4b1c-4a78-9c28-bb5fdcb226c9-1762173728568] = [groups:][instances:]
 }
 
 customization {
