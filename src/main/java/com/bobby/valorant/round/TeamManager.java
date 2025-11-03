@@ -1,6 +1,7 @@
 package com.bobby.valorant.round;
 
 import com.bobby.valorant.Config;
+import com.bobby.valorant.fancymenu.FancyMenuVarSync;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
@@ -25,6 +26,7 @@ public final class TeamManager {
         sb.addPlayerToTeam(player.getScoreboardName(), team);
         // Clear any previous agent lock so the player can re-lock on new team
         AgentLockManager.get(player.getServer()).onTeamChanged(player);
+        FancyMenuVarSync.updateAll(player.getServer());
         return true;
     }
 
@@ -34,7 +36,10 @@ public final class TeamManager {
         PlayerTeam existing = sb.getPlayersTeam(player.getScoreboardName());
         String target = (existing != null && existing.getName().equals("A")) ? "V" : "A";
         boolean ok = joinTeam(player, target);
-        if (ok) AgentLockManager.get(player.getServer()).onTeamChanged(player);
+        if (ok) {
+            AgentLockManager.get(player.getServer()).onTeamChanged(player);
+            FancyMenuVarSync.updateAll(player.getServer());
+        }
         return ok;
     }
 }

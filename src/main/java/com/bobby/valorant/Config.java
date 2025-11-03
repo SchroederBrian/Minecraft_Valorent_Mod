@@ -120,14 +120,19 @@ public final class Config {
         // Teams
         public final ModConfigSpec.IntValue maxTeamSize;
 
-		// Spawn areas (team polygons and particle rendering)
-		public final ModConfigSpec.ConfigValue<String> spawnAreaConfigPath;
-		public final ModConfigSpec.ConfigValue<String> spawnAreaParticleType;
-		public final ModConfigSpec.DoubleValue spawnAreaParticleSpacing;
-		public final ModConfigSpec.IntValue spawnAreaParticleTickInterval;
-		public final ModConfigSpec.ConfigValue<String> bombSiteParticleType;
-		public final ModConfigSpec.IntValue spawnAreaParticleColor;
-		public final ModConfigSpec.IntValue bombSiteParticleColor;
+        // FancyMenu integration
+        public final ModConfigSpec.BooleanValue enableFancyMenuTeamVars;
+        public final ModConfigSpec.IntValue teamVarSlots;
+        public final ModConfigSpec.ConfigValue<String> fancymenuVariablePrefix;
+
+        // Spawn areas (team polygons and particle rendering)
+        public final ModConfigSpec.ConfigValue<String> spawnAreaConfigPath;
+        public final ModConfigSpec.ConfigValue<String> spawnAreaParticleType;
+        public final ModConfigSpec.DoubleValue spawnAreaParticleSpacing;
+        public final ModConfigSpec.IntValue spawnAreaParticleTickInterval;
+        public final ModConfigSpec.ConfigValue<String> bombSiteParticleType;
+        public final ModConfigSpec.IntValue spawnAreaParticleColor;
+        public final ModConfigSpec.IntValue bombSiteParticleColor;
 
         // Spike runtime signal
         public final ModConfigSpec.BooleanValue spikePlanted;
@@ -777,6 +782,16 @@ public final class Config {
             builder.push("teams");
             maxTeamSize = builder.comment("Maximum players per team (A and V).")
                     .defineInRange("maxTeamSize", 5, 1, 10);
+            builder.pop();
+
+            // FancyMenu integration
+            builder.push("fancymenu");
+            enableFancyMenuTeamVars = builder.comment("Enable syncing team player slots to FancyMenu variables.")
+                    .define("enableTeamVariables", true);
+            teamVarSlots = builder.comment("Number of player slots per team to expose to FancyMenu (1..10).")
+                    .defineInRange("teamVarSlots", 10, 1, 10);
+            fancymenuVariablePrefix = builder.comment("Optional prefix prepended to FancyMenu variable names (e.g., 'valo-').")
+                    .define("variablePrefix", "");
             builder.pop();
 
 			// Spawn areas configuration

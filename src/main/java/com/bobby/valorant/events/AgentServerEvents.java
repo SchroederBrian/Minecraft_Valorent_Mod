@@ -2,6 +2,7 @@ package com.bobby.valorant.events;
 
 import com.bobby.valorant.Valorant;
 import com.bobby.valorant.network.SyncAgentLocksPacket;
+import com.bobby.valorant.fancymenu.FancyMenuVarSync;
 import com.bobby.valorant.network.SyncAgentS2CPacket;
 import com.bobby.valorant.player.AgentData;
 import com.bobby.valorant.player.AbilityStateData;
@@ -25,6 +26,7 @@ public final class AgentServerEvents {
             AgentLockManager.get(sp.getServer()).onTeamChanged(sp);
             // Broadcast updated locks to all
             broadcastLocks(sp);
+            FancyMenuVarSync.onPlayerLeave(sp);
         }
     }
 
@@ -64,6 +66,7 @@ public final class AgentServerEvents {
                     net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(p, joinSync);
                 });
             }
+            FancyMenuVarSync.updateAll(sp.getServer());
         }
     }
 

@@ -16,6 +16,9 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+
+import com.bobby.valorant.fancymenu.FancyMenuVarSync;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Valorant.MODID)
@@ -42,6 +45,14 @@ public class Valorant {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        var server = event.getServer();
+        if (server != null) {
+            FancyMenuVarSync.updateAll(server);
+        }
     }
 
     @SubscribeEvent
