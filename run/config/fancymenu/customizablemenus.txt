@@ -9,9 +9,6 @@ net.minecraft.client.gui.screens.TitleScreen {
 net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen {
 }
 
-com.bobby.valorant.client.AgentSelectionScreen {
-}
-
 net.minecraft.client.gui.screens.options.OptionsScreen {
 }
 
@@ -61,5 +58,8 @@ com.bobby.valorant.client.BuyScreen {
 }
 
 net.minecraft.client.gui.screens.LevelLoadingScreen {
+}
+
+net.minecraft.client.gui.screens.PauseScreen {
 }
 

@@ -3,13 +3,13 @@ type = fancymenu_layout
 layout-meta {
   identifier = buyscreen
   render_custom_elements_behind_vanilla = false
-  last_edited_time = 1762089189728
+  last_edited_time = 1762108247807
   is_enabled = true
   randommode = false
   randomgroup = 1
   randomonlyfirsttime = false
   layout_index = 0
-  [loading_requirement_container_meta:fa43086f-32f4-42bc-82c8-718128663c2b-1762089132379] = [groups:][instances:]
+  [loading_requirement_container_meta:d01212ea-3cbb-4511-912c-ae3aa0677d87-1762108114560] = [groups:][instances:]
 }
 
 customization {
@@ -34,6 +34,50 @@ scroll_list_customization {
 }
 
 layout_action_executable_blocks {
+}
+
+element {
+  source = [source:local]/config/fancymenu/assets/agentscreen/selectedagent.png
+  repeat_texture = false
+  nine_slice_texture = false
+  nine_slice_texture_border_x = 5
+  nine_slice_texture_border_y = 5
+  image_tint = #FFFFFF
+  restart_animated_on_menu_load = false
+  element_type = image
+  instance_identifier = c561d541-38f8-4ae0-ae8e-a56d13601eaf-1762080405958
+  custom_element_layer_name = brimstonefade
+  appearance_delay = no_delay
+  appearance_delay_seconds = 1.0
+  fade_in_v2 = no_fading
+  fade_in_speed = 1.0
+  fade_out = no_fading
+  fade_out_speed = 1.0
+  base_opacity = 1.0
+  auto_sizing = false
+  auto_sizing_base_screen_width = 1920
+  auto_sizing_base_screen_height = 1058
+  sticky_anchor = false
+  anchor_point = element
+  anchor_point_element = 97e971d0-3b39-4ed2-a175-a81bf4b5dfca-1762080405959
+  x = 0
+  y = 100
+  width = 100
+  height = 100
+  stretch_x = false
+  stretch_y = false
+  stay_on_screen = true
+  element_loading_requirement_container_identifier = 2addc50a-2282-4ff1-ae59-1b49b56eba32-1762035690665
+  [loading_requirement_container_meta:2addc50a-2282-4ff1-ae59-1b49b56eba32-1762035690665] = [groups:][instances:706bf8fa-515e-4255-9b6a-41f3a542bc5d-1762036115900;]
+  [loading_requirement:fancymenu_visibility_requirement_is_variable_value][requirement_mode:if][req_id:706bf8fa-515e-4255-9b6a-41f3a542bc5d-1762036115900] = selected-agent:brimstone
+  enable_parallax = false
+  parallax_intensity_v2 = 0.5
+  invert_parallax = false
+  animated_offset_x = 0
+  animated_offset_y = 0
+  load_once_per_session = false
+  in_editor_color = #FFC800FF
+  layer_hidden_in_editor = false
 }
 
 element {
@@ -188,11 +232,12 @@ element {
   base_opacity = 1.0
   auto_sizing = false
   auto_sizing_base_screen_width = 1920
-  auto_sizing_base_screen_height = 1080
+  auto_sizing_base_screen_height = 1058
   sticky_anchor = false
-  anchor_point = bottom-centered
-  x = -100
-  y = -135
+  anchor_point = element
+  anchor_point_element = edabfc04-b818-44cd-9d59-9d096a94a0f0-1762083993819
+  x = -50
+  y = 245
   width = 200
   height = 50
   stretch_x = false
@@ -437,9 +482,10 @@ element {
   auto_sizing_base_screen_width = 1920
   auto_sizing_base_screen_height = 1058
   sticky_anchor = false
-  anchor_point = mid-centered
-  x = -364
-  y = -147
+  anchor_point = element
+  anchor_point_element = edabfc04-b818-44cd-9d59-9d096a94a0f0-1762083993819
+  x = -315
+  y = 0
   width = 100
   height = 200
   stretch_x = false
@@ -684,9 +730,10 @@ element {
   auto_sizing_base_screen_width = 1920
   auto_sizing_base_screen_height = 1058
   sticky_anchor = false
-  anchor_point = mid-centered
-  x = -259
-  y = -147
+  anchor_point = element
+  anchor_point_element = edabfc04-b818-44cd-9d59-9d096a94a0f0-1762083993819
+  x = -210
+  y = 0
   width = 100
   height = 200
   stretch_x = false
@@ -694,50 +741,6 @@ element {
   stay_on_screen = true
   element_loading_requirement_container_identifier = 3dfcfab5-1fcf-457f-9349-b35f6a2ca3ea-1761995121387
   [loading_requirement_container_meta:3dfcfab5-1fcf-457f-9349-b35f6a2ca3ea-1761995121387] = [groups:][instances:]
-  enable_parallax = false
-  parallax_intensity_v2 = 0.5
-  invert_parallax = false
-  animated_offset_x = 0
-  animated_offset_y = 0
-  load_once_per_session = false
-  in_editor_color = #FFC800FF
-  layer_hidden_in_editor = false
-}
-
-element {
-  source = [source:local]/config/fancymenu/assets/agentscreen/selectedagent.png
-  repeat_texture = false
-  nine_slice_texture = false
-  nine_slice_texture_border_x = 5
-  nine_slice_texture_border_y = 5
-  image_tint = #FFFFFF
-  restart_animated_on_menu_load = false
-  element_type = image
-  instance_identifier = c561d541-38f8-4ae0-ae8e-a56d13601eaf-1762080405958
-  custom_element_layer_name = brimstonefade
-  appearance_delay = no_delay
-  appearance_delay_seconds = 1.0
-  fade_in_v2 = no_fading
-  fade_in_speed = 1.0
-  fade_out = no_fading
-  fade_out_speed = 1.0
-  base_opacity = 1.0
-  auto_sizing = false
-  auto_sizing_base_screen_width = 1920
-  auto_sizing_base_screen_height = 1058
-  sticky_anchor = false
-  anchor_point = element
-  anchor_point_element = 97e971d0-3b39-4ed2-a175-a81bf4b5dfca-1762080405959
-  x = 0
-  y = 100
-  width = 100
-  height = 100
-  stretch_x = false
-  stretch_y = false
-  stay_on_screen = true
-  element_loading_requirement_container_identifier = 2addc50a-2282-4ff1-ae59-1b49b56eba32-1762035690665
-  [loading_requirement_container_meta:2addc50a-2282-4ff1-ae59-1b49b56eba32-1762035690665] = [groups:][instances:706bf8fa-515e-4255-9b6a-41f3a542bc5d-1762036115900;]
-  [loading_requirement:fancymenu_visibility_requirement_is_variable_value][requirement_mode:if][req_id:706bf8fa-515e-4255-9b6a-41f3a542bc5d-1762036115900] = selected-agent:brimstone
   enable_parallax = false
   parallax_intensity_v2 = 0.5
   invert_parallax = false
@@ -931,9 +934,10 @@ element {
   auto_sizing_base_screen_width = 1920
   auto_sizing_base_screen_height = 1058
   sticky_anchor = false
-  anchor_point = mid-centered
-  x = -154
-  y = -147
+  anchor_point = element
+  anchor_point_element = edabfc04-b818-44cd-9d59-9d096a94a0f0-1762083993819
+  x = -105
+  y = 0
   width = 100
   height = 200
   stretch_x = false
@@ -1180,7 +1184,7 @@ element {
   sticky_anchor = false
   anchor_point = mid-centered
   x = -50
-  y = -147
+  y = -150
   width = 100
   height = 200
   stretch_x = false
@@ -1425,9 +1429,10 @@ element {
   auto_sizing_base_screen_width = 1920
   auto_sizing_base_screen_height = 1058
   sticky_anchor = false
-  anchor_point = mid-centered
-  x = 55
-  y = -147
+  anchor_point = element
+  anchor_point_element = edabfc04-b818-44cd-9d59-9d096a94a0f0-1762083993819
+  x = 105
+  y = 0
   width = 100
   height = 200
   stretch_x = false
@@ -1672,9 +1677,10 @@ element {
   auto_sizing_base_screen_width = 1920
   auto_sizing_base_screen_height = 1058
   sticky_anchor = false
-  anchor_point = mid-centered
-  x = 160
-  y = -147
+  anchor_point = element
+  anchor_point_element = edabfc04-b818-44cd-9d59-9d096a94a0f0-1762083993819
+  x = 210
+  y = 0
   width = 100
   height = 200
   stretch_x = false
@@ -1919,9 +1925,10 @@ element {
   auto_sizing_base_screen_width = 1920
   auto_sizing_base_screen_height = 1058
   sticky_anchor = false
-  anchor_point = mid-centered
-  x = 265
-  y = -147
+  anchor_point = element
+  anchor_point_element = edabfc04-b818-44cd-9d59-9d096a94a0f0-1762083993819
+  x = 315
+  y = 0
   width = 100
   height = 200
   stretch_x = false
