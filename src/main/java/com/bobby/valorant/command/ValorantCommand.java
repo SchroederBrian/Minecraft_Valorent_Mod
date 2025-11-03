@@ -30,6 +30,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -708,6 +709,55 @@ public final class ValorantCommand {
                         })
                 );
 
+        // -------- /valorant killfeed --------
+        var killfeedTest =
+            Commands.literal("killfeed")
+                .requires(s -> s.hasPermission(2))
+                .then(
+                    Commands.literal("test")
+                        .then(
+                            Commands.argument("victim", EntityArgument.player())
+                                .executes(ctx -> {
+                                    ServerPlayer killer = ctx.getSource().getPlayerOrException();
+                                    ServerPlayer victim = EntityArgument.getPlayer(ctx, "victim");
+                                    var stack = killer.getMainHandItem();
+                                    var key = BuiltInRegistries.ITEM.getKey(stack.getItem());
+                                    String weaponId = key != null ? key.toString() : "valorant:vandal";
+
+                                    var pkt = new com.bobby.valorant.network.KillfeedMessageS2CPacket(
+                                        killer.getScoreboardName(), victim.getScoreboardName(), weaponId);
+                                    var server = ctx.getSource().getServer();
+                                    if (server != null) {
+                                        for (ServerPlayer p : server.getPlayerList().getPlayers()) {
+                                            PacketDistributor.sendToPlayer(p, pkt);
+                                        }
+                                    }
+                                    ctx.getSource().sendSuccess(() -> Component.literal("Killfeed test sent: " + killer.getScoreboardName() + " -> " + victim.getScoreboardName() + " (" + weaponId + ")"), false);
+                                    return 1;
+                                })
+                                .then(
+                                    Commands.argument("weapon", StringArgumentType.word())
+                                        .executes(ctx -> {
+                                            ServerPlayer killer = ctx.getSource().getPlayerOrException();
+                                            ServerPlayer victim = EntityArgument.getPlayer(ctx, "victim");
+                                            String w = StringArgumentType.getString(ctx, "weapon");
+                                            String weaponId = w.contains(":") ? w : ("valorant:" + w);
+
+                                            var pkt = new com.bobby.valorant.network.KillfeedMessageS2CPacket(
+                                                killer.getScoreboardName(), victim.getScoreboardName(), weaponId);
+                                            var server = ctx.getSource().getServer();
+                                            if (server != null) {
+                                                for (ServerPlayer p : server.getPlayerList().getPlayers()) {
+                                                    PacketDistributor.sendToPlayer(p, pkt);
+                                                }
+                                            }
+                                            ctx.getSource().sendSuccess(() -> Component.literal("Killfeed test sent: " + killer.getScoreboardName() + " -> " + victim.getScoreboardName() + " (" + weaponId + ")"), false);
+                                            return 1;
+                                        })
+                                )
+                        )
+                );
+
         // -------- root /valorant --------
         dispatcher.register(
             Commands.literal("valorant")
@@ -722,6 +772,7 @@ public final class ValorantCommand {
                 .then(team)
                 .then(round)
                 .then(wallTest)
+                .then(killfeedTest)
         );
     }
 

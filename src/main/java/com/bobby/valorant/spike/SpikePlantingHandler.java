@@ -14,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import com.bobby.valorant.util.SoundManager;
 
 /**
  * Server-side planting progress tracking. Configurable hold time to plant (default 4 seconds / 80 ticks).
@@ -99,6 +100,8 @@ public final class SpikePlantingHandler {
             spawnPlanted(level, sp.position());
             broadcastPlantedTitle(level);
             com.bobby.valorant.Config.COMMON.spikePlanted.set(true);
+            System.out.println("[RoundController] Playing spike planted sound");
+            SoundManager.playSpikePlantedSound(level);
             RoundController.get(level).plantSpike();
             switchToWeapon(sp);
             return true;
