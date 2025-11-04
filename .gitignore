@@ -22,13 +22,25 @@ eclipse
 repo
 
 # dev/runtime
-run/
-!run/config/
-!run/config/fancymenu/
-!run/config/fancymenu/**
-!run/config/fancymenu/assets/
-!run/fancymenu_data/
-!run/fancymenu_data/**
-!run/mods/
-!run/mods/**
-run/config/fancymenu/user_variables.db
+# alles unter /run ignorieren …
+/run/*
+/run/config/*.json
+/run/config/*.toml
+/run/config/*.bak
+/run/config/*.properties
+
+# … aber diese Teilbäume wieder zulassen:
+!/run/config/
+
+!/run/config/fancymenu/
+!/run/config/fancymenu/**
+
+!/run/fancymenu_data/
+!/run/fancymenu_data/**
+
+!/run/mods/
+!/run/mods/**
+
+# einzelne Dateien weiter ausschließen
+/run/config/fancymenu/user_variables.db
+
