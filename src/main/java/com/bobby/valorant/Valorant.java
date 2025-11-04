@@ -59,5 +59,6 @@ public class Valorant {
     public static void onEntityAttributeCreation(EntityAttributeCreationEvent event) {
         // Register attributes for our custom entities
         event.put(ModEntityTypes.DROPPED_WEAPON_STAND.get(), net.minecraft.world.entity.decoration.ArmorStand.createAttributes().build());
+        event.put(ModEntityTypes.CORPSE.get(), net.minecraft.world.entity.decoration.ArmorStand.createAttributes().build());
     }
 }

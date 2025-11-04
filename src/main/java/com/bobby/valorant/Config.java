@@ -218,6 +218,13 @@ public final class Config {
         public final ModConfigSpec.BooleanValue allowStackDrop;
         public final ModConfigSpec.BooleanValue enableGlow;
 
+        // Corpses (dead body entity)
+        public final ModConfigSpec.BooleanValue corpseEnabled;
+        public final ModConfigSpec.BooleanValue corpseDespawnAtRoundStart;
+        public final ModConfigSpec.IntValue corpseLifetimeTicks;
+        public final ModConfigSpec.BooleanValue corpseCollision;
+        public final ModConfigSpec.BooleanValue corpseGlow;
+
         Common(ModConfigSpec.Builder builder) {
             builder.push("curveball");
 
@@ -453,6 +460,20 @@ public final class Config {
                 enableGlow = builder.comment("Enable glow/outline on dropped stands")
                         .define("enableGlow", false);
             }
+            builder.pop();
+
+            // Corpse configuration (dead bodies)
+            builder.push("corpse");
+            corpseEnabled = builder.comment("Enable spawning corpse entities on player death.")
+                    .define("enabled", true);
+            corpseDespawnAtRoundStart = builder.comment("Despawn all corpses automatically when a new round (BUY) starts.")
+                    .define("despawnAtRoundStart", true);
+            corpseLifetimeTicks = builder.comment("Auto-despawn corpses after this many ticks (0 disables).")
+                    .defineInRange("lifetimeTicks", 0, 0, 20 * 60 * 30);
+            corpseCollision = builder.comment("If true, corpse collides with players; if false, no collision.")
+                    .define("collision", false);
+            corpseGlow = builder.comment("If true, corpse has glowing outline.")
+                    .define("glow", false);
             builder.pop();
 
             // Fireball configuration

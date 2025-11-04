@@ -1,26 +1,8 @@
 type = user_variables
 
 variable {
-  name = raze-locked
-  value = 0
-  reset_on_launch = false
-}
-
-variable {
-  name = omen-lock
-  value =  1
-  reset_on_launch = false
-}
-
-variable {
   name = test
   value = # test<br> ## test1<br> ### test3<br>
-  reset_on_launch = false
-}
-
-variable {
-  name = sage-locked
-  value = 0
   reset_on_launch = false
 }
 
@@ -43,31 +25,55 @@ variable {
 }
 
 variable {
-  name = phoenix-locked
-  value = 1
-  reset_on_launch = false
-}
-
-variable {
   name = brimstone-locked
   value = 0
   reset_on_launch = false
 }
 
 variable {
-  name = jett-locked
-  value = 0
-  reset_on_launch = false
-}
-
-variable {
   name = selected-agent
-  value = phoenix
+  value = sova
   reset_on_launch = false
 }
 
 variable {
   name = omen-locked
+  value = 0
+  reset_on_launch = false
+}
+
+variable {
+  name = raze-locked
+  value = 0
+  reset_on_launch = false
+}
+
+variable {
+  name = sova-locked
+  value = 1
+  reset_on_launch = false
+}
+
+variable {
+  name = omen-lock
+  value =  1
+  reset_on_launch = false
+}
+
+variable {
+  name = sage-locked
+  value = 0
+  reset_on_launch = false
+}
+
+variable {
+  name = phoenix-locked
+  value = 0
+  reset_on_launch = false
+}
+
+variable {
+  name = jett-locked
   value = 0
   reset_on_launch = false
 }

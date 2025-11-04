@@ -1,6 +1,7 @@
 package com.bobby.valorant;
 
 import com.bobby.valorant.registry.ModEntityTypes;
+import com.bobby.valorant.client.render.CorpseRenderer;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.renderer.entity.EntityRenderers;
@@ -32,6 +33,8 @@ public class ValorantClient {
             EntityRenderers.register(ModEntityTypes.FIREBALL.get(), ThrownItemRenderer::new);
             EntityRenderers.register(ModEntityTypes.PLANTED_SPIKE.get(), ThrownItemRenderer::new);
             EntityRenderers.register(ModEntityTypes.DROPPED_WEAPON_STAND.get(), ArmorStandRenderer::new);
+            // Custom agent-skinned corpse renderer
+            EntityRenderers.register(ModEntityTypes.CORPSE.get(), CorpseRenderer::new);
 
             // Optionally unbind vanilla inventory key
             if (Config.COMMON.blockAllVanillaInventories.get()) {
