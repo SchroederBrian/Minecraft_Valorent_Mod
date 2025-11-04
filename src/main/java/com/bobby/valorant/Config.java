@@ -152,6 +152,16 @@ public final class Config {
         public final ModConfigSpec.IntValue classicMaxReserveAmmo;
         public final ModConfigSpec.IntValue classicReloadTimeTicks;
 
+        public final ModConfigSpec.DoubleValue frenzyDamage;
+        public final ModConfigSpec.DoubleValue frenzyRange;
+        public final ModConfigSpec.DoubleValue frenzySpreadDegrees;
+        public final ModConfigSpec.IntValue frenzyCooldownTicks;
+        public final ModConfigSpec.IntValue frenzyTracerParticles;
+        public final ModConfigSpec.IntValue frenzyMuzzleParticles;
+        public final ModConfigSpec.IntValue frenzyMagazineSize;
+        public final ModConfigSpec.IntValue frenzyMaxReserveAmmo;
+        public final ModConfigSpec.IntValue frenzyReloadTimeTicks;
+
         public final ModConfigSpec.DoubleValue ghostDamage;
         public final ModConfigSpec.DoubleValue ghostRange;
         public final ModConfigSpec.DoubleValue ghostSpreadDegrees;
@@ -683,6 +693,28 @@ public final class Config {
             classicMaxReserveAmmo = builder.comment("Maximum reserve ammo for Classic pistol.")
                     .defineInRange("maxReserveAmmo", 36, 0, 500);
             classicReloadTimeTicks = builder.comment("Reload time in ticks for Classic pistol (40 ticks = 2.0 seconds).")
+                    .defineInRange("reloadTimeTicks", 40, 1, 20 * 30);
+            builder.pop();
+
+            // Frenzy
+            builder.push("frenzy");
+            frenzyDamage = builder.comment("Damage per shot for Frenzy pistol.")
+                    .defineInRange("damage", 6.0D, 0.0D, 100.0D);
+            frenzyRange = builder.comment("Max range in blocks for Frenzy pistol.")
+                    .defineInRange("range", 1000.0D, 1000.0D, 1000.0D);
+            frenzySpreadDegrees = builder.comment("Random spread in degrees for Frenzy pistol.")
+                    .defineInRange("spreadDegrees", 1.25D, 0.0D, 15.0D);
+            frenzyCooldownTicks = builder.comment("Cooldown (fire rate) in ticks for Frenzy pistol.")
+                    .defineInRange("cooldownTicks", 8, 0, 40);
+            frenzyTracerParticles = builder.comment("Tracer particle steps for Frenzy pistol (visual only).")
+                    .defineInRange("tracerSteps", 5, 5, 5);
+            frenzyMuzzleParticles = builder.comment("Muzzle particle count for Frenzy pistol (visual only).")
+                    .defineInRange("muzzleParticles", 4, 1, 32);
+            frenzyMagazineSize = builder.comment("Magazine size for Frenzy pistol.")
+                    .defineInRange("magazineSize", 12, 1, 100);
+            frenzyMaxReserveAmmo = builder.comment("Maximum reserve ammo for Frenzy pistol.")
+                    .defineInRange("maxReserveAmmo", 36, 0, 500);
+            frenzyReloadTimeTicks = builder.comment("Reload time in ticks for Frenzy pistol (40 ticks = 2.0 seconds).")
                     .defineInRange("reloadTimeTicks", 40, 1, 20 * 30);
             builder.pop();
 

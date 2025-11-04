@@ -2,6 +2,7 @@ package com.bobby.valorant.registry;
 
 import com.bobby.valorant.Valorant;
 import com.bobby.valorant.world.item.ClassicPistolItem;
+import com.bobby.valorant.world.item.FrenzyPistolItem;
 import com.bobby.valorant.world.item.CurveballItem;
 import com.bobby.valorant.world.item.FireWallItem;
 import com.bobby.valorant.world.item.GhostPistolItem;
@@ -31,6 +32,7 @@ public final class ModItems {
     public static final DeferredItem<Item> GHOST = ITEMS.registerItem("ghost", props -> new GhostPistolItem(props.stacksTo(1)));
     public static final DeferredItem<Item> KNIFE = ITEMS.registerItem("knife", props -> new KnifeItem(props.stacksTo(1)));
     public static final DeferredItem<Item> CLASSIC = ITEMS.registerItem("classic", props -> new ClassicPistolItem(props.stacksTo(1)));
+    public static final DeferredItem<Item> FRENZY = ITEMS.registerItem("frenzy", props -> new FrenzyPistolItem(props.stacksTo(1)));
     public static final DeferredItem<Item> PLANTEDSPIKE = ITEMS.registerItem("plantedspike", props -> new Item(props.stacksTo(1)));
     public static final DeferredItem<Item> SPIKE = ITEMS.registerItem("spike", props -> new SpikeItem(props.stacksTo(1)));
     public static final DeferredItem<Item> DEFUSER = ITEMS.registerItem("defuser", props -> new DefuserItem(props.stacksTo(1)));
