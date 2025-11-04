@@ -42,4 +42,4 @@ repo
 /run/config/fancymenu/user_variables.db
 /run/config/fancymenu/*.db
 /run/fancymenu_data/last_world.fmdata
-
+/run/config/drippyloadingscreen/options.txt
