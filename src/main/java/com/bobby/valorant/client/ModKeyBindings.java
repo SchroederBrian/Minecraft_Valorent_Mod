@@ -1,14 +1,16 @@
 package com.bobby.valorant.client;
 
+import org.lwjgl.glfw.GLFW;
+
 import com.bobby.valorant.Valorant;
 import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.client.KeyMapping;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
-import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = Valorant.MODID, value = Dist.CLIENT)
 public final class ModKeyBindings {

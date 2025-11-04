@@ -51,6 +51,10 @@ public final class RoundController {
         phase = Phase.BUY;
         remainingSeconds = seconds > 0 ? seconds : BUY_SECONDS;
         roundCounter++;
+        // Despawn corpses at round start if enabled
+        if (java.lang.Boolean.TRUE.equals(com.bobby.valorant.Config.COMMON.corpseDespawnAtRoundStart.get())) {
+            com.bobby.valorant.events.CorpseEvents.despawnAll(level);
+        }
 			// Teleport players to their team spawn areas (if configured)
 			for (ServerPlayer sp : level.players()) {
 				var server = sp.getServer();

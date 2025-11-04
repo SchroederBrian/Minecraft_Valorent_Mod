@@ -4,6 +4,7 @@ import com.bobby.valorant.Valorant;
 import com.bobby.valorant.world.entity.CurveballOrb;
 import com.bobby.valorant.world.entity.FireballEntity;
 import com.bobby.valorant.world.entity.PlantedSpikeEntity;
+import com.bobby.valorant.world.entity.CorpseEntity;
 import com.bobby.valorant.drop.DroppedWeaponStandEntity;
 
 import net.minecraft.core.registries.Registries;
@@ -23,6 +24,7 @@ public final class ModEntityTypes {
     private static final ResourceKey<EntityType<?>> FIREBALL_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "fireball"));
     private static final ResourceKey<EntityType<?>> PLANTED_SPIKE_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "plantedspike"));
     private static final ResourceKey<EntityType<?>> DROPPED_WEAPON_STAND_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "dropped_weapon_stand"));
+    private static final ResourceKey<EntityType<?>> CORPSE_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "corpse"));
     public static final DeferredHolder<EntityType<?>, EntityType<CurveballOrb>> CURVEBALL_ORB = ENTITY_TYPES.register("curveball_orb",
             () -> EntityType.Builder.<CurveballOrb>of(CurveballOrb::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F)
@@ -50,6 +52,13 @@ public final class ModEntityTypes {
                     .clientTrackingRange(64)
                     .updateInterval(1)
                     .build(DROPPED_WEAPON_STAND_KEY));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<CorpseEntity>> CORPSE = ENTITY_TYPES.register("corpse",
+            () -> EntityType.Builder.<CorpseEntity>of(CorpseEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 0.2F)
+                    .clientTrackingRange(64)
+                    .updateInterval(1)
+                    .build(CORPSE_KEY));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);
