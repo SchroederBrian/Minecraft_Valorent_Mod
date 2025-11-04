@@ -19,24 +19,6 @@ variable {
 }
 
 variable {
-  name = omen-lock
-  value =  1
-  reset_on_launch = false
-}
-
-variable {
-  name = sage-locked
-  value = 0
-  reset_on_launch = false
-}
-
-variable {
-  name = phoenix-locked
-  value = 0
-  reset_on_launch = false
-}
-
-variable {
   name = v-p10-name
   value = Steve
   reset_on_launch = false
