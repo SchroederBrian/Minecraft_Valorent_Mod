@@ -38,9 +38,8 @@ repo
 !/run/fancymenu_data/
 !/run/fancymenu_data/**
 
-!/run/mods/
-!/run/mods/**
-
 # einzelne Dateien weiter ausschließen
 /run/config/fancymenu/user_variables.db
+/run/config/fancymenu/*.db
+/run/fancymenu_data/last_world.fmdata
 
