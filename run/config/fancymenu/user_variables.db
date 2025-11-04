@@ -1,56 +1,20 @@
 type = user_variables
 
 variable {
-  name = test
-  value = # test<br> ## test1<br> ### test3<br>
-  reset_on_launch = false
-}
-
-variable {
-  name = v-p1-name
-  value = Yvmx
-  reset_on_launch = false
-}
-
-variable {
-  name = any-agent-locked
-  value = 1
+  name = v-p5-name
+  value = Steve
   reset_on_launch = false
 }
 
 variable {
   name = v-p2-name
-  value = Yvmx
+  value = Steve
   reset_on_launch = false
 }
 
 variable {
-  name = brimstone-locked
+  name = player-is-ready
   value = 0
-  reset_on_launch = false
-}
-
-variable {
-  name = selected-agent
-  value = sova
-  reset_on_launch = false
-}
-
-variable {
-  name = omen-locked
-  value = 0
-  reset_on_launch = false
-}
-
-variable {
-  name = raze-locked
-  value = 0
-  reset_on_launch = false
-}
-
-variable {
-  name = sova-locked
-  value = 1
   reset_on_launch = false
 }
 
@@ -73,8 +37,164 @@ variable {
 }
 
 variable {
+  name = v-p10-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = a-p9-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = v-p8-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = a-p6-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
   name = jett-locked
   value = 0
+  reset_on_launch = false
+}
+
+variable {
+  name = a-p3-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = v-p7-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = v-p4-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = a-p7-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = test
+  value = # test<br> ## test1<br> ### test3<br>
+  reset_on_launch = false
+}
+
+variable {
+  name = v-p1-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = any-agent-locked
+  value = 1
+  reset_on_launch = false
+}
+
+variable {
+  name = selected-agent
+  value = omen
+  reset_on_launch = false
+}
+
+variable {
+  name = a-p1-name
+  value = Dev
+  reset_on_launch = false
+}
+
+variable {
+  name = omen-locked
+  value = 1
+  reset_on_launch = false
+}
+
+variable {
+  name = a-p4-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = raze-locked
+  value = 0
+  reset_on_launch = false
+}
+
+variable {
+  name = v-p3-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = omen-lock
+  value =  1
+  reset_on_launch = false
+}
+
+variable {
+  name = a-p10-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = v-p9-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = sage-locked
+  value = 0
+  reset_on_launch = false
+}
+
+variable {
+  name = a-p2-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = v-p6-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = phoenix-locked
+  value = 0
+  reset_on_launch = false
+}
+
+variable {
+  name = a-p5-name
+  value = Steve
+  reset_on_launch = false
+}
+
+variable {
+  name = a-p8-name
+  value = Steve
   reset_on_launch = false
 }
 
