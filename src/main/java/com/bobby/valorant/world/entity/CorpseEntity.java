@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 
 import com.bobby.valorant.client.render.state.CorpseRenderState;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -50,6 +51,8 @@ public class CorpseEntity extends ArmorStand {
         this.setShowArms(false);
         this.setInvulnerable(true);
         this.setSilent(true);
+        this.setCustomName(null);
+        this.setCustomNameVisible(false);
     }
 
     @Override
@@ -148,6 +151,21 @@ public class CorpseEntity extends ArmorStand {
 
     public CorpseRenderState createLivingEntityRenderState() {
         return new CorpseRenderState();
+    }
+
+    @Override
+    public boolean shouldShowName() {
+        return false;
+    }
+
+    @Override
+    public boolean hasCustomName() {
+        return false;
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return null;
     }
 
     @Override
