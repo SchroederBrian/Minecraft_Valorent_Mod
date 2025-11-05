@@ -1,0 +1,22 @@
+{
+	"model": {
+	  "type": "minecraft:select",
+	  "property": "minecraft:display_context",
+	  "cases": [
+		{
+		  "when": ["gui", "ground", "fixed"],
+		  "model": { "type": "minecraft:model", "model": "valorant:item/haven_map" }
+		},
+		{
+		  "when": "firstperson_righthand",
+		  "model": { "type": "minecraft:model", "model": "minecraft:item/air" }
+		},
+		{
+		  "when": "thirdperson_righthand",
+		  "model": { "type": "minecraft:model", "model": "minecraft:item/air" }
+		}
+	  ],
+	  "fallback": { "type": "minecraft:model", "model": "valorant:item/brimstone_smoke" }
+	}
+  }
+  

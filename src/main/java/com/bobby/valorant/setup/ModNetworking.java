@@ -23,7 +23,13 @@ import com.bobby.valorant.network.RemoveFireballPacket;
 import com.bobby.valorant.network.RemoveStimBeaconPacket;
 import com.bobby.valorant.network.SelectAgentC2SPacket;
 import com.bobby.valorant.network.ShootGunPacket;
+import com.bobby.valorant.network.OpenCalibrationPickPointS2CPacket;
 import com.bobby.valorant.network.ShowTitleOverlayPacket;
+import com.bobby.valorant.network.SubmitCalibrationPointC2SPacket;
+import com.bobby.valorant.network.SyncSkySmokeCalibrationS2CPacket;
+import com.bobby.valorant.network.SyncSkySmokeAreasS2CPacket;
+import com.bobby.valorant.network.SyncSkySmokeRecordingPointsS2CPacket;
+import com.bobby.valorant.network.SyncSkySmokeTransformS2CPacket;
 import com.bobby.valorant.network.SyncAbilityStateS2CPacket;
 import com.bobby.valorant.network.SyncAgentLocksPacket;
 import com.bobby.valorant.network.SyncAgentS2CPacket;
@@ -86,8 +92,15 @@ public final class ModNetworking {
                 .playToClient(SyncAgentS2CPacket.TYPE, SyncAgentS2CPacket.STREAM_CODEC, SyncAgentS2CPacket::handle)
                 .playToClient(SyncAbilityStateS2CPacket.TYPE, SyncAbilityStateS2CPacket.STREAM_CODEC, SyncAbilityStateS2CPacket::handle)
                 .playToClient(com.bobby.valorant.network.KillfeedMessageS2CPacket.TYPE, com.bobby.valorant.network.KillfeedMessageS2CPacket.STREAM_CODEC, com.bobby.valorant.network.KillfeedMessageS2CPacket::handle)
+                .playToClient(SyncSkySmokeCalibrationS2CPacket.TYPE, SyncSkySmokeCalibrationS2CPacket.STREAM_CODEC, SyncSkySmokeCalibrationS2CPacket::handle)
+                .playToClient(SyncSkySmokeAreasS2CPacket.TYPE, SyncSkySmokeAreasS2CPacket.STREAM_CODEC, SyncSkySmokeAreasS2CPacket::handle)
+                .playToClient(SyncSkySmokeRecordingPointsS2CPacket.TYPE, SyncSkySmokeRecordingPointsS2CPacket.STREAM_CODEC, SyncSkySmokeRecordingPointsS2CPacket::handle)
+                .playToClient(OpenCalibrationPickPointS2CPacket.TYPE, OpenCalibrationPickPointS2CPacket.STREAM_CODEC, OpenCalibrationPickPointS2CPacket::handle)
+                .playToClient(SyncSkySmokeTransformS2CPacket.TYPE, SyncSkySmokeTransformS2CPacket.STREAM_CODEC, SyncSkySmokeTransformS2CPacket::handle)
                 .playToClient(PlantingProgressPacket.TYPE, PlantingProgressPacket.STREAM_CODEC, (pkt, ctx) -> {})
-                .playToClient(DefuseProgressPacket.TYPE, DefuseProgressPacket.STREAM_CODEC, (pkt, ctx) -> {});
+				.playToClient(DefuseProgressPacket.TYPE, DefuseProgressPacket.STREAM_CODEC, (pkt, ctx) -> {})
+				.playToServer(com.bobby.valorant.network.PlaceSkySmokesC2SPacket.TYPE, com.bobby.valorant.network.PlaceSkySmokesC2SPacket.STREAM_CODEC, com.bobby.valorant.network.PlaceSkySmokesC2SPacket::handle)
+				.playToServer(SubmitCalibrationPointC2SPacket.TYPE, SubmitCalibrationPointC2SPacket.STREAM_CODEC, SubmitCalibrationPointC2SPacket::handle);
     }
 }
 

@@ -7,32 +7,30 @@ import com.bobby.valorant.registry.ModEntityTypes;
 import com.bobby.valorant.registry.ModItems;
 import com.bobby.valorant.registry.ModSounds;
 import com.bobby.valorant.setup.ModNetworking;
+import com.bobby.valorant.fancymenu.FancyMenuVarSync;
+
 import com.mojang.logging.LogUtils;
 
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 
-import com.bobby.valorant.fancymenu.FancyMenuVarSync;
+import com.bobby.valorant.util.ArmorStandRotator;
 
-// The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Valorant.MODID)
-@net.neoforged.fml.common.EventBusSubscriber(modid = Valorant.MODID)
 public class Valorant {
-    // Define mod id in a common place for everything to reference
     public static final String MODID = "valorant";
-    // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
-    // The constructor for the mod class is the first code that is run when your mod is loaded.
-    // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
+
     public Valorant(IEventBus modEventBus, ModContainer modContainer) {
-        // Register the commonSetup method for modloading
+        // MOD-Bus (Lifecycle)
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::onEntityAttributeCreation);
         modEventBus.addListener(ModNetworking::registerPayloadHandlers);
 
         ModItems.register(modEventBus);
@@ -40,24 +38,31 @@ public class Valorant {
         ModCreativeTabs.register(modEventBus);
         ModSounds.register(modEventBus);
 
-        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
+
+        // GAME-Bus (Runtime)
+        NeoForge.EVENT_BUS.addListener(Valorant::onServerStarted);
+        NeoForge.EVENT_BUS.addListener(ArmorStandRotator::onServerTick);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
+        // ggf. Netzwerk/Deferred Tasks etc.
     }
 
-    @SubscribeEvent
-    public static void onServerStarted(ServerStartedEvent event) {
+    // === GAME-Bus ===
+    private static void onServerStarted(ServerStartedEvent event) {
         var server = event.getServer();
         if (server != null) {
+            server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team add A \"Attackers\"");
+            server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team modify A nametagVisibility never");
+            server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team add V \"Defenders\"");
+            server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team modify V nametagVisibility never");
             FancyMenuVarSync.updateAll(server);
         }
     }
 
-    @SubscribeEvent
-    public static void onEntityAttributeCreation(EntityAttributeCreationEvent event) {
-        // Register attributes for our custom entities
+    // === MOD-Bus ===
+    private void onEntityAttributeCreation(EntityAttributeCreationEvent event) {
         event.put(ModEntityTypes.DROPPED_WEAPON_STAND.get(), net.minecraft.world.entity.decoration.ArmorStand.createAttributes().build());
         event.put(ModEntityTypes.CORPSE.get(), net.minecraft.world.entity.decoration.ArmorStand.createAttributes().build());
     }

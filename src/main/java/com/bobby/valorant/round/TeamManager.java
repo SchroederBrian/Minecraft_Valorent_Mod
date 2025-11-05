@@ -5,6 +5,7 @@ import com.bobby.valorant.fancymenu.FancyMenuVarSync;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.Team;
 
 public final class TeamManager {
     private TeamManager() {}
@@ -15,6 +16,7 @@ public final class TeamManager {
         Scoreboard sb = player.getServer().getScoreboard();
         PlayerTeam team = sb.getPlayerTeam(teamId);
         if (team == null) team = sb.addPlayerTeam(teamId);
+        team.setNameTagVisibility(Team.Visibility.NEVER);
         int max = Config.COMMON.maxTeamSize.get();
         int currentSize = team.getPlayers().size();
         if (currentSize >= max) return false;

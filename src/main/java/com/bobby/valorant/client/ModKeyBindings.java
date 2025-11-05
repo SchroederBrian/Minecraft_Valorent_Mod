@@ -96,6 +96,15 @@ public final class ModKeyBindings {
             "key.categories.valorant"
     );
 
+    // Sky Smoke area recording add point
+    public static final KeyMapping SKY_SMOKE_RECORD_POINT = new KeyMapping(
+            "key.valorant.sky_smoke_record_point",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_V,
+            "key.categories.valorant"
+    );
+
     @SubscribeEvent
     public static void onRegisterKeys(RegisterKeyMappingsEvent event) {
         event.register(OPEN_AGENT_MENU);
@@ -107,6 +116,7 @@ public final class ModKeyBindings {
         event.register(OPEN_SHOP);
         event.register(EQUIP_SPIKE_OR_DEFUSE);
         event.register(DROP_PICKUP_WEAPON);
+        event.register(SKY_SMOKE_RECORD_POINT);
     }
 }
 

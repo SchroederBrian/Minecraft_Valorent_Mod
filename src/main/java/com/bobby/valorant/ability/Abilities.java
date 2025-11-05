@@ -76,7 +76,10 @@ public final class Abilities {
                 .baseCharges(0).effect((sp, ctx) -> {}).build();
         Ability br_e = Ability.builder().id("brim_e_sky_smoke").slot(Ability.Slot.E)
                 .displayName(Component.literal("Sky Smoke")).description(Component.literal("Place smokes."))
-                .baseCharges(0).effect((sp, ctx) -> {}).build();
+                .iconSupplier(() -> new ItemStack(ModItems.HAVEN_MAP.get()))
+                .baseCharges(3)
+                .effect(com.bobby.valorant.ability.effects.AbilityEffects::brimSkySmoke)
+                .build();
         Ability br_x = Ability.builder().id("brim_x_orbital").slot(Ability.Slot.X)
                 .displayName(Component.literal("Orbital Strike")).description(Component.literal("Call laser."))
                 .iconSupplier(() -> ItemStack.EMPTY)

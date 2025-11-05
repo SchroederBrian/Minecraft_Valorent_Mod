@@ -54,11 +54,13 @@
   
   "key.valorant.open_agent_menu": "Open Agent Menu",
   "key.valorant.use_ability_1": "Use Ability 1",
+  "key.valorant.sky_smoke_record_point": "Add Sky Smoke Recording Point",
   "category.valorant.valorant": "Valorant",
 
   "commands.valorant.curveball.charges.set": "Set curveball charges to %s for %s player(s)",
   "commands.valorant.wall.charges.set": "Set wall charges to %s for %s player(s)",
   "commands.valorant.fireball.charges.set": "Set fireball charges to %s for %s player(s)",
+  "commands.valorant.skysmoke.charges.set": "Set Sky Smoke charges to %s for %s player(s)",
   
   "agent.valorant.jett": "Jett",
   "agent.valorant.reyna": "Reyna",

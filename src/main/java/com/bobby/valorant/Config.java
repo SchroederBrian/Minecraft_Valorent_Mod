@@ -134,6 +134,31 @@ public final class Config {
         public final ModConfigSpec.IntValue spawnAreaParticleColor;
         public final ModConfigSpec.IntValue bombSiteParticleColor;
 
+        // Sky Smoke settings
+        public final ModConfigSpec.ConfigValue<String> skySmokeMapDimensionId;
+        public final ModConfigSpec.IntValue skySmokeMapMinX;
+        public final ModConfigSpec.IntValue skySmokeMapMinZ;
+        public final ModConfigSpec.IntValue skySmokeMapMaxX;
+        public final ModConfigSpec.IntValue skySmokeMapMaxZ;
+        public final ModConfigSpec.DoubleValue skySmokeMapRotationDegrees;
+        public final ModConfigSpec.IntValue skySmokeMaxPerCast;
+        public final ModConfigSpec.DoubleValue skySmokeRadius;
+        public final ModConfigSpec.IntValue skySmokeDurationTicks;
+        public final ModConfigSpec.BooleanValue skySmokePlaceOnGround;
+        public final ModConfigSpec.DoubleValue skySmokeYOffset;
+        public final ModConfigSpec.BooleanValue skySmokeApplyBlindness;
+        public final ModConfigSpec.IntValue skySmokeBlindnessTicks;
+        public final ModConfigSpec.ConfigValue<String> skySmokeAreasConfigPath;
+
+        // Sky Smoke zones rendering
+        public final ModConfigSpec.ConfigValue<String> skySmokeAreasParticleType;
+        public final ModConfigSpec.DoubleValue skySmokeAreasParticleSpacing;
+        public final ModConfigSpec.IntValue skySmokeAreasParticleTickInterval;
+        public final ModConfigSpec.IntValue skySmokeAreasAllowedParticleColor;
+        public final ModConfigSpec.IntValue skySmokeAreasBlockedParticleColor;
+        public final ModConfigSpec.BooleanValue skySmokeAreasShowRecordingParticles;
+        public final ModConfigSpec.IntValue skySmokeAreasRecordingParticleColor;
+
         // Spike runtime signal
         public final ModConfigSpec.BooleanValue spikePlanted;
         public final ModConfigSpec.DoubleValue plantedSpikeYOffset;
@@ -847,22 +872,73 @@ public final class Config {
                     .define("variablePrefix", "");
             builder.pop();
 
-			// Spawn areas configuration
-			builder.push("spawnAreas");
-			spawnAreaConfigPath = builder.comment("Path to JSON file describing team spawn polygons per dimension.")
-					.define("configPath", "config/valorant/spawn_areas.json");
-			spawnAreaParticleType = builder.comment("Particle id used to outline spawn area perimeters (e.g., FLAME, GLOW, ASH).")
-					.define("particle", "DUST");
-			spawnAreaParticleSpacing = builder.comment("Spacing in blocks between perimeter particles when rendering spawn areas.")
-					.defineInRange("particleSpacing", 0.5D, 0.1D, 5.0D);
-			spawnAreaParticleTickInterval = builder.comment("How often (in ticks) to render the perimeter particles (lower = more frequent).")
-					.defineInRange("particleTickInterval", 10, 1, 200);
-			bombSiteParticleType = builder.comment("Particle id used to outline bomb site perimeters (A/B/C).")
-					.define("bombSiteParticle", "DUST");
-			spawnAreaParticleColor = builder.comment("RGB hex color used when particle supports color (e.g., DUST). Format: 0xRRGGBB")
-					.defineInRange("spawnColor", 0x00FFFF, 0x000000, 0xFFFFFF);
-			bombSiteParticleColor = builder.comment("RGB hex color used when particle supports color (e.g., DUST). Format: 0xRRGGBB")
-					.defineInRange("bombColor", 0xFF0000, 0x000000, 0xFFFFFF);
+            // Spawn areas configuration
+            builder.push("spawnAreas");
+            spawnAreaConfigPath = builder.comment("Path to JSON file describing team spawn polygons per dimension.")
+                            .define("configPath", "config/valorant/spawn_areas.json");
+            spawnAreaParticleType = builder.comment("Particle id used to outline spawn area perimeters (e.g., FLAME, GLOW, ASH).")
+                            .define("particle", "DUST");
+            spawnAreaParticleSpacing = builder.comment("Spacing in blocks between perimeter particles when rendering spawn areas.")
+                            .defineInRange("particleSpacing", 0.5D, 0.1D, 5.0D);
+            spawnAreaParticleTickInterval = builder.comment("How often (in ticks) to render the perimeter particles (lower = more frequent).")
+                            .defineInRange("particleTickInterval", 10, 1, 200);
+            bombSiteParticleType = builder.comment("Particle id used to outline bomb site perimeters (A/B/C).")
+                            .define("bombSiteParticle", "DUST");
+            spawnAreaParticleColor = builder.comment("RGB hex color used when particle supports color (e.g., DUST). Format: 0xRRGGBB")
+                            .defineInRange("spawnColor", 0x00FFFF, 0x000000, 0xFFFFFF);
+            bombSiteParticleColor = builder.comment("RGB hex color used when particle supports color (e.g., DUST). Format: 0xRRGGBB")
+                            .defineInRange("bombColor", 0xFF0000, 0x000000, 0xFFFFFF);
+            builder.pop();
+
+            // Sky Smoke settings
+            builder.push("sky_smoke");
+            skySmokeMapDimensionId = builder.comment("Dimension ID where Sky Smoke map bounds apply.")
+                    .define("mapDimensionId", "minecraft:overworld");
+            skySmokeMapMinX = builder.comment("Minimum X coordinate of the Sky Smoke map in world space.")
+                    .defineInRange("mapMinX", 0, -1000000, 1000000);
+            skySmokeMapMinZ = builder.comment("Minimum Z coordinate of the Sky Smoke map in world space.")
+                    .defineInRange("mapMinZ", 0, -1000000, 1000000);
+            skySmokeMapMaxX = builder.comment("Maximum X coordinate of the Sky Smoke map in world space.")
+                    .defineInRange("mapMaxX", 512, -1000000, 1000000);
+            skySmokeMapMaxZ = builder.comment("Maximum Z coordinate of the Sky Smoke map in world space.")
+                    .defineInRange("mapMaxZ", 512, -1000000, 1000000);
+            skySmokeMapRotationDegrees = builder.comment("Rotation of the Sky Smoke map in degrees (clockwise, 0 = north is up).")
+                    .defineInRange("mapRotationDegrees", 0.0D, -180.0D, 180.0D);
+            skySmokeMaxPerCast = builder.comment("Maximum Sky Smoke placements per cast.")
+                    .defineInRange("maxPerCast", 3, 1, 10);
+            skySmokeRadius = builder.comment("Radius in blocks for Sky Smoke clouds.")
+                    .defineInRange("radius", 4.5D, 0.5D, 20.0D);
+            skySmokeDurationTicks = builder.comment("Duration in ticks for Sky Smoke clouds.")
+                    .defineInRange("durationTicks", 280, 20, 20 * 60);
+            skySmokePlaceOnGround = builder.comment("If true, place Sky Smoke on ground heightmap; else use player Y + yOffset.")
+                    .define("placeOnGround", true);
+            skySmokeYOffset = builder.comment("Y offset added when not placing on ground (blocks).")
+                    .defineInRange("yOffset", 0.1D, -10.0D, 10.0D);
+            skySmokeApplyBlindness = builder.comment("If true, Sky Smoke clouds apply blindness effect.")
+                    .define("applyBlindness", true);
+            skySmokeBlindnessTicks = builder.comment("Duration of blindness effect in ticks (only used if applyBlindness is true).")
+                    .defineInRange("blindnessTicks", 255, 255, 20 * 60);
+            skySmokeAreasConfigPath = builder.comment("Path to JSON file describing Sky Smoke allowed/blocked zones per dimension.")
+                    .define("areasConfigPath", "config/valorant/sky_smoke_areas.json");
+
+            // Sky Smoke zones rendering
+            builder.push("areasRendering");
+            skySmokeAreasParticleType = builder.comment("Particle type for Sky Smoke zone rendering (e.g., DUST, FLAME, GLOW).")
+                    .define("particleType", "DUST");
+            skySmokeAreasParticleSpacing = builder.comment("Spacing in blocks between zone perimeter particles.")
+                    .defineInRange("particleSpacing", 1.0D, 0.5D, 10.0D);
+            skySmokeAreasParticleTickInterval = builder.comment("How often (in ticks) to render zone particles (lower = more frequent).")
+                    .defineInRange("particleTickInterval", 20, 1, 200);
+            skySmokeAreasAllowedParticleColor = builder.comment("RGB hex color for allowed zone particles (e.g., 0x00FF00 for green).")
+                    .defineInRange("allowedParticleColor", 0x00FF00, 0x000000, 0xFFFFFF);
+            skySmokeAreasBlockedParticleColor = builder.comment("RGB hex color for blocked zone particles (e.g., 0xFF0000 for red).")
+                    .defineInRange("blockedParticleColor", 0xFF0000, 0x000000, 0xFFFFFF);
+            skySmokeAreasShowRecordingParticles = builder.comment("If true, show particles at recorded points during zone recording.")
+                    .define("showRecordingParticles", true);
+            skySmokeAreasRecordingParticleColor = builder.comment("RGB hex color for recording point particles (e.g., 0xFFFF00 for yellow).")
+                    .defineInRange("recordingParticleColor", 0xFFFF00, 0x000000, 0xFFFFFF);
+            builder.pop();
+
             builder.pop();
 
             // Molly Launcher

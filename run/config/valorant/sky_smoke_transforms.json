@@ -1,0 +1,10 @@
+{
+  "dimensions": {
+    "minecraft:overworld": {
+      "a": 0.85,
+      "b": -0.15,
+      "tx": 650.0,
+      "tz": 550.0
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+	"parent": "minecraft:item/generated",
+	"textures": {
+	  "layer0": "valorant:item/haven_map"
+	},
+	"display": {
+	  "head": {
+		"translation": [0, -43, 0],
+		"rotation": [0, 0, -90]
+	  }
+	}
+  }
+  
+  
+  

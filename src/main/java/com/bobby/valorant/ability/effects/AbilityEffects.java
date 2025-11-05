@@ -30,6 +30,10 @@ public final class AbilityEffects {
         equipSelected(player, new net.minecraft.world.item.ItemStack(com.bobby.valorant.registry.ModItems.STIMBEACONHAND.get()));
     }
 
+	public static void brimSkySmoke(ServerPlayer player, AbilityUseContext ctx) {
+		equipSelected(player, new net.minecraft.world.item.ItemStack(com.bobby.valorant.registry.ModItems.HAVEN_MAP.get()));
+	}
+
     private static void equipSelected(ServerPlayer player, net.minecraft.world.item.ItemStack toEquip) {
         var inv = player.getInventory();
         try {

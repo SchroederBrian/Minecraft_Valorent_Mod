@@ -2,7 +2,7 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "valorant:item/ghost"
-  }
+  },
   "display": {
     "head": {
       "translation": [0, -43, 0],

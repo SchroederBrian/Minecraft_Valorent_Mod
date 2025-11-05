@@ -15,6 +15,7 @@ import com.bobby.valorant.world.item.PlacedStimBeacon;
 import com.bobby.valorant.world.item.BlastPackItem;
 import com.bobby.valorant.world.item.VandalRifleItem;
 import com.bobby.valorant.world.item.MollyLauncherItem;
+import com.bobby.valorant.world.item.HavenMapItem;
 
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
@@ -45,6 +46,7 @@ public final class ModItems {
     public static final DeferredItem<Item> RUN_IT_BACK = ITEMS.registerItem("run_it_back", props -> new Item(props.stacksTo(1)));
     public static final DeferredItem<Item> BLAST_PACK = ITEMS.registerItem("blast_pack", props -> new BlastPackItem(props.stacksTo(1)));
     public static final DeferredItem<Item> MOLLY_LAUNCHER = ITEMS.registerItem("molly_launcher", props -> new MollyLauncherItem(props.stacksTo(1)));
+	public static final DeferredItem<Item> HAVEN_MAP = ITEMS.registerItem("haven_map", props -> new HavenMapItem(props.stacksTo(1)));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

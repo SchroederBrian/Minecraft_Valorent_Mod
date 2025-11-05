@@ -26,9 +26,14 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.AreaEffectCloud;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.core.registries.BuiltInRegistries;
 
@@ -156,10 +161,11 @@ public final class ValorantCommand {
                 var server = ctx.getSource().getServer();
                 if (server == null) return 0;
                 com.bobby.valorant.spawn.SpawnAreaManager.load(server);
+                com.bobby.valorant.spawn.SkySmokeCalibration.load(server);
                 for (ServerPlayer sp : server.getPlayerList().getPlayers()) {
                     com.bobby.valorant.spawn.SpawnAreaManager.syncFor(sp);
                 }
-                ctx.getSource().sendSuccess(() -> Component.literal("Reloaded spawn areas"), true);
+                ctx.getSource().sendSuccess(() -> Component.literal("Reloaded spawn areas and sky smoke calibration"), true);
                 return 1;
             });
 
@@ -362,6 +368,248 @@ public final class ValorantCommand {
                         )
                 );
 
+        // -------- sky smoke calibration --------
+        var skySmokeCalibration =
+            Commands.literal("skysmoke")
+                .then(
+                    Commands.literal("bounds")
+                        .then(
+                            Commands.literal("get").requires(s -> s.hasPermission(2))
+                                .executes(ctx -> {
+                                    var bounds = com.bobby.valorant.spawn.SkySmokeCalibration.getBounds();
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                        "Sky Smoke Map Bounds: " +
+                                        "Dim=" + Config.COMMON.skySmokeMapDimensionId.get() + ", " +
+                                        "Min=" + bounds.toMinString() + ", " +
+                                        "Max=" + bounds.toMaxString()
+                                    ), false);
+                                    return 1;
+                                })
+                        )
+                        .then(
+                            Commands.literal("set").requires(s -> s.hasPermission(2))
+                                .then(
+                                    Commands.argument("minX", IntegerArgumentType.integer())
+                                        .then(
+                                            Commands.argument("minZ", IntegerArgumentType.integer())
+                                                .then(
+                                                    Commands.argument("maxX", IntegerArgumentType.integer())
+                                                        .then(
+                                                            Commands.argument("maxZ", IntegerArgumentType.integer())
+                                                                .executes(ctx -> {
+                                                                    int minX = IntegerArgumentType.getInteger(ctx, "minX");
+                                                                    int minZ = IntegerArgumentType.getInteger(ctx, "minZ");
+                                                                    int maxX = IntegerArgumentType.getInteger(ctx, "maxX");
+                                                                    int maxZ = IntegerArgumentType.getInteger(ctx, "maxZ");
+
+                                                                    // Basic validation
+                                                                    if (maxX <= minX || maxZ <= minZ) {
+                                                                        ctx.getSource().sendFailure(Component.literal("Max coordinates must be greater than min coordinates"));
+                                                                        return 0;
+                                                                    }
+
+                                                                    // Save to calibration file (similar to spawn areas)
+                                                                    com.bobby.valorant.spawn.SkySmokeCalibration.putAndSave(
+                                                                        ctx.getSource().getServer(),
+                                                                        minX, minZ, maxX, maxZ
+                                                                    );
+
+                                                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                                                        "Sky Smoke bounds saved: " +
+                                                                        minX + "," + minZ + " to " + maxX + "," + maxZ +
+                                                                        ". Changes will persist across restarts."
+                                                                    ), false);
+                                                                    return 1;
+                                                                })
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                )
+                .then(
+                    Commands.literal("test").requires(s -> s.hasPermission(2))
+                        .executes(ctx -> {
+                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                            ServerLevel level = (ServerLevel) player.level();
+
+                            // Check if player is in the correct dimension
+                            String expectedDim = Config.COMMON.skySmokeMapDimensionId.get();
+                            if (!level.dimension().location().toString().equals(expectedDim)) {
+                                ctx.getSource().sendFailure(Component.literal("You must be in dimension: " + expectedDim));
+                                return 0;
+                            }
+
+                            // Create a test smoke at player's position
+                            var cloud = new AreaEffectCloud(level,
+                                player.getX(), player.getY(), player.getZ());
+                            cloud.setRadius(Config.COMMON.skySmokeRadius.get().floatValue());
+                            cloud.setRadiusPerTick(0.0F);
+                            cloud.setDuration(Config.COMMON.skySmokeDurationTicks.get());
+                            cloud.setWaitTime(0);
+
+                            // Add blindness if configured
+                            if (Config.COMMON.skySmokeApplyBlindness.get()) {
+                                cloud.addEffect(new MobEffectInstance(
+                                    MobEffects.BLINDNESS,
+                                    Config.COMMON.skySmokeBlindnessTicks.get(), 0, true, false));
+                            }
+
+                            level.addFreshEntity(cloud);
+
+                            // Add smoke particles for visibility
+                            level.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE,
+                                player.getX(), player.getY() + 0.5D, player.getZ(),
+                                20, 0.3D, 0.3D, 0.3D, 0.01D);
+
+                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                "Test smoke spawned at your position (" +
+                                String.format("%.1f, %.1f, %.1f", player.getX(), player.getY(), player.getZ()) + ")"
+                            ), false);
+                            return 1;
+                        })
+                )
+                .then(
+                    Commands.literal("corners").requires(s -> s.hasPermission(2))
+                        .then(
+                            Commands.literal("tp").requires(s -> s.hasPermission(2))
+                                .then(
+                                    Commands.argument("corner", StringArgumentType.word())
+                                        .executes(ctx -> {
+                                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                            String corner = StringArgumentType.getString(ctx, "corner").toLowerCase();
+
+                                            var bounds = com.bobby.valorant.spawn.SkySmokeCalibration.getBounds();
+                                            int minX = bounds.minX();
+                                            int minZ = bounds.minZ();
+                                            int maxX = bounds.maxX();
+                                            int maxZ = bounds.maxZ();
+
+                                            double x, z;
+                                            switch (corner) {
+                                                case "nw", "northwest" -> { x = minX + 0.5; z = minZ + 0.5; }
+                                                case "ne", "northeast" -> { x = maxX - 0.5; z = minZ + 0.5; }
+                                                case "sw", "southwest" -> { x = minX + 0.5; z = maxZ - 0.5; }
+                                                case "se", "southeast" -> { x = maxX - 0.5; z = maxZ - 0.5; }
+                                                case "center", "middle" -> { x = (minX + maxX) / 2.0; z = (minZ + maxZ) / 2.0; }
+                                                default -> {
+                                                    ctx.getSource().sendFailure(Component.literal(
+                                                        "Invalid corner. Use: nw/ne/sw/se/center"));
+                                                    return 0;
+                                                }
+                                            }
+
+                                            // Teleport player to corner at current Y level
+                                            player.teleportTo(x, player.getY(), z);
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                "Teleported to " + corner.toUpperCase() + " corner (" +
+                                                String.format("%.1f, %.1f", x, z) + ")"
+                                            ), false);
+                                            return 1;
+                                        })
+                                )
+                        )
+                )
+                .then(
+                    Commands.literal("calibrate").requires(s -> s.hasPermission(2))
+                        .then(
+                            Commands.literal("start")
+                                .executes(ctx -> {
+                                    ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                    ResourceLocation dim = sp.level().dimension().location();
+                                    String expectedDim = Config.COMMON.skySmokeMapDimensionId.get();
+
+                                    if (!dim.toString().equals(expectedDim)) {
+                                        ctx.getSource().sendFailure(Component.literal("You must be in dimension: " + expectedDim));
+                                        return 0;
+                                    }
+
+                                    // Start calibration session
+                                    com.bobby.valorant.spawn.SkySmokeCalibration.startCalibration(sp.getServer(), dim);
+                                    ctx.getSource().sendSuccess(() -> Component.literal("Started Sky Smoke calibration. Stand at point 1 and run '/valorant skysmoke calibrate point'"), false);
+                                    return 1;
+                                })
+                        )
+                        .then(
+                            Commands.literal("point")
+                                .executes(ctx -> {
+                                    ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                    ResourceLocation dim = sp.level().dimension().location();
+
+                                    // Try to add calibration point
+                                    int result = com.bobby.valorant.spawn.SkySmokeCalibration.addCalibrationPoint(sp.getServer(), dim, sp);
+                                    if (result == -1) {
+                                        ctx.getSource().sendFailure(Component.literal("Calibration not started. Run '/valorant skysmoke calibrate start' first"));
+                                        return 0;
+                                    } else if (result == -2) {
+                                        ctx.getSource().sendFailure(Component.literal("Wrong dimension for calibration"));
+                                        return 0;
+                                    } else if (result == -3) {
+                                        ctx.getSource().sendFailure(Component.literal("Calibration already complete"));
+                                        return 0;
+                                    }
+
+                                    // Success - GUI will open
+                                    ctx.getSource().sendSuccess(() -> Component.literal("Point " + result + " captured. Click on the map to select the corresponding location."), false);
+                                    return 1;
+                                })
+                        )
+                        .then(
+                            Commands.literal("preview")
+                                .executes(ctx -> {
+                                    ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                    ResourceLocation dim = sp.level().dimension().location();
+
+                                    boolean success = com.bobby.valorant.spawn.SkySmokeCalibration.previewCalibration(sp.getServer(), dim, sp.level());
+                                    if (!success) {
+                                        ctx.getSource().sendFailure(Component.literal("Calibration not complete or invalid. Need 3 points to preview."));
+                                        return 0;
+                                    }
+
+                                    ctx.getSource().sendSuccess(() -> Component.literal("Calibration preview active. Map corners shown as particles."), false);
+                                    return 1;
+                                })
+                        )
+                        .then(
+                            Commands.literal("apply")
+                                .executes(ctx -> {
+                                    ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                    ResourceLocation dim = sp.level().dimension().location();
+
+                                    boolean success = com.bobby.valorant.spawn.SkySmokeCalibration.applyCalibration(sp.getServer(), dim);
+                                    if (!success) {
+                                        ctx.getSource().sendFailure(Component.literal("Calibration not complete or invalid."));
+                                        return 0;
+                                    }
+
+                                    ctx.getSource().sendSuccess(() -> Component.literal("Calibration applied and saved!"), true);
+                                    return 1;
+                                })
+                        )
+                        .then(
+                            Commands.literal("cancel")
+                                .executes(ctx -> {
+                                    ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                    ResourceLocation dim = sp.level().dimension().location();
+
+                                    com.bobby.valorant.spawn.SkySmokeCalibration.cancelCalibration(sp.getServer(), dim);
+                                    ctx.getSource().sendSuccess(() -> Component.literal("Calibration cancelled."), false);
+                                    return 1;
+                                })
+                        )
+                        .then(
+                            Commands.literal("status")
+                                .executes(ctx -> {
+                                    ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                    ResourceLocation dim = sp.level().dimension().location();
+
+                                    String status = com.bobby.valorant.spawn.SkySmokeCalibration.getCalibrationStatus(sp.getServer(), dim);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(status), false);
+                                    return 1;
+                                })
+                        )
+                );
+
         // -------- charges helpers (fireball/curveball/blaze) --------
         var fireballCharges =
             Commands.literal("fireball")
@@ -421,6 +669,27 @@ public final class ValorantCommand {
                                         .executes(ctx -> {
                                             int amount = IntegerArgumentType.getInteger(ctx, "amount");
                                             return setBlazeCharges(ctx.getSource(), EntityArgument.getPlayers(ctx, "players"), amount);
+                                        })
+                                )
+                        )
+                );
+
+        var skySmokeCharges =
+            Commands.literal("skysmoke")
+                .then(
+                    Commands.literal("charges").requires(s -> s.hasPermission(2))
+                        .then(
+                            Commands.argument("amount", IntegerArgumentType.integer(0))
+                                .executes(ctx -> {
+                                    ServerPlayer p = ctx.getSource().getPlayerOrException();
+                                    int amount = IntegerArgumentType.getInteger(ctx, "amount");
+                                    return setSkySmokeCharges(ctx.getSource(), List.of(p), amount);
+                                })
+                                .then(
+                                    Commands.argument("players", EntityArgument.players())
+                                        .executes(ctx -> {
+                                            int amount = IntegerArgumentType.getInteger(ctx, "amount");
+                                            return setSkySmokeCharges(ctx.getSource(), EntityArgument.getPlayers(ctx, "players"), amount);
                                         })
                                 )
                         )
@@ -804,7 +1073,316 @@ public final class ValorantCommand {
                                 ctx.getSource().sendFailure(Component.literal("Failed to generate HTML file: " + e.getMessage()));
                                 return 0;
                             }
-                        });
+                        }            );
+
+        // -------- Sky Smoke area/block commands --------
+        var skySmokeAreaCommands =
+            Commands.literal("area").requires(s -> s.hasPermission(2))
+            .then(
+                Commands.literal("record")
+                    .then(
+                        Commands.literal("start").requires(s -> s.hasPermission(2))
+                            .then(
+                                Commands.argument("id", StringArgumentType.word())
+                                    .then(
+                                        Commands.literal("ground")
+                                            .executes(ctx -> {
+                                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                                String id = StringArgumentType.getString(ctx, "id");
+                                                boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.start(sp, id,
+                                                    com.bobby.valorant.skysmoke.SkySmokeArea.Type.ALLOWED,
+                                                    com.bobby.valorant.skysmoke.SkySmokeArea.Mode.GROUND, null);
+                                                if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Started recording allowed area '" + id + "' (ground mode)"), false);
+                                                else ctx.getSource().sendFailure(Component.literal("Failed to start recording"));
+                                                return ok ? 1 : 0;
+                                            })
+                                            .then(
+                                                Commands.argument("y", IntegerArgumentType.integer())
+                                                    .executes(ctx -> {
+                                                        ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                                        String id = StringArgumentType.getString(ctx, "id");
+                                                        int y = IntegerArgumentType.getInteger(ctx, "y");
+                                                        boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.start(sp, id,
+                                                            com.bobby.valorant.skysmoke.SkySmokeArea.Type.ALLOWED,
+                                                            com.bobby.valorant.skysmoke.SkySmokeArea.Mode.GROUND, y);
+                                                        if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Started recording allowed area '" + id + "' (ground mode) at y=" + y), false);
+                                                        else ctx.getSource().sendFailure(Component.literal("Failed to start recording"));
+                                                        return ok ? 1 : 0;
+                                                    })
+                                            )
+                                    )
+                                    .then(
+                                        Commands.literal("fixed")
+                                            .then(
+                                                Commands.argument("y", IntegerArgumentType.integer())
+                                                    .executes(ctx -> {
+                                                        ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                                        String id = StringArgumentType.getString(ctx, "id");
+                                                        int y = IntegerArgumentType.getInteger(ctx, "y");
+                                                        boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.start(sp, id,
+                                                            com.bobby.valorant.skysmoke.SkySmokeArea.Type.ALLOWED,
+                                                            com.bobby.valorant.skysmoke.SkySmokeArea.Mode.FIXED_Y, y);
+                                                        if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Started recording allowed area '" + id + "' (fixed Y=" + y + ")"), false);
+                                                        else ctx.getSource().sendFailure(Component.literal("Failed to start recording"));
+                                                        return ok ? 1 : 0;
+                                                    })
+                                            )
+                                    )
+                            )
+                    )
+                    .then(
+                        Commands.literal("add")
+                            .executes(ctx -> {
+                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.addPoint(sp);
+                                if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Added point at your location"), false);
+                                else ctx.getSource().sendFailure(Component.literal("No active recording; use /valorant area record start"));
+                                return ok ? 1 : 0;
+                            })
+                    )
+                    .then(
+                        Commands.literal("undo")
+                            .executes(ctx -> {
+                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.undo(sp);
+                                if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Removed last point"), false);
+                                else ctx.getSource().sendFailure(Component.literal("Nothing to undo"));
+                                return ok ? 1 : 0;
+                            })
+                    )
+                    .then(
+                        Commands.literal("clear")
+                            .executes(ctx -> {
+                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.clear(sp);
+                                if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Cleared all points"), false);
+                                else ctx.getSource().sendFailure(Component.literal("No active recording"));
+                                return ok ? 1 : 0;
+                            })
+                    )
+                    .then(
+                        Commands.literal("setY")
+                            .then(
+                                Commands.argument("y", IntegerArgumentType.integer())
+                                    .executes(ctx -> {
+                                        ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                        int y = IntegerArgumentType.getInteger(ctx, "y");
+                                        boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.setY(sp, y);
+                                        if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Set area Y to " + y), false);
+                                        else ctx.getSource().sendFailure(Component.literal("No active recording"));
+                                        return ok ? 1 : 0;
+                                    })
+                            )
+                    )
+                    .then(
+                        Commands.literal("save")
+                            .executes(ctx -> {
+                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.save(sp);
+                                if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Saved allowed area"), false);
+                                else ctx.getSource().sendFailure(Component.literal("Failed to save (need 3+ points)"));
+                                return ok ? 1 : 0;
+                            })
+                    )
+                    .then(
+                        Commands.literal("cancel")
+                            .executes(ctx -> {
+                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.cancel(sp);
+                                if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Cancelled recording"), false);
+                                else ctx.getSource().sendFailure(Component.literal("No active recording"));
+                                return ok ? 1 : 0;
+                            })
+                    )
+                    .then(
+                        Commands.literal("status")
+                            .executes(ctx -> {
+                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                String status = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.status(sp);
+                                ctx.getSource().sendSuccess(() -> Component.literal(status), false);
+                                return 1;
+                            })
+                    )
+            )
+            .then(
+                Commands.literal("toggle")
+                    .then(
+                        Commands.argument("id", StringArgumentType.word())
+                            .then(
+                                Commands.argument("enabled", StringArgumentType.word())
+                                    .executes(ctx -> {
+                                        ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                        String id = StringArgumentType.getString(ctx, "id");
+                                        String enabledStr = StringArgumentType.getString(ctx, "enabled").toLowerCase();
+                                        boolean enabled = enabledStr.equals("true") || enabledStr.equals("enable") || enabledStr.equals("on");
+
+                                        com.bobby.valorant.skysmoke.SkySmokeManager.toggleArea(sp.getServer(), sp.level().dimension().location(), id, enabled);
+                                        ctx.getSource().sendSuccess(() -> Component.literal("Toggled allowed area '" + id + "' " + (enabled ? "enabled" : "disabled")), false);
+                                        return 1;
+                                    })
+                            )
+                    )
+            )
+            .then(
+                Commands.literal("list")
+                    .executes(ctx -> {
+                        ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                        var areas = com.bobby.valorant.skysmoke.SkySmokeManager.get((ServerLevel) sp.level());
+                        if (areas == null || areas.allowed().isEmpty()) {
+                            ctx.getSource().sendSuccess(() -> Component.literal("No allowed areas defined"), false);
+                            return 1;
+                        }
+
+                        StringBuilder sb = new StringBuilder("Allowed areas:\n");
+                        for (var entry : areas.allowed().entrySet()) {
+                            var area = entry.getValue();
+                            sb.append("  ").append(entry.getKey())
+                              .append(" (").append(area.mode().name().toLowerCase())
+                              .append(area.mode() == com.bobby.valorant.skysmoke.SkySmokeArea.Mode.FIXED_Y ? ",y=" + area.y() : "")
+                              .append(", ").append(area.vertices().size()).append(" verts")
+                              .append(area.enabled() ? ", enabled" : ", disabled")
+                              .append(")\n");
+                        }
+                        ctx.getSource().sendSuccess(() -> Component.literal(sb.toString().trim()), false);
+                        return 1;
+                    })
+            )
+            .then(
+                Commands.literal("reload")
+                    .executes(ctx -> {
+                        var server = ctx.getSource().getServer();
+                        if (server == null) return 0;
+                        com.bobby.valorant.skysmoke.SkySmokeManager.load(server);
+                        ctx.getSource().sendSuccess(() -> Component.literal("Reloaded Sky Smoke areas"), true);
+                        return 1;
+                    })
+            );
+
+        var skySmokeBlockCommands =
+            Commands.literal("block").requires(s -> s.hasPermission(2))
+            .then(
+                Commands.literal("record")
+                    .then(
+                        Commands.literal("start").requires(s -> s.hasPermission(2))
+                            .then(
+                                Commands.argument("id", StringArgumentType.word())
+                                    .then(
+                                        Commands.literal("ground")
+                                            .executes(ctx -> {
+                                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                                String id = StringArgumentType.getString(ctx, "id");
+                                                boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.start(sp, id,
+                                                    com.bobby.valorant.skysmoke.SkySmokeArea.Type.BLOCKED,
+                                                    com.bobby.valorant.skysmoke.SkySmokeArea.Mode.GROUND, null);
+                                                if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Started recording blocked area '" + id + "' (ground mode)"), false);
+                                                else ctx.getSource().sendFailure(Component.literal("Failed to start recording"));
+                                                return ok ? 1 : 0;
+                                            })
+                                    )
+                            )
+                    )
+                    .then(
+                        Commands.literal("add")
+                            .executes(ctx -> {
+                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.addPoint(sp);
+                                if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Added point at your location"), false);
+                                else ctx.getSource().sendFailure(Component.literal("No active recording; use /valorant block record start"));
+                                return ok ? 1 : 0;
+                            })
+                    )
+                    .then(
+                        Commands.literal("undo")
+                            .executes(ctx -> {
+                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.undo(sp);
+                                if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Removed last point"), false);
+                                else ctx.getSource().sendFailure(Component.literal("Nothing to undo"));
+                                return ok ? 1 : 0;
+                            })
+                    )
+                    .then(
+                        Commands.literal("clear")
+                            .executes(ctx -> {
+                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.clear(sp);
+                                if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Cleared all points"), false);
+                                else ctx.getSource().sendFailure(Component.literal("No active recording"));
+                                return ok ? 1 : 0;
+                            })
+                    )
+                    .then(
+                        Commands.literal("save")
+                            .executes(ctx -> {
+                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.save(sp);
+                                if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Saved blocked area"), false);
+                                else ctx.getSource().sendFailure(Component.literal("Failed to save (need 3+ points)"));
+                                return ok ? 1 : 0;
+                            })
+                    )
+                    .then(
+                        Commands.literal("cancel")
+                            .executes(ctx -> {
+                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                boolean ok = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.cancel(sp);
+                                if (ok) ctx.getSource().sendSuccess(() -> Component.literal("Cancelled recording"), false);
+                                else ctx.getSource().sendFailure(Component.literal("No active recording"));
+                                return ok ? 1 : 0;
+                            })
+                    )
+                    .then(
+                        Commands.literal("status")
+                            .executes(ctx -> {
+                                ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                String status = com.bobby.valorant.skysmoke.SkySmokeAreaRecording.status(sp);
+                                ctx.getSource().sendSuccess(() -> Component.literal(status), false);
+                                return 1;
+                            })
+                    )
+            )
+            .then(
+                Commands.literal("toggle")
+                    .then(
+                        Commands.argument("id", StringArgumentType.word())
+                            .then(
+                                Commands.argument("enabled", StringArgumentType.word())
+                                    .executes(ctx -> {
+                                        ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                                        String id = StringArgumentType.getString(ctx, "id");
+                                        String enabledStr = StringArgumentType.getString(ctx, "enabled").toLowerCase();
+                                        boolean enabled = enabledStr.equals("true") || enabledStr.equals("enable") || enabledStr.equals("on");
+
+                                        com.bobby.valorant.skysmoke.SkySmokeManager.toggleArea(sp.getServer(), sp.level().dimension().location(), id, enabled);
+                                        ctx.getSource().sendSuccess(() -> Component.literal("Toggled blocked area '" + id + "' " + (enabled ? "enabled" : "disabled")), false);
+                                        return 1;
+                                    })
+                            )
+                    )
+            )
+            .then(
+                Commands.literal("list")
+                    .executes(ctx -> {
+                        ServerPlayer sp = ctx.getSource().getPlayerOrException();
+                        var areas = com.bobby.valorant.skysmoke.SkySmokeManager.get((ServerLevel) sp.level());
+                        if (areas == null || areas.blocked().isEmpty()) {
+                            ctx.getSource().sendSuccess(() -> Component.literal("No blocked areas defined"), false);
+                            return 1;
+                        }
+
+                        StringBuilder sb = new StringBuilder("Blocked areas:\n");
+                        for (var entry : areas.blocked().entrySet()) {
+                            var area = entry.getValue();
+                            sb.append("  ").append(entry.getKey())
+                              .append(" (").append(area.mode().name().toLowerCase())
+                              .append(", ").append(area.vertices().size()).append(" verts")
+                              .append(area.enabled() ? ", enabled" : ", disabled")
+                              .append(")\n");
+                        }
+                        ctx.getSource().sendSuccess(() -> Component.literal(sb.toString().trim()), false);
+                        return 1;
+                    })
+            );
 
         // -------- root /valorant --------
         dispatcher.register(
@@ -816,15 +1394,20 @@ public final class ValorantCommand {
                 .then(fireballCharges)
                 .then(curveballCharges)
                 .then(blazeCharges)
+                .then(skySmokeCharges)
                 .then(credits)
                 .then(team)
                 .then(round)
                 .then(wallTest)
                 .then(killfeedTest)
                 .then(testCommand)
+                .then(skySmokeCalibration)
+                .then(skySmokeAreaCommands)
+                .then(skySmokeBlockCommands)
         );
     }
 
+    // -------- Utility methods --------
     private static void spawnScheduledParticles(ServerPlayer sp,
                                                ParticleOptions po,
                                                double dx, double dy, double dz,
@@ -875,6 +1458,15 @@ public final class ValorantCommand {
             setChargesForSlot(player, Ability.Slot.C, amount);
         }
         Component message = Component.translatable("commands.valorant.wall.charges.set", amount, players.size());
+        source.sendSuccess(() -> message, true);
+        return players.size();
+    }
+
+    private static int setSkySmokeCharges(CommandSourceStack source, Collection<ServerPlayer> players, int amount) {
+        for (ServerPlayer player : players) {
+            setChargesForSlot(player, Ability.Slot.E, amount);
+        }
+        Component message = Component.translatable("commands.valorant.skysmoke.charges.set", amount, players.size());
         source.sendSuccess(() -> message, true);
         return players.size();
     }
