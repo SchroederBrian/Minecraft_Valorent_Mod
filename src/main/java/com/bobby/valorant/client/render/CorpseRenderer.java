@@ -1,19 +1,21 @@
 package com.bobby.valorant.client.render;
 
+import javax.annotation.Nonnull;
+
 import com.bobby.valorant.Config;
 import com.bobby.valorant.client.render.state.CorpseRenderState;
 import com.bobby.valorant.world.agent.Agent;
 import com.bobby.valorant.world.entity.CorpseEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-
-import javax.annotation.Nonnull;
 
 public class CorpseRenderer extends LivingEntityRenderer<
         CorpseEntity,
@@ -86,6 +88,7 @@ public class CorpseRenderer extends LivingEntityRenderer<
         super.render(state, pose, buffer, packedLight);
         pose.popPose();
     }
+
 
     @Override
     protected float getShadowRadius(CorpseRenderState state) {

@@ -9,6 +9,10 @@
 		},
 		{
 		  "when": "firstperson_righthand",
+		  "model": { "type": "minecraft:model", "model": "valorant:item/blaze_hand_3d" }
+		},
+		{
+		  "when": "thirdperson_righthand",
 		  "model": { "type": "minecraft:model", "model": "minecraft:item/air" }
 		}
 	  ],
