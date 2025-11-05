@@ -3,14 +3,14 @@ type = fancymenu_layout
 layout-meta {
   identifier = %fancymenu:universal_layout%
   render_custom_elements_behind_vanilla = false
-  last_edited_time = 1762174185434
+  last_edited_time = 1762283580133
   is_enabled = true
   randommode = false
   randomgroup = 1
   randomonlyfirsttime = false
   layout_index = 0
-  universal_layout_blacklist = buyscreen_layout;bob_buyscreen;com.bobby.valorant.client.BuyScreen;buyscreen;gameselection;pause_screen;
-  [loading_requirement_container_meta:a486bf42-857c-4d6a-896d-f01e5d559aa8-1762174084176] = [groups:][instances:]
+  universal_layout_blacklist = buyscreen_layout;bob_buyscreen;com.bobby.valorant.client.BuyScreen;buyscreen;gameselection;pause_screen;ingameshop;
+  [loading_requirement_container_meta:f73e61e8-99ef-4091-8b45-666bfcb06ad0-1762283565021] = [groups:][instances:]
 }
 
 customization {
