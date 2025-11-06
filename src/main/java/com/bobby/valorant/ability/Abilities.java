@@ -76,7 +76,7 @@ public final class Abilities {
                 .baseCharges(0).effect((sp, ctx) -> {}).build();
         Ability br_e = Ability.builder().id("brim_e_sky_smoke").slot(Ability.Slot.E)
                 .displayName(Component.literal("Sky Smoke")).description(Component.literal("Place smokes."))
-                .iconSupplier(() -> new ItemStack(ModItems.HAVEN_MAP.get()))
+                .iconSupplier(() -> new ItemStack(ModItems.SKY_SMOKE_ITEM.get()))
                 .baseCharges(3)
                 .effect(com.bobby.valorant.ability.effects.AbilityEffects::brimSkySmoke)
                 .build();

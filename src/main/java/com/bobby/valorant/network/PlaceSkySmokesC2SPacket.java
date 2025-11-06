@@ -172,7 +172,7 @@ public record PlaceSkySmokesC2SPacket(List<BlockPos> positions) implements Custo
             stand.setShowArms(false);
             stand.setNoBasePlate(true);
             stand.setItemSlot(EquipmentSlot.HEAD,
-                com.bobby.valorant.registry.ModItems.HAVEN_MAP.get().getDefaultInstance());
+                com.bobby.valorant.registry.ModItems.SKY_SMOKE_ITEM.get().getDefaultInstance());
 
             level.addFreshEntity(stand);
 

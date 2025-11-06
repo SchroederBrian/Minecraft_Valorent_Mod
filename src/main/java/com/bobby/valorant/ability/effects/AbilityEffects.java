@@ -31,7 +31,7 @@ public final class AbilityEffects {
     }
 
 	public static void brimSkySmoke(ServerPlayer player, AbilityUseContext ctx) {
-		equipSelected(player, new net.minecraft.world.item.ItemStack(com.bobby.valorant.registry.ModItems.HAVEN_MAP.get()));
+		equipSelected(player, new net.minecraft.world.item.ItemStack(com.bobby.valorant.registry.ModItems.SKY_SMOKE_ITEM.get()));
 	}
 
     private static void equipSelected(ServerPlayer player, net.minecraft.world.item.ItemStack toEquip) {

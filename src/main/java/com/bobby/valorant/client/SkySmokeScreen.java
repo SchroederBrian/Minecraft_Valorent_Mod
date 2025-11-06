@@ -21,17 +21,17 @@ import com.bobby.valorant.client.SkySmokeAreaClient;
 import java.io.InputStream;
 import java.util.Optional;
 
-public class HavenMapScreen extends Screen {
+public class SkySmokeScreen extends Screen {
     public static final Logger LOGGER = LogManager.getLogger();
 
-    // Deine Textur
+    // Sky Smoke GUI Texture
     private static final ResourceLocation MAP_TEX =
-            ResourceLocation.parse("valorant:textures/gui/haven_map.png");
+            ResourceLocation.parse("valorant:skysmoke_map");
 
     // echte PNG-Maße (werden in init() gelesen)
     private int texW = 256;
     private int texH = 256;
-    private boolean hasPngTexture = false; // true if valorant:textures/gui/haven_map.png exists
+    private boolean hasPngTexture = false; // true if valorant:textures/gui/sprites/skysmoke_map.png exists
 
     // Zielrechteck
     private int drawW, drawH, drawX, drawY;
@@ -47,12 +47,12 @@ public class HavenMapScreen extends Screen {
     private int calibrationStep = 0;
     private String calibrationPrompt = "";
 
-    public HavenMapScreen() {
-        super(Component.literal("Haven Map"));
+    public SkySmokeScreen() {
+        super(Component.literal("Sky Smoke Map"));
     }
 
     public static void openCalibrationMode(int step, String prompt) {
-        HavenMapScreen screen = new HavenMapScreen();
+        SkySmokeScreen screen = new SkySmokeScreen();
         screen.isCalibrationMode = true;
         screen.calibrationStep = step;
         screen.calibrationPrompt = prompt;
@@ -136,6 +136,7 @@ public class HavenMapScreen extends Screen {
         int rDrawX = drawX;
         int rDrawY = drawY;
         if (hasPngTexture) {
+            // Use PNG rendering with UV coordinates for proper marker/clicking functionality
             int srcU = (int)Math.floor(viewU0 * texW);
             int srcV = (int)Math.floor(viewV0 * texH);
             int srcW = (int)Math.ceil(viewUw * texW);
@@ -146,9 +147,10 @@ public class HavenMapScreen extends Screen {
             if (srcV + srcH > texH) srcH = texH - srcV;
             g.blit(MAP_TEX, rDrawX, rDrawY, srcU, srcV, rDrawW, rDrawH, texW, texH);
         } else {
+            // Fallback to sprite rendering if PNG not available
             g.blitSprite(
                 RenderPipelines.GUI_TEXTURED,
-                ResourceLocation.parse("valorant:haven_map"),
+                ResourceLocation.parse("valorant:skysmoke_map"),
                 rDrawX, rDrawY,
                 rDrawW, rDrawH
             );

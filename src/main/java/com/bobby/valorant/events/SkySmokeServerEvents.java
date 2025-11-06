@@ -69,7 +69,7 @@ public final class SkySmokeServerEvents {
         java.util.List<ArmorStand> nearby =
             level.getEntitiesOfClass(ArmorStand.class, box, as -> {
                 var head = as.getItemBySlot(EquipmentSlot.HEAD);
-                return !head.isEmpty() && head.is(com.bobby.valorant.registry.ModItems.HAVEN_MAP.get());
+                return !head.isEmpty() && head.is(com.bobby.valorant.registry.ModItems.SKY_SMOKE_ITEM.get());
             });
 
         boolean wasInSmoke = playerInSmoke.getOrDefault(sp, false);

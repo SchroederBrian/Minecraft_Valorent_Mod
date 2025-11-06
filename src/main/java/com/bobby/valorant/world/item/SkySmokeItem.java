@@ -6,8 +6,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
-public class HavenMapItem extends Item {
-	public HavenMapItem(Properties properties) {
+public class SkySmokeItem extends Item {
+	public SkySmokeItem(Properties properties) {
 		super(properties);
 	}
 
@@ -23,7 +23,7 @@ public class HavenMapItem extends Item {
 	private static void openMapScreen() {
 		var mc = net.minecraft.client.Minecraft.getInstance();
 		if (mc == null) return;
-		mc.setScreen(new com.bobby.valorant.client.HavenMapScreen());
+		mc.setScreen(new com.bobby.valorant.client.SkySmokeScreen());
 	}
 }
 

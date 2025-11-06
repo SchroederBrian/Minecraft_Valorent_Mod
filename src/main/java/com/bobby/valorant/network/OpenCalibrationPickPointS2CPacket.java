@@ -37,7 +37,7 @@ public record OpenCalibrationPickPointS2CPacket(
     public static void handle(OpenCalibrationPickPointS2CPacket packet, IPayloadContext context) {
         // Client-side: open HavenMapScreen in calibration mode
         context.enqueueWork(() -> {
-            com.bobby.valorant.client.HavenMapScreen.openCalibrationMode(packet.step(), packet.prompt());
+            com.bobby.valorant.client.SkySmokeScreen.openCalibrationMode(packet.step(), packet.prompt());
         });
     }
 }

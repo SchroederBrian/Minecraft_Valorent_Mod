@@ -37,6 +37,9 @@ public final class WeaponClientEvents {
         if (held.is(com.bobby.valorant.registry.ModItems.CURVEBALL.get())) {
             return; // HotbarLockEvents will handle removal and restore
         }
+        if (held.is(com.bobby.valorant.registry.ModItems.SKY_SMOKE_ITEM.get())) {
+            return; // HotbarLockEvents will handle removal and restore
+        }
         int current = getCurrentType(player);
         double dy = event.getScrollDeltaY();
         int next = (current + (dy > 0 ? 2 : 1)) % 3; // cycle opposite direction on positive delta

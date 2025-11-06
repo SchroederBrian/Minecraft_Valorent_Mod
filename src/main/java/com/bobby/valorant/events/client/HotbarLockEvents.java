@@ -35,6 +35,9 @@ public class HotbarLockEvents {
             } else if (heldItem.is(ModItems.STIMBEACONHAND.get())) {
                 ClientPacketDistributor.sendToServer(new com.bobby.valorant.network.RemoveStimBeaconPacket());
                 event.setCanceled(true);
+            } else if (heldItem.is(ModItems.SKY_SMOKE_ITEM.get())) {
+                ClientPacketDistributor.sendToServer(new com.bobby.valorant.network.RemoveSkySmokePacket());
+                event.setCanceled(true);
             }
         }
     }

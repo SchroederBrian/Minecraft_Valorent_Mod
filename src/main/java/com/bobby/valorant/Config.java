@@ -818,7 +818,7 @@ public final class Config {
             // Knife configuration
             builder.push("knife");
             knifeSpeedMultiplier = builder.comment("Movement speed multiplier when holding knife (1.0 = normal speed, 1.2 = 20% faster).")
-                    .defineInRange("speedMultiplier", 1.2D, 0.1D, 5.0D);
+                    .defineInRange("speedMultiplier", 1.5D, 0.1D, 5.0D);
             builder.pop();
 
             builder.pop();

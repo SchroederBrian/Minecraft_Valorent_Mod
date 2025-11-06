@@ -20,6 +20,7 @@ import com.bobby.valorant.network.RemoveBlastPackPacket;
 import com.bobby.valorant.network.RemoveCurveballPacket;
 import com.bobby.valorant.network.RemoveFireWallPacket;
 import com.bobby.valorant.network.RemoveFireballPacket;
+import com.bobby.valorant.network.RemoveSkySmokePacket;
 import com.bobby.valorant.network.RemoveStimBeaconPacket;
 import com.bobby.valorant.network.SelectAgentC2SPacket;
 import com.bobby.valorant.network.ShootGunPacket;
@@ -69,6 +70,7 @@ public final class ModNetworking {
                 .playToServer(RemoveFireballPacket.TYPE, RemoveFireballPacket.STREAM_CODEC, RemoveFireballPacket::handle)
                 .playToServer(RemoveBlastPackPacket.TYPE, RemoveBlastPackPacket.STREAM_CODEC, RemoveBlastPackPacket::handle)
                 .playToServer(RemoveStimBeaconPacket.TYPE, RemoveStimBeaconPacket.STREAM_CODEC, RemoveStimBeaconPacket::handle)
+                .playToServer(RemoveSkySmokePacket.TYPE, RemoveSkySmokePacket.STREAM_CODEC, RemoveSkySmokePacket::handle)
                 .playToServer(PlantSpikePacket.TYPE, PlantSpikePacket.STREAM_CODEC, PlantSpikePacket::handle)
                 .playToServer(DefuseSpikePacket.TYPE, DefuseSpikePacket.STREAM_CODEC, DefuseSpikePacket::handle)
                 .playToServer(EquipSpikePacket.TYPE, EquipSpikePacket.STREAM_CODEC, EquipSpikePacket::handle)
