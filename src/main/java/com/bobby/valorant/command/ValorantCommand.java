@@ -1000,7 +1000,7 @@ public final class ValorantCommand {
                                     String weaponId = key != null ? key.toString() : "valorant:vandal";
 
                                     var pkt = new com.bobby.valorant.network.KillfeedMessageS2CPacket(
-                                        killer.getScoreboardName(), victim.getScoreboardName(), weaponId);
+                                        killer.getScoreboardName(), victim.getScoreboardName(), weaponId, Agent.UNSELECTED.getId(), Agent.UNSELECTED.getId());
                                     var server = ctx.getSource().getServer();
                                     if (server != null) {
                                         for (ServerPlayer p : server.getPlayerList().getPlayers()) {
@@ -1019,7 +1019,7 @@ public final class ValorantCommand {
                                             String weaponId = w.contains(":") ? w : ("valorant:" + w);
 
                                             var pkt = new com.bobby.valorant.network.KillfeedMessageS2CPacket(
-                                                killer.getScoreboardName(), victim.getScoreboardName(), weaponId);
+                                                killer.getScoreboardName(), victim.getScoreboardName(), weaponId, Agent.UNSELECTED.getId(), Agent.UNSELECTED.getId());
                                             var server = ctx.getSource().getServer();
                                             if (server != null) {
                                                 for (ServerPlayer p : server.getPlayerList().getPlayers()) {

@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import com.bobby.valorant.Config;
+import com.bobby.valorant.world.agent.Agent;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,8 +18,12 @@ public final class KillfeedOverlay {
     private static final Deque<Entry> entries = new ArrayDeque<>();
 
     public static void push(String killerName, String victimName, ItemStack weaponIcon) {
+        push(killerName, victimName, weaponIcon, Agent.UNSELECTED, Agent.UNSELECTED);
+    }
+
+    public static void push(String killerName, String victimName, ItemStack weaponIcon, Agent killerAgent, Agent victimAgent) {
         long now = System.currentTimeMillis();
-        entries.addFirst(new Entry(killerName, victimName, weaponIcon, now));
+        entries.addFirst(new Entry(killerName, victimName, weaponIcon, killerAgent, victimAgent, now));
         // Trim to max messages immediately
         int max = Config.COMMON.killfeedMaxMessages.get();
         while (entries.size() > Math.max(1, max)) {
@@ -68,18 +73,29 @@ public final class KillfeedOverlay {
             int kChipW = (int) Math.round(kTextW * scale) + padX * 2;
             int iconW = iconSize + padX * 2;
             int vChipW = (int) Math.round(vTextW * scale) + padX * 2;
-            int rowW = kChipW + gap + iconW + gap + vChipW;
+            int kAgentW = iconSize + gap; // Agent icon + gap
+            int vAgentW = iconSize + gap; // Agent icon + gap
+            int rowW = kAgentW + kChipW + gap + iconW + gap + vChipW + vAgentW;
 
             int left = sw - rightMargin - rowW;
 
+            // Killer agent icon
+            int kAgentX = left;
+            int kAgentY = y + (rowH - 16) / 2;
+            ItemStack killerAgentIcon = AgentHeadIcons.get(e.killerAgent);
+            if (!killerAgentIcon.isEmpty()) {
+                g.renderItem(killerAgentIcon, kAgentX, kAgentY);
+            }
+
             // Killer chip
-            g.fill(left, y, left + kChipW, y + rowH, killerBg);
-            int kTextX = left + padX + (int) Math.round((scale - 1.0) * 2); // small nudge for scale
+            int kChipX = left + kAgentW;
+            g.fill(kChipX, y, kChipX + kChipW, y + rowH, killerBg);
+            int kTextX = kChipX + padX + (int) Math.round((scale - 1.0) * 2); // small nudge for scale
             int kTextY = y + (rowH - mc.font.lineHeight) / 2;
             g.drawString(mc.font, killer, kTextX, kTextY, textCol, false);
 
             // Icon chip
-            int iconChipX = left + kChipW + gap;
+            int iconChipX = kChipX + kChipW + gap;
             g.fill(iconChipX, y, iconChipX + iconW, y + rowH, killerBg);
             int iconX = iconChipX + padX + Math.max(0, (iconW - padX * 2 - 16) / 2);
             int iconY = y + (rowH - 16) / 2;
@@ -94,14 +110,26 @@ public final class KillfeedOverlay {
             int vTextY = y + (rowH - mc.font.lineHeight) / 2;
             g.drawString(mc.font, victim, vTextX, vTextY, textCol, false);
 
+            // Victim agent icon
+            int vAgentX = vChipX + vChipW + gap;
+            int vAgentY = y + (rowH - 16) / 2;
+            ItemStack victimAgentIcon = AgentHeadIcons.get(e.victimAgent);
+            if (!victimAgentIcon.isEmpty()) {
+                g.renderItem(victimAgentIcon, vAgentX, vAgentY);
+            }
+
             y += rowH + lineSpacing;
             count++;
         }
     }
 
     public static void pushId(String killerName, String victimName, String weaponItemId) {
+        pushId(killerName, victimName, weaponItemId, Agent.UNSELECTED, Agent.UNSELECTED);
+    }
+
+    public static void pushId(String killerName, String victimName, String weaponItemId, Agent killerAgent, Agent victimAgent) {
         ItemStack icon = resolveIcon(weaponItemId);
-        push(killerName, victimName, icon);
+        push(killerName, victimName, icon, killerAgent, victimAgent);
     }
 
     private static ItemStack resolveIcon(String weaponItemId) {
@@ -129,7 +157,7 @@ public final class KillfeedOverlay {
         return ItemStack.EMPTY;
     }
 
-    private record Entry(String killer, String victim, ItemStack weaponIcon, long createdMs) {}
+    private record Entry(String killer, String victim, ItemStack weaponIcon, Agent killerAgent, Agent victimAgent, long createdMs) {}
 }
 
 

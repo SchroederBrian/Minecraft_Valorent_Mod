@@ -1,6 +1,7 @@
 package com.bobby.valorant.events;
 
 import com.bobby.valorant.Valorant;
+import com.bobby.valorant.client.lock.PlayerAgentState;
 import com.bobby.valorant.registry.ModItems;
 import com.bobby.valorant.round.RoundController;
 import net.minecraft.server.level.ServerPlayer;
@@ -96,7 +97,13 @@ public final class ServerWeaponEvents {
             net.minecraft.resources.ResourceLocation wid = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(weapon.getItem());
             String weaponId = wid != null ? wid.toString() : "";
 
-            com.bobby.valorant.network.KillfeedMessageS2CPacket pkt = new com.bobby.valorant.network.KillfeedMessageS2CPacket(killerName, victimName, weaponId);
+            // Get agent information for both players
+            com.bobby.valorant.world.agent.Agent killerAgent = PlayerAgentState.getAgentForPlayer(killer);
+            com.bobby.valorant.world.agent.Agent victimAgent = PlayerAgentState.getAgentForPlayer(sp);
+            String killerAgentId = killerAgent != null ? killerAgent.getId() : "";
+            String victimAgentId = victimAgent != null ? victimAgent.getId() : "";
+
+            com.bobby.valorant.network.KillfeedMessageS2CPacket pkt = new com.bobby.valorant.network.KillfeedMessageS2CPacket(killerName, victimName, weaponId, killerAgentId, victimAgentId);
             for (ServerPlayer p : sp.getServer().getPlayerList().getPlayers()) {
                 net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(p, pkt);
             }
