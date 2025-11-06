@@ -60,7 +60,7 @@ public final class WeaponClientEvents {
     private static int getCurrentType(LocalPlayer player) {
         ItemStack s = player.getMainHandItem();
         if (s.is(ModItems.VANDAL_RIFLE.get())) return 0; // rifle
-        if (s.is(ModItems.GHOST.get())) return 1; // pistol
+        if (s.is(ModItems.CLASSIC.get()) || s.is(ModItems.GHOST.get()) || s.is(ModItems.SHERIFF.get()) || s.is(ModItems.FRENZY.get())) return 1; // pistol
         return 2; // knife/other
     }
 

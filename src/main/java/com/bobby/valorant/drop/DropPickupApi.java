@@ -123,6 +123,11 @@ public final class DropPickupApi {
             return Config.COMMON.vandalDropYOffset.get();
         }
 
+        // Sheriff starts higher
+        if ("valorant:sheriff".equals(itemId.toString())) {
+            return Config.COMMON.sheriffDropYOffset.get();
+        }
+
         // Default offset for any other items
         return 0.0D;
     }

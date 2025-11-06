@@ -8,9 +8,9 @@ public enum ShopItem {
     // Sidearms
     SIDEARM_CLASSIC(Category.SIDEARM, "Classic", 0, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(ModItems.CLASSIC.get()); }},
     SIDEARM_SHORTY(Category.SIDEARM, "Shorty", 300, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(Items.WOODEN_SWORD); }},
-    SIDEARM_FRENZY(Category.SIDEARM, "Frenzy", 450, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(Items.GOLDEN_SWORD); }},
+    SIDEARM_FRENZY(Category.SIDEARM, "Frenzy", 450, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(ModItems.FRENZY.get()); }},
     SIDEARM_GHOST(Category.SIDEARM, "Ghost", 500, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(ModItems.GHOST.get()); }},
-    SIDEARM_SHERIFF(Category.SIDEARM, "Sheriff", 800, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(Items.IRON_SWORD); }},
+    SIDEARM_SHERIFF(Category.SIDEARM, "Sheriff", 800, Slot.SECONDARY) { public ItemStack giveStack() { return new ItemStack(ModItems.SHERIFF.get()); }},
 
     // SMGs
     SMG_STINGER(Category.SMG, "Stinger", 1100, Slot.PRIMARY) { public ItemStack giveStack() { return new ItemStack(Items.CROSSBOW); }},

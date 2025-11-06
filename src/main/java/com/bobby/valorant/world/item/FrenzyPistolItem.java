@@ -22,10 +22,10 @@
                 return Config.COMMON.frenzySpreadDegrees.get();
             }
 
-            @Override
-            protected int getCooldownTicks() {
-                return Config.COMMON.frenzyCooldownTicks.get();
-            }
+    @Override
+    public double getFireRateShotsPerSecond() {
+        return Config.COMMON.frenzyFireRateShotsPerSecond.get();
+    }
 
             @Override
             protected int getTracerParticles() {
@@ -51,4 +51,19 @@
             public int getReloadTimeTicks() {
                 return Config.COMMON.frenzyReloadTimeTicks.get();
             }
+
+            @Override
+            public boolean isAutomatic() {
+                return Config.COMMON.frenzyAutomatic.get();
+            }
+
+            @Override
+            public double getRecoilPitchPerShot() {
+                return Config.COMMON.frenzyRecoilPitchDegrees.get();
+            }
+
+    @Override
+    public double getAutomaticFireRateShotsPerSecond() {
+        return Config.COMMON.frenzyAutomaticFireRateShotsPerSecond.get();
+    }
         }

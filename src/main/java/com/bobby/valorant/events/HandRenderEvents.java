@@ -6,7 +6,6 @@ import com.bobby.valorant.client.render.ReloadAnimationRenderer;
 import com.bobby.valorant.client.render.KnifeAnimationRenderer;
 import com.bobby.valorant.client.render.ShootAnimationRenderer;
 import com.bobby.valorant.player.ReloadStateData;
-import com.bobby.valorant.player.KnifeAnimationStateData;
 import com.bobby.valorant.world.item.ClassicPistolItem;
 import com.bobby.valorant.world.item.KnifeItem;
 import net.neoforged.api.distmarker.Dist;

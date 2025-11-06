@@ -23,8 +23,8 @@ public class MollyLauncherItem extends GunItem {
     }
 
     @Override
-    protected int getCooldownTicks() {
-        return Config.COMMON.mollyLauncherCooldownTicks.get();
+    public double getFireRateShotsPerSecond() {
+        return Config.COMMON.mollyLauncherFireRateShotsPerSecond.get();
     }
 
     @Override

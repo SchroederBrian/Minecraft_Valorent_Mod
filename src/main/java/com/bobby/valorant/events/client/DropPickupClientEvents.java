@@ -132,6 +132,11 @@ public final class DropPickupClientEvents {
             return com.bobby.valorant.Config.COMMON.vandalDropYOffset.get();
         }
 
+        // Sheriff
+        if ("valorant:sheriff".equals(itemId.toString())) {
+            return com.bobby.valorant.Config.COMMON.sheriffDropYOffset.get();
+        }
+
         // Default offset for any other items
         return 0.0D;
     }

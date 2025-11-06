@@ -23,8 +23,8 @@ public class GhostPistolItem extends GunItem {
     }
 
     @Override
-    protected int getCooldownTicks() {
-        return Config.COMMON.ghostCooldownTicks.get();
+    public double getFireRateShotsPerSecond() {
+        return Config.COMMON.ghostFireRateShotsPerSecond.get();
     }
 
     @Override
@@ -50,6 +50,21 @@ public class GhostPistolItem extends GunItem {
     @Override
     public int getReloadTimeTicks() {
         return Config.COMMON.ghostReloadTimeTicks.get();
+    }
+
+    @Override
+    public boolean isAutomatic() {
+        return Config.COMMON.ghostAutomatic.get();
+    }
+
+    @Override
+    public double getRecoilPitchPerShot() {
+        return Config.COMMON.ghostRecoilPitchDegrees.get();
+    }
+
+    @Override
+    public double getAutomaticFireRateShotsPerSecond() {
+        return Config.COMMON.ghostAutomaticFireRateShotsPerSecond.get();
     }
 }
 

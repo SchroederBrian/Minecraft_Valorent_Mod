@@ -13,6 +13,7 @@ set "SOURCE_JAR=%BUILD_DIR%\%MOD_JAR_NAME%"
 set "DEV_RUN_DIR=run"
 set "MOD_FOLDER=%DEV_RUN_DIR%\mods"
 set "TARGET_JAR=%MOD_FOLDER%\%MOD_JAR_NAME%"
+set "VALORANT_CONFIG_FOLDER=%DEV_RUN_DIR%\config"
 
 echo.
 echo Step 1: Build
@@ -28,6 +29,10 @@ if not exist "%SOURCE_JAR%" (
 echo.
 echo Step 3: Prepare run/mods
 if not exist "%MOD_FOLDER%" mkdir "%MOD_FOLDER%"
+
+echo.
+echo Step 4: Deltete old Valorant Config toml
+if exist "%VALORANT_CONFIG_FOLDER%\valorant-common.toml" del /F /Q "%VALORANT_CONFIG_FOLDER%\valorant-common.toml"
 
 echo.
 echo Step 4: Deploy JAR

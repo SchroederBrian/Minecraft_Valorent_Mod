@@ -3,13 +3,13 @@ package com.bobby.valorant.events;
 import com.bobby.valorant.Config;
 import com.bobby.valorant.Valorant;
 import com.bobby.valorant.player.ReloadStateData;
-import com.bobby.valorant.registry.ModItems;
 import com.bobby.valorant.util.SoundManager;
 import com.bobby.valorant.world.item.ClassicPistolItem;
 import com.bobby.valorant.world.item.GhostPistolItem;
 import com.bobby.valorant.world.item.IWeapon;
 import com.bobby.valorant.world.item.KnifeItem;
 import com.bobby.valorant.world.item.VandalRifleItem;
+import com.bobby.valorant.world.item.SheriffItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -18,7 +18,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.WeakHashMap;
 
 @EventBusSubscriber(modid = Valorant.MODID)
@@ -93,6 +92,8 @@ public final class WeaponSwitchEvents {
             return "ghost";
         } else if (weapon instanceof VandalRifleItem) {
             return "vandal";
+        } else if (weapon instanceof SheriffItem) {
+            return "sheriff";
         }
         return null;
     }

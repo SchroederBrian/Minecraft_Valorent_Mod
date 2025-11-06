@@ -107,6 +107,9 @@ public final class ModNetworking {
 				.playToClient(DefuseProgressPacket.TYPE, DefuseProgressPacket.STREAM_CODEC, (pkt, ctx) -> {})
 				.playToServer(com.bobby.valorant.network.PlaceSkySmokesC2SPacket.TYPE, com.bobby.valorant.network.PlaceSkySmokesC2SPacket.STREAM_CODEC, com.bobby.valorant.network.PlaceSkySmokesC2SPacket::handle)
 				.playToServer(SubmitCalibrationPointC2SPacket.TYPE, SubmitCalibrationPointC2SPacket.STREAM_CODEC, SubmitCalibrationPointC2SPacket::handle);
+        // Register late (separate chain) to keep diff minimal
+        event.registrar(NETWORK_VERSION)
+                .playToClient(com.bobby.valorant.network.ApplyRecoilS2CPacket.TYPE, com.bobby.valorant.network.ApplyRecoilS2CPacket.STREAM_CODEC, com.bobby.valorant.network.ApplyRecoilS2CPacket::handle);
     }
 }
 

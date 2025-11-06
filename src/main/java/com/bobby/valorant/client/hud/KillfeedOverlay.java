@@ -146,13 +146,7 @@ public final class KillfeedOverlay {
         if ("defuser".equals(path)) return com.bobby.valorant.registry.ModItems.DEFUSER.get().getDefaultInstance();
         if ("fireball".equals(path)) return com.bobby.valorant.registry.ModItems.FIREBALL.get().getDefaultInstance();
         if ("curveball".equals(path)) return com.bobby.valorant.registry.ModItems.CURVEBALL.get().getDefaultInstance();
-        if ("molly_launcher".equals(path)) return com.bobby.valorant.registry.ModItems.MOLLY_LAUNCHER.get().getDefaultInstance();
-
-        // Common vanilla fallbacks used in codebase
-        if ("bow".equals(path)) return new ItemStack(Items.BOW);
-        if ("trident".equals(path)) return new ItemStack(Items.TRIDENT);
-        if ("iron_axe".equals(path)) return new ItemStack(Items.IRON_AXE);
-        if ("netherite_axe".equals(path)) return new ItemStack(Items.NETHERITE_AXE);
+        if ("sheriff".equals(path)) return com.bobby.valorant.registry.ModItems.SHERIFF.get().getDefaultInstance();
 
         return ItemStack.EMPTY;
     }

@@ -30,9 +30,41 @@ public abstract class GunItem extends Item implements IWeapon {
     protected abstract double getDamage();
     protected abstract double getRange();
     protected abstract double getSpreadDegrees();
-    protected abstract int getCooldownTicks();
+    // Fire rate in shots per second - override per weapon if needed
+    public double getFireRateShotsPerSecond() {
+        return 20.0D / 8; // Default: 2.5 shots per second (8 ticks between shots)
+    }
+
+    // Convert shots per second to ticks for internal use
+    public int getCooldownTicks() {
+        double shotsPerSecond = getFireRateShotsPerSecond();
+        if (shotsPerSecond <= 0.0D) return Integer.MAX_VALUE; // No firing
+        return (int) Math.max(1, Math.round(20.0D / shotsPerSecond)); // Convert back to ticks
+    }
     protected abstract int getTracerParticles();
     protected abstract int getMuzzleParticles();
+
+    // Firing mode - override per weapon if needed
+    public boolean isAutomatic() {
+        return false;
+    }
+
+    // Recoil - vertical camera kick per shot in degrees (client-applied)
+    public double getRecoilPitchPerShot() {
+        return 0.0D;
+    }
+
+    // Automatic fire rate - override per weapon if needed (default to regular cooldown)
+    public double getAutomaticFireRateShotsPerSecond() {
+        return 20.0D / getCooldownTicks(); // Convert ticks to shots per second
+    }
+
+    // Convert shots per second to ticks for internal use
+    public int getAutomaticFireRateTicks() {
+        double shotsPerSecond = getAutomaticFireRateShotsPerSecond();
+        if (shotsPerSecond <= 0.0D) return Integer.MAX_VALUE; // No automatic fire
+        return (int) Math.max(1, Math.round(20.0D / shotsPerSecond)); // Convert back to ticks
+    }
 
     @Override
     public InteractionResult use(Level level, net.minecraft.world.entity.player.Player player, InteractionHand hand) {
@@ -125,6 +157,10 @@ public abstract class GunItem extends Item implements IWeapon {
             return "ghost";
         } else if (this instanceof VandalRifleItem) {
             return "vandal";
+        } else if (this instanceof SheriffItem) {
+            return "sheriff";
+        } else if (this instanceof FrenzyPistolItem) {
+            return "frenzy";
         }
         return "classic"; // fallback
     }

@@ -26,6 +26,9 @@ public record ShootGunPacket() implements CustomPacketPayload {
             return;
         }
 
+        // DEBUG: Log when packet is received
+        com.bobby.valorant.Valorant.LOGGER.info("SERVER: Received ShootGunPacket from {} at tick {}", sp.getName().getString(), sp.level().getGameTime());
+
         // Block shooting while reloading
         if (ReloadStateData.isReloading(sp)) {
             return;
@@ -38,16 +41,12 @@ public record ShootGunPacket() implements CustomPacketPayload {
         // Prefer main hand; fallback to offhand
         ItemStack main = sp.getMainHandItem();
         if (main.getItem() instanceof GunItem gun) {
+            // DEBUG: Log before firing
+            com.bobby.valorant.Valorant.LOGGER.info("SERVER: Firing gun from main hand for {}", sp.getName().getString());
+            
             if (gun.fire(sp, InteractionHand.MAIN_HAND, main)) {
-                // Start cooldown using our custom system
-                int cooldownTicks = 5; // default fallback
-                try {
-                    var cooldownMethod = GunItem.class.getDeclaredMethod("getCooldownTicks");
-                    cooldownMethod.setAccessible(true);
-                    cooldownTicks = (Integer) cooldownMethod.invoke(gun);
-                } catch (Exception e) {
-                    // Use default if reflection fails
-                }
+                // Start cooldown using automatic fire rate for automatic weapons, regular cooldown for semi-auto
+                int cooldownTicks = gun.isAutomatic() ? gun.getAutomaticFireRateTicks() : gun.getCooldownTicks();
                 com.bobby.valorant.player.GunCooldownStateData.startCooldown(sp, cooldownTicks);
 
                 // Sync ammo after successful shot
@@ -62,21 +61,28 @@ public record ShootGunPacket() implements CustomPacketPayload {
                 int currentAmmo = WeaponAmmoData.getCurrentAmmo(main);
                 int reserveAmmo = WeaponAmmoData.getReserveAmmo(main);
                 PacketDistributor.sendToPlayer(sp, new SyncWeaponAmmoPacket(slot, currentAmmo, reserveAmmo));
+
+                // Apply recoil on client
+                float recoil = 0.0f;
+                try {
+                    var recoilMethod = GunItem.class.getDeclaredMethod("getRecoilPitchPerShot");
+                    recoilMethod.setAccessible(true);
+                    recoil = ((Double) recoilMethod.invoke(gun)).floatValue();
+                } catch (Exception ignored) {}
+                if (recoil > 0.0f) {
+                    PacketDistributor.sendToPlayer(sp, new ApplyRecoilS2CPacket(recoil));
+                }
             }
             return;
         }
         ItemStack off = sp.getOffhandItem();
         if (off.getItem() instanceof GunItem gun) {
+            // DEBUG: Log before firing
+            com.bobby.valorant.Valorant.LOGGER.info("SERVER: Firing gun from offhand for {}", sp.getName().getString());
+            
             if (gun.fire(sp, InteractionHand.OFF_HAND, off)) {
-                // Start cooldown using our custom system
-                int cooldownTicks = 5; // default fallback
-                try {
-                    var cooldownMethod = GunItem.class.getDeclaredMethod("getCooldownTicks");
-                    cooldownMethod.setAccessible(true);
-                    cooldownTicks = (Integer) cooldownMethod.invoke(gun);
-                } catch (Exception e) {
-                    // Use default if reflection fails
-                }
+                // Start cooldown using automatic fire rate for automatic weapons, regular cooldown for semi-auto
+                int cooldownTicks = gun.isAutomatic() ? gun.getAutomaticFireRateTicks() : gun.getCooldownTicks();
                 com.bobby.valorant.player.GunCooldownStateData.startCooldown(sp, cooldownTicks);
 
                 // Sync ammo after successful shot (offhand slot is 40 + selected slot)
@@ -92,6 +98,17 @@ public record ShootGunPacket() implements CustomPacketPayload {
                 int currentAmmo = WeaponAmmoData.getCurrentAmmo(off);
                 int reserveAmmo = WeaponAmmoData.getReserveAmmo(off);
                 PacketDistributor.sendToPlayer(sp, new SyncWeaponAmmoPacket(slot, currentAmmo, reserveAmmo));
+
+                // Apply recoil on client
+                float recoil = 0.0f;
+                try {
+                    var recoilMethod = GunItem.class.getDeclaredMethod("getRecoilPitchPerShot");
+                    recoilMethod.setAccessible(true);
+                    recoil = ((Double) recoilMethod.invoke(gun)).floatValue();
+                } catch (Exception ignored) {}
+                if (recoil > 0.0f) {
+                    PacketDistributor.sendToPlayer(sp, new ApplyRecoilS2CPacket(recoil));
+                }
             }
         }
     }

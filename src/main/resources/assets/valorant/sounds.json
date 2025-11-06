@@ -125,6 +125,66 @@
       "valorant:vandal/vandal-shot-4"
     ]
   },
+  "sheriff.reload": {
+    "sounds": [
+      "valorant:sheriff/sheriff-reload"
+    ]
+  },
+  "sheriff.equip": {
+    "sounds": [
+      "valorant:sheriff/sheriff-equip"
+    ]
+  },
+  "sheriff.shot_1": {
+    "sounds": [
+      "valorant:sheriff/sheriff-shot-1"
+    ]
+  },
+  "sheriff.shot_2": {
+    "sounds": [
+      "valorant:sheriff/sheriff-shot-2"
+    ]
+  },
+  "sheriff.shot_3": {
+    "sounds": [
+      "valorant:sheriff/sheriff-shot-3"
+    ]
+  },
+  "sheriff.shot_4": {
+    "sounds": [
+      "valorant:sheriff/sheriff-shot-4"
+    ]
+  },
+  "frenzy.reload": {
+    "sounds": [
+      "valorant:frenzy/frenzy-reload"
+    ]
+  },
+  "frenzy.equip": {
+    "sounds": [
+      "valorant:frenzy/frenzy-equip"
+    ]
+  },
+  "frenzy.shot_1": {
+    "sounds": [
+      "valorant:frenzy/frenzy-shot-1"
+    ]
+  },
+  "frenzy.shot_2": {
+    "sounds": [
+      "valorant:frenzy/frenzy-shot-2"
+    ]
+  },
+  "frenzy.shot_3": {
+    "sounds": [
+      "valorant:frenzy/frenzy-shot-3"
+    ]
+  },
+  "frenzy.shot_4": {
+    "sounds": [
+      "valorant:frenzy/frenzy-shot-4"
+    ]
+  },
   "spike.plant": {
     "sounds": [
       "valorant:spike/plant"

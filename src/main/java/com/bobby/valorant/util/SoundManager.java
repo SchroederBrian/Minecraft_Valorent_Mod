@@ -4,6 +4,8 @@ import com.bobby.valorant.Valorant;
 import com.bobby.valorant.world.item.ClassicPistolItem;
 import com.bobby.valorant.world.item.GhostPistolItem;
 import com.bobby.valorant.world.item.VandalRifleItem;
+import com.bobby.valorant.world.item.SheriffItem;
+import com.bobby.valorant.world.item.FrenzyPistolItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -11,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvent;
-import java.util.Optional;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 
@@ -82,11 +83,15 @@ public class SoundManager {
                 soundPath = "ghost.reload";
             } else if (item instanceof VandalRifleItem) {
                 soundPath = "vandal.reload";
+            } else if (item instanceof SheriffItem) {
+                soundPath = "sheriff.reload";
+            } else if (item instanceof FrenzyPistolItem) {
+                soundPath = "frenzy.reload";
             } else {
-                soundPath = "classic.reload";
+                soundPath = "";
             }
         } else {
-            soundPath = "classic.reload";
+            soundPath = "";
         }
         float vol = com.bobby.valorant.Config.COMMON.soundReloadVolume.get().floatValue();
         playResolvedForPlayer(player, soundPath, SoundSource.PLAYERS, vol, 1.0f);
@@ -97,6 +102,8 @@ public class SoundManager {
             case "classic" -> getSoundLocation("classic.reload");
             case "ghost" -> getSoundLocation("ghost.reload");
             case "valor_rifle", "vandal" -> getSoundLocation("vandal.reload");
+            case "sheriff" -> getSoundLocation("sheriff.reload");
+            case "frenzy" -> getSoundLocation("frenzy.reload");
             default -> getSoundLocation("classic.reload"); // fallback
         };
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
@@ -262,6 +269,8 @@ public class SoundManager {
             case "classic" -> "classic.single_shot_" + variant;
             case "ghost" -> "ghost.shot_" + variant;
             case "vandal" -> "vandal.shot_" + variant;
+            case "sheriff" -> "sheriff.shot_" + variant;
+            case "frenzy" -> "frenzy.shot_" + variant;
             default -> "classic.single_shot_" + variant;
         };
     }
@@ -279,6 +288,8 @@ public class SoundManager {
             case "classic" -> "classic.equip";
             case "ghost" -> "ghost.equip_" + variant;
             case "vandal" -> "vandal.equip";
+            case "sheriff" -> "sheriff.equip";
+            case "frenzy" -> "frenzy.equip";
             default -> "classic.equip";
         };
     }

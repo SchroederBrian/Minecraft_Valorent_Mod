@@ -14,6 +14,7 @@ import com.bobby.valorant.world.item.StimBeaconHandItem;
 import com.bobby.valorant.world.item.PlacedStimBeacon;
 import com.bobby.valorant.world.item.BlastPackItem;
 import com.bobby.valorant.world.item.VandalRifleItem;
+import com.bobby.valorant.world.item.SheriffItem;
 import com.bobby.valorant.world.item.MollyLauncherItem;
 import com.bobby.valorant.world.item.SkySmokeItem;
 
@@ -47,6 +48,7 @@ public final class ModItems {
     public static final DeferredItem<Item> BLAST_PACK = ITEMS.registerItem("blast_pack", props -> new BlastPackItem(props.stacksTo(1)));
     public static final DeferredItem<Item> MOLLY_LAUNCHER = ITEMS.registerItem("molly_launcher", props -> new MollyLauncherItem(props.stacksTo(1)));
 	public static final DeferredItem<Item> SKY_SMOKE_ITEM = ITEMS.registerItem("skysmoke", props -> new SkySmokeItem(props.stacksTo(1)));
+	public static final DeferredItem<Item> SHERIFF = ITEMS.registerItem("sheriff", props -> new SheriffItem(props.stacksTo(1)));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

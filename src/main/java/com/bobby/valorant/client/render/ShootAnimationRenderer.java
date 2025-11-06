@@ -36,12 +36,16 @@ public final class ShootAnimationRenderer {
         int remainingTicks = GunCooldownStateData.getRemainingCooldownTicks(mc.player);
         int totalTicks = 5; // Default cooldown, adjust based on weapon
 
-        // Try to get actual cooldown from weapon
+        // Try to get actual cooldown from weapon (use automatic fire rate for automatic weapons)
         if (heldItem.getItem() instanceof com.bobby.valorant.world.item.GunItem gun) {
             try {
-                var cooldownMethod = com.bobby.valorant.world.item.GunItem.class.getDeclaredMethod("getCooldownTicks");
-                cooldownMethod.setAccessible(true);
-                totalTicks = (Integer) cooldownMethod.invoke(gun);
+                if (gun.isAutomatic()) {
+                    // For automatic weapons, use the automatic fire rate
+                    totalTicks = gun.getAutomaticFireRateTicks();
+                } else {
+                    // For semi-automatic weapons, use regular cooldown
+                    totalTicks = gun.getCooldownTicks();
+                }
             } catch (Exception e) {
                 totalTicks = 5; // fallback
             }

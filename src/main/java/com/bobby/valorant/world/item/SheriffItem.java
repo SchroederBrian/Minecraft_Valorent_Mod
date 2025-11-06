@@ -2,69 +2,69 @@ package com.bobby.valorant.world.item;
 
 import com.bobby.valorant.Config;
 
-public class VandalRifleItem extends GunItem {
-    public VandalRifleItem(Properties properties) {
+public class SheriffItem extends GunItem {
+    public SheriffItem(Properties properties) {
         super(properties);
     }
 
     @Override
     public boolean isAutomatic() {
-        return Config.COMMON.vandalRifleAutomatic.get();
+        return Config.COMMON.sheriffAutomatic.get();
     }
 
     @Override
     public double getRecoilPitchPerShot() {
-        return Config.COMMON.vandalRifleRecoilPitchDegrees.get();
+        return Config.COMMON.sheriffRecoilPitchDegrees.get();
     }
 
     @Override
     public double getAutomaticFireRateShotsPerSecond() {
-        return Config.COMMON.vandalRifleAutomaticFireRateShotsPerSecond.get();
+        return Config.COMMON.sheriffAutomaticFireRateShotsPerSecond.get();
     }
 
     @Override
     protected double getDamage() {
-        return Config.COMMON.vandalRifleDamage.get();
+        return Config.COMMON.sheriffDamage.get();
     }
 
     @Override
     protected double getRange() {
-        return Config.COMMON.vandalRifleRange.get();
+        return Config.COMMON.sheriffRange.get();
     }
 
     @Override
     protected double getSpreadDegrees() {
-        return Config.COMMON.vandalRifleSpreadDegrees.get();
+        return Config.COMMON.sheriffSpreadDegrees.get();
     }
 
     @Override
     public double getFireRateShotsPerSecond() {
-        return Config.COMMON.vandalRifleFireRateShotsPerSecond.get();
+        return Config.COMMON.sheriffFireRateShotsPerSecond.get();
     }
 
     @Override
     protected int getTracerParticles() {
-        return Config.COMMON.vandalRifleTracerParticles.get();
+        return Config.COMMON.sheriffTracerParticles.get();
     }
 
     @Override
     protected int getMuzzleParticles() {
-        return Config.COMMON.vandalRifleMuzzleParticles.get();
+        return Config.COMMON.sheriffMuzzleParticles.get();
     }
 
     @Override
     public int getMagazineSize() {
-        return Config.COMMON.vandalRifleMagazineSize.get();
+        return Config.COMMON.sheriffMagazineSize.get();
     }
 
     @Override
     public int getMaxReserveAmmo() {
-        return Config.COMMON.vandalRifleMaxReserveAmmo.get();
+        return Config.COMMON.sheriffMaxReserveAmmo.get();
     }
 
     @Override
     public int getReloadTimeTicks() {
-        return Config.COMMON.vandalRifleReloadTimeTicks.get();
+        return Config.COMMON.sheriffReloadTimeTicks.get();
     }
 }
 

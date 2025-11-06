@@ -52,6 +52,22 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> VANDAL_SHOT_3 = register("vandal.shot_3");
     public static final DeferredHolder<SoundEvent, SoundEvent> VANDAL_SHOT_4 = register("vandal.shot_4");
 
+    // Sheriff weapon sounds
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHERIFF_RELOAD = register("sheriff.reload");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHERIFF_EQUIP = register("sheriff.equip");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHERIFF_SHOT_1 = register("sheriff.shot_1");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHERIFF_SHOT_2 = register("sheriff.shot_2");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHERIFF_SHOT_3 = register("sheriff.shot_3");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHERIFF_SHOT_4 = register("sheriff.shot_4");
+
+    // Frenzy weapon sounds
+    public static final DeferredHolder<SoundEvent, SoundEvent> FRENZY_RELOAD = register("frenzy.reload");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FRENZY_EQUIP = register("frenzy.equip");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FRENZY_SHOT_1 = register("frenzy.shot_1");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FRENZY_SHOT_2 = register("frenzy.shot_2");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FRENZY_SHOT_3 = register("frenzy.shot_3");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FRENZY_SHOT_4 = register("frenzy.shot_4");
+
     // Spike sounds
     public static final DeferredHolder<SoundEvent, SoundEvent> SPIKE_PLANT = register("spike.plant");
     public static final DeferredHolder<SoundEvent, SoundEvent> SPIKE_DEFUSE = register("spike.defuse");

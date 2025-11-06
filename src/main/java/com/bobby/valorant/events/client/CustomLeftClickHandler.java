@@ -39,6 +39,9 @@ public final class CustomLeftClickHandler {
                 return; // Can't attack while animation is playing
             }
 
+            // DEBUG: Log when gun firing is attempted
+            Valorant.LOGGER.info("CLIENT: Attempting to fire gun at tick {}", mc.level.getGameTime());
+
             // Start light attack animation
             com.bobby.valorant.player.KnifeAnimationStateData.startAnimation(
                 mc.player,
@@ -207,9 +210,6 @@ public final class CustomLeftClickHandler {
 
         // Spawn tracer particles (client prediction)
         spawnTracerParticles(mc.level, eyePos, hitPos);
-
-        // Client-side sound prediction - play gun shot sound immediately
-        playClientSideGunSound(player, gun);
     }
 
     private static void spawnTracerParticles(net.minecraft.client.multiplayer.ClientLevel level,
@@ -231,40 +231,6 @@ public final class CustomLeftClickHandler {
 
         // Impact effect
         level.addParticle(net.minecraft.core.particles.ParticleTypes.CRIT, end.x, end.y, end.z, 0.1D, 0.1D, 0.1D);
-    }
-
-    private static void playClientSideGunSound(net.minecraft.world.entity.player.Player player, GunItem gun) {
-        // Play a quieter version of the gun sound for immediate client feedback
-        // This provides responsive audio feedback while the server handles the authoritative sound
-        try {
-            var weaponTypeMethod = GunItem.class.getDeclaredMethod("getWeaponTypeName");
-            weaponTypeMethod.setAccessible(true);
-            String weaponType = (String) weaponTypeMethod.invoke(gun);
-
-            // Resolve sound resource location
-            String soundPath = getGunSoundPath(weaponType, player.level().random.nextInt(4) + 1);
-            var soundLocation = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("valorant", soundPath);
-
-            // Get sound event and play if available
-            net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.get(soundLocation).ifPresent(soundEvent -> {
-                // Play quieter client-side sound (50% volume for prediction)
-                player.level().playLocalSound(player.getX(), player.getY(), player.getZ(),
-                    soundEvent.value(), net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 1.0f, false);
-            });
-
-        } catch (Exception e) {
-            // Fallback - just don't play client-side sound if we can't resolve it
-            // Server will still play the authoritative sound
-        }
-    }
-
-    private static String getGunSoundPath(String weaponType, int variant) {
-        return switch (weaponType.toLowerCase()) {
-            case "classic" -> "classic.single_shot_" + variant;
-            case "ghost" -> "ghost.shot_" + variant;
-            case "vandal" -> "vandal.shot_" + variant;
-            default -> "classic.single_shot_" + variant;
-        };
     }
 
     // Copy of the spread application logic from GunItem for client prediction
