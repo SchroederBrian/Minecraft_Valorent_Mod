@@ -30,10 +30,26 @@ public record ShootGunPacket() implements CustomPacketPayload {
         if (ReloadStateData.isReloading(sp)) {
             return;
         }
+
+        // Block shooting while on gun cooldown
+        if (com.bobby.valorant.player.GunCooldownStateData.isOnCooldown(sp)) {
+            return;
+        }
         // Prefer main hand; fallback to offhand
         ItemStack main = sp.getMainHandItem();
         if (main.getItem() instanceof GunItem gun) {
             if (gun.fire(sp, InteractionHand.MAIN_HAND, main)) {
+                // Start cooldown using our custom system
+                int cooldownTicks = 5; // default fallback
+                try {
+                    var cooldownMethod = GunItem.class.getDeclaredMethod("getCooldownTicks");
+                    cooldownMethod.setAccessible(true);
+                    cooldownTicks = (Integer) cooldownMethod.invoke(gun);
+                } catch (Exception e) {
+                    // Use default if reflection fails
+                }
+                com.bobby.valorant.player.GunCooldownStateData.startCooldown(sp, cooldownTicks);
+
                 // Sync ammo after successful shot
                 int slot;
                 try {
@@ -52,6 +68,17 @@ public record ShootGunPacket() implements CustomPacketPayload {
         ItemStack off = sp.getOffhandItem();
         if (off.getItem() instanceof GunItem gun) {
             if (gun.fire(sp, InteractionHand.OFF_HAND, off)) {
+                // Start cooldown using our custom system
+                int cooldownTicks = 5; // default fallback
+                try {
+                    var cooldownMethod = GunItem.class.getDeclaredMethod("getCooldownTicks");
+                    cooldownMethod.setAccessible(true);
+                    cooldownTicks = (Integer) cooldownMethod.invoke(gun);
+                } catch (Exception e) {
+                    // Use default if reflection fails
+                }
+                com.bobby.valorant.player.GunCooldownStateData.startCooldown(sp, cooldownTicks);
+
                 // Sync ammo after successful shot (offhand slot is 40 + selected slot)
                 int selectedSlot;
                 try {

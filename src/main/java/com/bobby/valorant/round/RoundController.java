@@ -287,7 +287,19 @@ public final class RoundController {
             return;
         }
         // If slot is not a pistol (could be empty or something else), give Classic.
-        sp.getInventory().setItem(1, com.bobby.valorant.registry.ModItems.CLASSIC.get().getDefaultInstance());
+        var classicStack = com.bobby.valorant.registry.ModItems.CLASSIC.get().getDefaultInstance();
+        sp.getInventory().setItem(1, classicStack);
+
+        // Initialize ammo for the new weapon
+        var weapon = (com.bobby.valorant.world.item.IWeapon) classicStack.getItem();
+        WeaponAmmoData.setCurrentAmmo(classicStack, weapon.getMagazineSize());
+        WeaponAmmoData.setReserveAmmo(classicStack, weapon.getMaxReserveAmmo());
+
+        // Sync ammo to client
+        int currentAmmo = WeaponAmmoData.getCurrentAmmo(classicStack);
+        int reserveAmmo = WeaponAmmoData.getReserveAmmo(classicStack);
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(sp,
+            new com.bobby.valorant.network.SyncWeaponAmmoPacket(1, currentAmmo, reserveAmmo));
     }
 
     public static void ensureKnife(ServerPlayer sp) {

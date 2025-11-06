@@ -39,6 +39,8 @@ import com.bobby.valorant.network.SyncCurveballChargesPacket;
 import com.bobby.valorant.network.SyncFireWallChargesPacket;
 import com.bobby.valorant.network.SyncFireballChargesPacket;
 import com.bobby.valorant.network.SyncReloadStatePacket;
+import com.bobby.valorant.network.SyncKnifeAnimationStatePacket;
+import com.bobby.valorant.network.KnifeAttackPacket;
 import com.bobby.valorant.network.SyncRoundStatePacket;
 import com.bobby.valorant.network.SyncUltimatePointsPacket;
 import com.bobby.valorant.network.SyncWeaponAmmoPacket;
@@ -63,6 +65,7 @@ public final class ModNetworking {
                 .playToServer(BuyAbilityRequestPacket.TYPE, BuyAbilityRequestPacket.STREAM_CODEC, BuyAbilityRequestPacket::handle)
                 .playToServer(EquipCurveballPacket.TYPE, EquipCurveballPacket.STREAM_CODEC, EquipCurveballPacket::handle)
                 .playToServer(ShootGunPacket.TYPE, ShootGunPacket.STREAM_CODEC, ShootGunPacket::handle)
+                .playToServer(KnifeAttackPacket.TYPE, KnifeAttackPacket.STREAM_CODEC, KnifeAttackPacket::handle)
                 .playToServer(LockAgentRequestPacket.TYPE, LockAgentRequestPacket.STREAM_CODEC, LockAgentRequestPacket::handle)
                 .playToServer(EquipFireballPacket.TYPE, EquipFireballPacket.STREAM_CODEC, EquipFireballPacket::handle)
                 .playToServer(EquipFireWallPacket.TYPE, EquipFireWallPacket.STREAM_CODEC, EquipFireWallPacket::handle)
@@ -89,6 +92,7 @@ public final class ModNetworking {
                 .playToClient(SyncFireballChargesPacket.TYPE, SyncFireballChargesPacket.STREAM_CODEC, SyncFireballChargesPacket::handle)
                 .playToClient(SyncFireWallChargesPacket.TYPE, SyncFireWallChargesPacket.STREAM_CODEC, SyncFireWallChargesPacket::handle)
                 .playToClient(SyncReloadStatePacket.TYPE, SyncReloadStatePacket.STREAM_CODEC, SyncReloadStatePacket::handle)
+                .playToClient(SyncKnifeAnimationStatePacket.TYPE, SyncKnifeAnimationStatePacket.STREAM_CODEC, SyncKnifeAnimationStatePacket::handle)
                 .playToClient(ShowTitleOverlayPacket.TYPE, ShowTitleOverlayPacket.STREAM_CODEC, ShowTitleOverlayPacket::handle)
 				.playToClient(com.bobby.valorant.network.SyncSpawnAreasS2CPacket.TYPE, com.bobby.valorant.network.SyncSpawnAreasS2CPacket.STREAM_CODEC, com.bobby.valorant.network.SyncSpawnAreasS2CPacket::handle)
                 .playToClient(SyncAgentS2CPacket.TYPE, SyncAgentS2CPacket.STREAM_CODEC, SyncAgentS2CPacket::handle)

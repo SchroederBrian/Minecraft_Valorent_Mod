@@ -24,6 +24,9 @@ public final class WeaponClientEvents {
         LocalPlayer player = mc.player;
         var conn = mc.getConnection();
         if (player == null || conn == null) return;
+
+        // Tick client-side knife animation state
+        com.bobby.valorant.player.KnifeAnimationStateData.clientTick(player);
     }
 
     @SubscribeEvent

@@ -367,7 +367,7 @@ public final class HudOverlay {
 
 	private static void renderWeaponInfo(GuiGraphics guiGraphics, net.minecraft.client.Minecraft mc, Player player, int sw, int sh) {
 		ItemStack heldItem = player.getMainHandItem();
-		if (heldItem.isEmpty() || !(heldItem.getItem() instanceof com.bobby.valorant.world.item.IWeapon weapon)) {
+		if (heldItem.isEmpty() || !(heldItem.getItem() instanceof com.bobby.valorant.world.item.GunItem weapon)) {
 			return;
 		}
 

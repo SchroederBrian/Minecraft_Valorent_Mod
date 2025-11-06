@@ -198,20 +198,42 @@ public final class EconomyData {
             removeItem(sp, ShopItem.ARMOR_LIGHT);
         }
 
+        var itemStack = item.giveStack();
+
+        // Initialize ammo for weapons
+        if (itemStack.getItem() instanceof com.bobby.valorant.world.item.IWeapon weapon) {
+            com.bobby.valorant.world.item.WeaponAmmoData.setCurrentAmmo(itemStack, weapon.getMagazineSize());
+            com.bobby.valorant.world.item.WeaponAmmoData.setReserveAmmo(itemStack, weapon.getMaxReserveAmmo());
+
+            // Sync ammo to client
+            int slot = switch (item.slot) {
+                case PRIMARY -> 0;
+                case SECONDARY -> 1;
+                default -> -1; // Will be handled by add() below
+            };
+
+            if (slot != -1) {
+                int currentAmmo = com.bobby.valorant.world.item.WeaponAmmoData.getCurrentAmmo(itemStack);
+                int reserveAmmo = com.bobby.valorant.world.item.WeaponAmmoData.getReserveAmmo(itemStack);
+                net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(sp,
+                    new com.bobby.valorant.network.SyncWeaponAmmoPacket(slot, currentAmmo, reserveAmmo));
+            }
+        }
+
         switch (item.slot) {
             case PRIMARY:
                 // Remove any existing primary weapon before giving the new one.
                 removeItemsOfSlot(sp, ShopItem.Slot.PRIMARY);
-                sp.getInventory().setItem(0, item.giveStack());
+                sp.getInventory().setItem(0, itemStack);
                 break;
             case SECONDARY:
                 // Remove any existing secondary weapon, including the default pistol.
                 removeItemsOfSlot(sp, ShopItem.Slot.SECONDARY);
-                sp.getInventory().setItem(1, item.giveStack());
+                sp.getInventory().setItem(1, itemStack);
                 break;
             default:
                 // For other items like armor, add them to the inventory without specific slot placement.
-                sp.getInventory().add(item.giveStack());
+                sp.getInventory().add(itemStack);
                 break;
         }
 

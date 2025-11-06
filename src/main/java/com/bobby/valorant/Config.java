@@ -230,6 +230,14 @@ public final class Config {
 
         // Knife settings
         public final ModConfigSpec.DoubleValue knifeSpeedMultiplier;
+        public final ModConfigSpec.DoubleValue knifeLightAttackDamage;
+        public final ModConfigSpec.DoubleValue knifeHeavyAttackDamage;
+        public final ModConfigSpec.DoubleValue knifeRange;
+        public final ModConfigSpec.IntValue knifeLightAttackCooldownTicks;
+        public final ModConfigSpec.IntValue knifeHeavyAttackCooldownTicks;
+
+        // Knife animation settings
+        public final ModConfigSpec.BooleanValue knifeAnimationEnabled;
 
         // Commands / particles
         public final ModConfigSpec.IntValue particleCommandDefaultDurationTicks;
@@ -240,6 +248,9 @@ public final class Config {
         public final ModConfigSpec.DoubleValue reloadMagazineScale;
         public final ModConfigSpec.DoubleValue reloadLeftHandMovement;
         public final ModConfigSpec.BooleanValue reloadShowEjectedMagazine;
+
+        public final ModConfigSpec.BooleanValue shootAnimationEnabled;
+        public final ModConfigSpec.DoubleValue shootRecoilAmount;
         public final ModConfigSpec.DoubleValue reloadEjectedMagazineOffset;
         public final ModConfigSpec.BooleanValue reloadRackSlide;
         public final ModConfigSpec.DoubleValue reloadRackSlideAmount;
@@ -819,6 +830,22 @@ public final class Config {
             builder.push("knife");
             knifeSpeedMultiplier = builder.comment("Movement speed multiplier when holding knife (1.0 = normal speed, 1.2 = 20% faster).")
                     .defineInRange("speedMultiplier", 1.5D, 0.1D, 5.0D);
+            knifeLightAttackDamage = builder.comment("Damage dealt by knife left-click (light attack).")
+                    .defineInRange("lightAttackDamage", 3.0D, 0.0D, 100.0D);
+            knifeHeavyAttackDamage = builder.comment("Damage dealt by knife right-click (heavy attack).")
+                    .defineInRange("heavyAttackDamage", 8.0D, 0.0D, 100.0D);
+            knifeRange = builder.comment("Maximum range for knife attacks.")
+                    .defineInRange("range", 4.0D, 1.0D, 10.0D);
+            knifeLightAttackCooldownTicks = builder.comment("Cooldown between knife left-click attacks (ticks).")
+                    .defineInRange("lightAttackCooldownTicks", 10, 1, 100);
+            knifeHeavyAttackCooldownTicks = builder.comment("Cooldown between knife right-click attacks (ticks).")
+                    .defineInRange("heavyAttackCooldownTicks", 25, 1, 200);
+            builder.pop();
+
+            // Knife animation settings
+            builder.push("knifeAnimation");
+            knifeAnimationEnabled = builder.comment("Enable first-person knife attack animations.")
+                    .define("enabled", true);
             builder.pop();
 
             builder.pop();
@@ -850,6 +877,13 @@ public final class Config {
                     .define("rackSlide", true);
             reloadRackSlideAmount = builder.comment("How far back the slide is pulled during racking.")
                     .defineInRange("rackSlideAmount", 0.15D, 0.0D, 0.5D);
+            builder.pop();
+
+            builder.push("shootAnimation");
+            shootAnimationEnabled = builder.comment("Enable first-person shoot animations (recoil).")
+                    .define("enabled", true);
+            shootRecoilAmount = builder.comment("Amount of weapon recoil during shoot animation.")
+                    .defineInRange("recoilAmount", 0.15D, 0.0D, 1.0D);
             builder.pop();
 
             // Sound configuration

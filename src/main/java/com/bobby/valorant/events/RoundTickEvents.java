@@ -43,6 +43,9 @@ public final class RoundTickEvents {
                     boolean wasReloading = ReloadStateData.isReloading(serverPlayer);
                     ReloadStateData.tick(serverPlayer);
 
+                    // Tick knife animation state
+                    com.bobby.valorant.player.KnifeAnimationStateData.tick(serverPlayer);
+
                     // If reload just completed, perform the ammo transfer
                     if (wasReloading && !ReloadStateData.isReloading(serverPlayer)) {
                         completeReload(serverPlayer);

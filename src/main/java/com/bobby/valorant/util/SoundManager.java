@@ -12,9 +12,30 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvent;
 import java.util.Optional;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 
 public class SoundManager {
     private SoundManager() {}
+
+    // Sound cooldown system to prevent duplicate sounds
+    private static final Object2LongMap<String> LAST_SOUND_PLAY_TIME = new Object2LongOpenHashMap<>();
+    private static final long SOUND_COOLDOWN_TICKS = 2; // 2 ticks = 0.1 seconds minimum between same sounds
+
+    /**
+     * Check if a sound can be played (not on cooldown)
+     */
+    private static boolean canPlaySound(String soundKey, ServerLevel level) {
+        long currentTime = level.getGameTime();
+        long lastPlayTime = LAST_SOUND_PLAY_TIME.getLong(soundKey);
+
+        if (currentTime - lastPlayTime >= SOUND_COOLDOWN_TICKS) {
+            LAST_SOUND_PLAY_TIME.put(soundKey, currentTime);
+            return true;
+        }
+
+        return false; // Sound is on cooldown
+    }
 
     // Easy sound playing methods
 
@@ -126,11 +147,38 @@ public class SoundManager {
         playResolvedForPlayer(player, "ui.buy_failure", SoundSource.PLAYERS, vol, 1.0f);
     }
 
-    // Weapon shot sounds
+    // Weapon shot sounds (for guns)
     public static void playWeaponShotSound(ServerPlayer player, String weaponType) {
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
+
+        // Create unique sound key for cooldown tracking (player + weapon type)
+        String soundKey = player.getUUID().toString() + "_" + weaponType + "_shot";
+
+        // Check cooldown to prevent duplicate sounds
+        if (!canPlaySound(soundKey, (ServerLevel) player.level())) {
+            return; // Sound is on cooldown, skip playing
+        }
+
         float vol = com.bobby.valorant.Config.COMMON.soundWeaponVolume.get().floatValue();
         String soundPath = getWeaponShotSoundPath(weaponType, player.level().getRandom().nextInt(4) + 1);
+        playResolvedForPlayer(player, soundPath, SoundSource.PLAYERS, vol, 1.0f);
+    }
+
+    // Knife hit sounds
+    public static void playKnifeHitSound(ServerPlayer player, boolean isHeavyAttack) {
+        if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
+
+        // Create unique sound key for cooldown tracking (player + attack type)
+        String attackType = isHeavyAttack ? "heavy" : "light";
+        String soundKey = player.getUUID().toString() + "_knife_" + attackType + "_hit";
+
+        // Check cooldown to prevent duplicate sounds
+        if (!canPlaySound(soundKey, (ServerLevel) player.level())) {
+            return; // Sound is on cooldown, skip playing
+        }
+
+        float vol = com.bobby.valorant.Config.COMMON.soundWeaponVolume.get().floatValue();
+        String soundPath = getKnifeHitSoundPath(isHeavyAttack, player.level().getRandom().nextInt(3) + 1);
         playResolvedForPlayer(player, soundPath, SoundSource.PLAYERS, vol, 1.0f);
     }
 
@@ -216,6 +264,14 @@ public class SoundManager {
             case "vandal" -> "vandal.shot_" + variant;
             default -> "classic.single_shot_" + variant;
         };
+    }
+
+    private static String getKnifeHitSoundPath(boolean isHeavyAttack, int variant) {
+        if (isHeavyAttack) {
+            return "knife.heavy_hit_" + variant;
+        } else {
+            return "knife.light_hit_" + variant;
+        }
     }
 
     private static String getWeaponEquipSoundPath(String weaponType, int variant) {
