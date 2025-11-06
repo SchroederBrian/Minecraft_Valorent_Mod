@@ -150,17 +150,13 @@ public record PlaceSkySmokesC2SPacket(List<BlockPos> positions) implements Custo
                 Valorant.LOGGER.warn("[SkySmoke] Smoke {}: No containing area found, using fallback Y=64", i + 1);
             }
 
-            // *** FIX 1: Y richtig bestimmen ***
-            int finalY;
-            if (placeOnGround) {
-                // Bodenhöhe (MotionBlockingNoLeaves) nehmen
-                finalY = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, in.getX(), in.getZ());
-            } else {
-                finalY = baseY;
-            }
-            finalY += Mth.floor(yOffset);
+            // Use nearest vertex Y from allowed areas
+            int finalY = baseY + Mth.floor(yOffset);
 
-            BlockPos targetPos = BlockPos.containing(in.getX(), finalY, in.getZ());
+            // Apply spawn offsets after coordinate transformation
+            double spawnXOffset = com.bobby.valorant.Config.COMMON.skySmokeSpawnXOffset.get();
+            double spawnZOffset = com.bobby.valorant.Config.COMMON.skySmokeSpawnZOffset.get();
+            BlockPos targetPos = BlockPos.containing(in.getX() + spawnXOffset, finalY, in.getZ() + spawnZOffset);
             Valorant.LOGGER.debug("[SkySmoke] Smoke {}: Final position ({},{},{})",
                 i + 1, targetPos.getX(), targetPos.getY(), targetPos.getZ());
 
@@ -181,7 +177,7 @@ public record PlaceSkySmokesC2SPacket(List<BlockPos> positions) implements Custo
             level.addFreshEntity(stand);
 
             // Rotator-Task inkl. Blindness
-            if (applyBlindness && radius > 0 && blindTicks > 0) {
+            if (applyBlindness && radius - 1 > 0 && blindTicks > 0) {
                 com.bobby.valorant.util.ArmorStandRotator.addRotatingArmorStandWithBlindness(
                     stand, duration, (float) radius, blindTicks
                 );

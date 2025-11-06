@@ -52,16 +52,18 @@ public final class SkySmokeServerEvents {
         if (!com.bobby.valorant.Config.COMMON.skySmokeApplyBlindness.get()) return;
 
         double radius = com.bobby.valorant.Config.COMMON.skySmokeRadius.get();
+        double blindnessOffset = com.bobby.valorant.Config.COMMON.skySmokeBlindnessRadiusOffset.get();
+        double blindnessRadius = Math.max(0, radius - blindnessOffset);
         int blindTicks = com.bobby.valorant.Config.COMMON.skySmokeBlindnessTicks.get();
-        if (radius <= 0 || blindTicks <= 0) return;
+        if (blindnessRadius <= 0 || blindTicks <= 0) return;
 
         var level = (net.minecraft.server.level.ServerLevel) sp.level();
 
         // Search for smoke stands with generous vertical range (Y-agnostic)
         double vRange = 256.0; // large enough to find stands that are deep/high
         AABB box = new AABB(
-            sp.getX() - radius, sp.getY() - vRange, sp.getZ() - radius,
-            sp.getX() + radius, sp.getY() + vRange, sp.getZ() + radius
+            sp.getX() - blindnessRadius, sp.getY() - vRange, sp.getZ() - blindnessRadius,
+            sp.getX() + blindnessRadius, sp.getY() + vRange, sp.getZ() + blindnessRadius
         );
 
         java.util.List<ArmorStand> nearby =
@@ -74,12 +76,12 @@ public final class SkySmokeServerEvents {
         boolean isInSmoke = false;
 
         if (!nearby.isEmpty()) {
-            double radiusSq = radius * radius;
+            double blindnessRadiusSq = blindnessRadius * blindnessRadius;
             for (var stand : nearby) {
                 double dx = stand.getX() - sp.getX();
                 double dz = stand.getZ() - sp.getZ();
                 double horizontalDistSq = dx * dx + dz * dz;
-                if (horizontalDistSq <= radiusSq) {
+                if (horizontalDistSq <= blindnessRadiusSq) {
                     isInSmoke = true;
                     break;
                 }

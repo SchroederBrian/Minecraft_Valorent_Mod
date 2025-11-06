@@ -9,10 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record SyncSkySmokeTransformS2CPacket(
-    double a, // scale * cos(theta)
-    double b, // scale * sin(theta)
-    double tx, // translation X
-    double tz  // translation Z
+    String model,
+    double[] H
 ) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SyncSkySmokeTransformS2CPacket> TYPE =
         new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Valorant.MODID, "sync_sky_smoke_transform"));
@@ -21,18 +19,29 @@ public record SyncSkySmokeTransformS2CPacket(
         StreamCodec.of(SyncSkySmokeTransformS2CPacket::encode, SyncSkySmokeTransformS2CPacket::decode);
 
     private static void encode(RegistryFriendlyByteBuf buf, SyncSkySmokeTransformS2CPacket packet) {
-        buf.writeDouble(packet.a());
-        buf.writeDouble(packet.b());
-        buf.writeDouble(packet.tx());
-        buf.writeDouble(packet.tz());
+        buf.writeUtf(packet.model());
+        // Write 9 doubles
+        int len = packet.H() != null ? packet.H().length : 0;
+        if (len != 9) {
+            // write identity if malformed
+            buf.writeVarInt(9);
+            for (int i=0;i<9;i++) buf.writeDouble(i%4==0?1.0:0.0);
+        } else {
+            buf.writeVarInt(9);
+            for (int i=0;i<9;i++) buf.writeDouble(packet.H()[i]);
+        }
     }
 
     private static SyncSkySmokeTransformS2CPacket decode(RegistryFriendlyByteBuf buf) {
-        double a = buf.readDouble();
-        double b = buf.readDouble();
-        double tx = buf.readDouble();
-        double tz = buf.readDouble();
-        return new SyncSkySmokeTransformS2CPacket(a, b, tx, tz);
+        String model = buf.readUtf();
+        int n = buf.readVarInt();
+        double[] H = new double[Math.max(9, n)];
+        for (int i=0;i<n;i++) H[i]=buf.readDouble();
+        if (n < 9) {
+            // identity fallback
+            H = new double[]{1,0,0, 0,1,0, 0,0,1};
+        }
+        return new SyncSkySmokeTransformS2CPacket(model, H);
     }
 
     @Override
@@ -42,6 +51,6 @@ public record SyncSkySmokeTransformS2CPacket(
 
     public static void handle(SyncSkySmokeTransformS2CPacket packet, IPayloadContext context) {
         // Client-side: store the transform for projection
-        com.bobby.valorant.client.SkySmokeCalibrationClient.setTransform(packet.a(), packet.b(), packet.tx(), packet.tz());
+        com.bobby.valorant.client.SkySmokeCalibrationClient.setTransform(packet.model(), packet.H());
     }
 }

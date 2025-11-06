@@ -57,7 +57,7 @@ final class SkySmokeCalibrationIO {
         } catch (IOException ignored) {}
     }
 
-    static Map<ResourceLocation, SkySmokeCalibration.SimilarityTransform> loadTransforms(Path path) {
+    static Map<ResourceLocation, SkySmokeCalibration.Transform2D> loadTransforms(Path path) {
         try {
             if (!Files.exists(path)) {
                 return new HashMap<>();
@@ -66,7 +66,7 @@ final class SkySmokeCalibrationIO {
                 JsonObject root = GSON.fromJson(r, JsonObject.class);
                 if (root == null) return new HashMap<>();
 
-                Map<ResourceLocation, SkySmokeCalibration.SimilarityTransform> transforms = new HashMap<>();
+                Map<ResourceLocation, SkySmokeCalibration.Transform2D> transforms = new HashMap<>();
 
                 if (root.has("dimensions") && root.get("dimensions").isJsonObject()) {
                     JsonObject dimensions = root.getAsJsonObject("dimensions");
@@ -74,12 +74,28 @@ final class SkySmokeCalibrationIO {
                         ResourceLocation dimension = ResourceLocation.tryParse(entry.getKey());
                         if (dimension != null && entry.getValue().isJsonObject()) {
                             JsonObject transformObj = entry.getValue().getAsJsonObject();
-                            if (transformObj.has("a") && transformObj.has("b") && transformObj.has("tx") && transformObj.has("tz")) {
+                            // New format: model + H[9]
+                            if (transformObj.has("model") && transformObj.has("H") && transformObj.get("H").isJsonArray()) {
+                                String modelStr = transformObj.get("model").getAsString();
+                                java.util.List<Double> list = new java.util.ArrayList<>();
+                                for (JsonElement el : transformObj.getAsJsonArray("H")) list.add(el.getAsDouble());
+                                if (list.size() == 9) {
+                                    double[] H = new double[9];
+                                    for (int i=0;i<9;i++) H[i]=list.get(i);
+                                    SkySmokeCalibration.Model model;
+                                    try { model = SkySmokeCalibration.Model.valueOf(modelStr.toUpperCase()); } catch (Exception e) { model = SkySmokeCalibration.Model.SIMILARITY; }
+                                    double[] Hinv = invert3x3(H);
+                                    transforms.put(dimension, new SkySmokeCalibration.Transform2D(model, H, Hinv));
+                                }
+                            } else if (transformObj.has("a") && transformObj.has("b") && transformObj.has("tx") && transformObj.has("tz")) {
+                                // Legacy format: similarity parameters
                                 double a = transformObj.get("a").getAsDouble();
                                 double b = transformObj.get("b").getAsDouble();
                                 double tx = transformObj.get("tx").getAsDouble();
                                 double tz = transformObj.get("tz").getAsDouble();
-                                transforms.put(dimension, new SkySmokeCalibration.SimilarityTransform(a, b, tx, tz));
+                                double[] H = new double[]{ a, -b, tx,  b, a, tz,  0, 0, 1 };
+                                double[] Hinv = invert3x3(H);
+                                transforms.put(dimension, new SkySmokeCalibration.Transform2D(SkySmokeCalibration.Model.SIMILARITY, H, Hinv));
                             }
                         }
                     }
@@ -92,20 +108,20 @@ final class SkySmokeCalibrationIO {
         }
     }
 
-    static void saveTransforms(Path path, Map<ResourceLocation, SkySmokeCalibration.SimilarityTransform> transforms) {
+    static void saveTransforms(Path path, Map<ResourceLocation, SkySmokeCalibration.Transform2D> transforms) {
         try {
             Files.createDirectories(path.getParent());
             try (Writer w = Files.newBufferedWriter(path)) {
                 JsonObject root = new JsonObject();
                 JsonObject dimensions = new JsonObject();
 
-                for (Map.Entry<ResourceLocation, SkySmokeCalibration.SimilarityTransform> entry : transforms.entrySet()) {
+                for (Map.Entry<ResourceLocation, SkySmokeCalibration.Transform2D> entry : transforms.entrySet()) {
                     JsonObject transformObj = new JsonObject();
-                    SkySmokeCalibration.SimilarityTransform transform = entry.getValue();
-                    transformObj.addProperty("a", transform.a);
-                    transformObj.addProperty("b", transform.b);
-                    transformObj.addProperty("tx", transform.tx);
-                    transformObj.addProperty("tz", transform.tz);
+                    SkySmokeCalibration.Transform2D t = entry.getValue();
+                    transformObj.addProperty("model", t.model.name());
+                    com.google.gson.JsonArray arr = new com.google.gson.JsonArray();
+                    for (int i=0;i<9;i++) arr.add(t.H[i]);
+                    transformObj.add("H", arr);
                     dimensions.add(entry.getKey().toString(), transformObj);
                 }
 
@@ -113,5 +129,22 @@ final class SkySmokeCalibrationIO {
                 GSON.toJson(root, w);
             }
         } catch (IOException ignored) {}
+    }
+
+    private static double[] invert3x3(double[] m) {
+        double a=m[0], b=m[1], c=m[2], d=m[3], e=m[4], f=m[5], g=m[6], h=m[7], i=m[8];
+        double A = e*i - f*h;
+        double B = -(d*i - f*g);
+        double C = d*h - e*g;
+        double D = -(b*i - c*h);
+        double E = a*i - c*g;
+        double F = -(a*h - b*g);
+        double G = b*f - c*e;
+        double H = -(a*f - c*d);
+        double I = a*e - b*d;
+        double det = a*A + b*B + c*C;
+        if (Math.abs(det) < 1e-12) det = 1e-12;
+        double invDet = 1.0/det;
+        return new double[]{ A*invDet, D*invDet, G*invDet,  B*invDet, E*invDet, H*invDet,  C*invDet, F*invDet, I*invDet };
     }
 }

@@ -12,11 +12,10 @@ public final class SkySmokeCalibrationClient {
     private static int maxZ = Config.COMMON.skySmokeMapMaxZ.get();
     private static double rotationDegrees = Config.COMMON.skySmokeMapRotationDegrees.get();
 
-    // Similarity transform: world = s·R·mapUV + t, stored as a,b,tx,tz
-    private static double transformA = 0.0; // scale * cos(theta)
-    private static double transformB = 0.0; // scale * sin(theta)
-    private static double transformTx = 0.0; // translation X
-    private static double transformTz = 0.0; // translation Z
+    // Unified transform (homography) uv->world
+    private static String model = "SIMILARITY";
+    private static double[] H = new double[]{1,0,0, 0,1,0, 0,0,1};
+    private static double[] Hinv = new double[]{1,0,0, 0,1,0, 0,0,1};
     private static boolean hasTransform = false;
 
     public static void setBounds(int minX, int minZ, int maxX, int maxZ, double rotationDegrees) {
@@ -27,17 +26,21 @@ public final class SkySmokeCalibrationClient {
         SkySmokeCalibrationClient.rotationDegrees = rotationDegrees;
     }
 
-    public static void setTransform(double a, double b, double tx, double tz) {
-        transformA = a;
-        transformB = b;
-        transformTx = tx;
-        transformTz = tz;
+    public static void setTransform(String modelName, double[] h) {
+        model = modelName != null ? modelName : "SIMILARITY";
+        if (h != null && h.length == 9) {
+            H = h.clone();
+        } else {
+            H = new double[]{1,0,0, 0,1,0, 0,0,1};
+        }
+        Hinv = invert3x3(H);
         hasTransform = true;
     }
 
     public static void clearTransform() {
         hasTransform = false;
-        transformA = transformB = transformTx = transformTz = 0.0;
+        H = new double[]{1,0,0, 0,1,0, 0,0,1};
+        Hinv = new double[]{1,0,0, 0,1,0, 0,0,1};
     }
 
     public static int getMinX() { return minX; }
@@ -47,8 +50,40 @@ public final class SkySmokeCalibrationClient {
     public static double getRotationDegrees() { return rotationDegrees; }
 
     public static boolean hasTransform() { return hasTransform; }
-    public static double getTransformA() { return transformA; }
-    public static double getTransformB() { return transformB; }
-    public static double getTransformTx() { return transformTx; }
-    public static double getTransformTz() { return transformTz; }
+    public static String getModel() { return model; }
+    public static double[] getH() { return H; }
+    public static double[] getHinv() { return Hinv; }
+
+    public static double[] uvToWorld(double u, double v) {
+        double x = H[0]*u + H[1]*v + H[2];
+        double z = H[3]*u + H[4]*v + H[5];
+        double w = H[6]*u + H[7]*v + H[8];
+        if (w == 0.0) w = 1e-9;
+        return new double[]{ x / w, z / w };
+    }
+
+    public static double[] worldToUv(double wx, double wz) {
+        double u = Hinv[0]*wx + Hinv[1]*wz + Hinv[2];
+        double v = Hinv[3]*wx + Hinv[4]*wz + Hinv[5];
+        double w = Hinv[6]*wx + Hinv[7]*wz + Hinv[8];
+        if (w == 0.0) w = 1e-9;
+        return new double[]{ u / w, v / w };
+    }
+
+    private static double[] invert3x3(double[] m) {
+        double a=m[0], b=m[1], c=m[2], d=m[3], e=m[4], f=m[5], g=m[6], h=m[7], i=m[8];
+        double A = e*i - f*h;
+        double B = -(d*i - f*g);
+        double C = d*h - e*g;
+        double D = -(b*i - c*h);
+        double E = a*i - c*g;
+        double F = -(a*h - b*g);
+        double G = b*f - c*e;
+        double Hh = -(a*f - c*d);
+        double I = a*e - b*d;
+        double det = a*A + b*B + c*C;
+        if (Math.abs(det) < 1e-12) det = 1e-12;
+        double invDet = 1.0/det;
+        return new double[]{ A*invDet, D*invDet, G*invDet,  B*invDet, E*invDet, Hh*invDet,  C*invDet, F*invDet, I*invDet };
+    }
 }

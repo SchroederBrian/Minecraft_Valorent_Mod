@@ -9,7 +9,7 @@
 		},
 		{
 		  "when": "firstperson_righthand",
-		  "model": { "type": "minecraft:model", "model": "minecraft:item/air" }
+		  "model": { "type": "minecraft:model", "model": "valorant:item/brimstone_hand_3d" }
 		},
 		{
 		  "when": "thirdperson_righthand",

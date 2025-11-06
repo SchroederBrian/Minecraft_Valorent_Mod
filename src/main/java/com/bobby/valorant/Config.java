@@ -94,6 +94,9 @@ public final class Config {
         public final ModConfigSpec.BooleanValue showValorantHud;
         public final ModConfigSpec.DoubleValue hudScale;
 
+        // Player movement settings
+        public final ModConfigSpec.BooleanValue preventSprinting;
+
         // Killfeed settings
         public final ModConfigSpec.BooleanValue killfeedEnabled;
         public final ModConfigSpec.IntValue killfeedDurationTicks;
@@ -141,12 +144,23 @@ public final class Config {
         public final ModConfigSpec.IntValue skySmokeMapMaxX;
         public final ModConfigSpec.IntValue skySmokeMapMaxZ;
         public final ModConfigSpec.DoubleValue skySmokeMapRotationDegrees;
+        // Calibration precision/model
+        public final ModConfigSpec.ConfigValue<String> skySmokeCalibrationModel; // SIMILARITY|AFFINE|HOMOGRAPHY
+        public final ModConfigSpec.IntValue skySmokeCalibrationMinPoints;
+        public final ModConfigSpec.BooleanValue skySmokeCalibrationUseRansac;
+        public final ModConfigSpec.IntValue skySmokeCalibrationRansacIterations;
+        public final ModConfigSpec.DoubleValue skySmokeCalibrationRansacThreshold;
+        public final ModConfigSpec.DoubleValue skySmokeCalibrationUiZoomFactor;
+        public final ModConfigSpec.BooleanValue skySmokeCalibrationUiEnableSnap;
         public final ModConfigSpec.IntValue skySmokeMaxPerCast;
         public final ModConfigSpec.DoubleValue skySmokeRadius;
         public final ModConfigSpec.IntValue skySmokeDurationTicks;
         public final ModConfigSpec.BooleanValue skySmokePlaceOnGround;
         public final ModConfigSpec.DoubleValue skySmokeYOffset;
+        public final ModConfigSpec.DoubleValue skySmokeSpawnXOffset;
+        public final ModConfigSpec.DoubleValue skySmokeSpawnZOffset;
         public final ModConfigSpec.BooleanValue skySmokeApplyBlindness;
+        public final ModConfigSpec.DoubleValue skySmokeBlindnessRadiusOffset;
         public final ModConfigSpec.IntValue skySmokeBlindnessTicks;
         public final ModConfigSpec.ConfigValue<String> skySmokeAreasConfigPath;
 
@@ -158,6 +172,13 @@ public final class Config {
         public final ModConfigSpec.IntValue skySmokeAreasBlockedParticleColor;
         public final ModConfigSpec.BooleanValue skySmokeAreasShowRecordingParticles;
         public final ModConfigSpec.IntValue skySmokeAreasRecordingParticleColor;
+
+        // Sky Smoke map UI (player marker / follow)
+        public final ModConfigSpec.BooleanValue skySmokeUiShowPlayerMarker;
+        public final ModConfigSpec.BooleanValue skySmokeUiFollowPlayer;
+        public final ModConfigSpec.DoubleValue skySmokeUiFollowZoomFactor;
+        public final ModConfigSpec.IntValue skySmokeUiPlayerMarkerColor;
+        public final ModConfigSpec.IntValue skySmokeUiPlayerMarkerSize;
 
         // Spike runtime signal
         public final ModConfigSpec.BooleanValue spikePlanted;
@@ -647,6 +668,13 @@ public final class Config {
                     .define("showValorantHud", true);
             hudScale = builder.comment("Global scale factor for the Valorant HUD (1.0 = 100%).")
                     .defineInRange("hudScale", 1.0D, 0.5D, 2.0D);
+            builder.pop();
+
+            // Player movement settings
+            builder.push("playerMovement");
+            preventSprinting = builder.comment("Prevent players from sprinting when enabled.")
+                    .define("preventSprinting", true);
+            builder.pop();
 
             // Title overlay settings
             builder.push("titleOverlay");
@@ -904,6 +932,21 @@ public final class Config {
                     .defineInRange("mapMaxZ", 512, -1000000, 1000000);
             skySmokeMapRotationDegrees = builder.comment("Rotation of the Sky Smoke map in degrees (clockwise, 0 = north is up).")
                     .defineInRange("mapRotationDegrees", 0.0D, -180.0D, 180.0D);
+            // Calibration model/settings
+            skySmokeCalibrationModel = builder.comment("Calibration model used to fit GUI map to world: SIMILARITY, AFFINE, or HOMOGRAPHY")
+                    .define("calibrationModel", "HOMOGRAPHY");
+            skySmokeCalibrationMinPoints = builder.comment("Minimum number of calibration anchors to collect before preview/apply.")
+                    .defineInRange("calibrationMinPoints", 4, 3, 16);
+            skySmokeCalibrationUseRansac = builder.comment("Use RANSAC to robustly fit the transform and reject outliers.")
+                    .define("calibrationUseRansac", true);
+            skySmokeCalibrationRansacIterations = builder.comment("RANSAC iterations for calibration model fitting.")
+                    .defineInRange("calibrationRansacIterations", 300, 1, 10000);
+            skySmokeCalibrationRansacThreshold = builder.comment("RANSAC inlier threshold (blocks) measured as reprojection error in world XZ.")
+                    .defineInRange("calibrationRansacThreshold", 1.0D, 0.01D, 10.0D);
+            skySmokeCalibrationUiZoomFactor = builder.comment("GUI calibration zoom factor when holding Shift (1.0 = disabled)")
+                    .defineInRange("calibrationUiZoomFactor", 2.0D, 1.0D, 8.0D);
+            skySmokeCalibrationUiEnableSnap = builder.comment("Enable Ctrl snapping during calibration to pixel centers of the map texture.")
+                    .define("calibrationUiEnableSnap", true);
             skySmokeMaxPerCast = builder.comment("Maximum Sky Smoke placements per cast.")
                     .defineInRange("maxPerCast", 3, 1, 10);
             skySmokeRadius = builder.comment("Radius in blocks for Sky Smoke clouds.")
@@ -914,8 +957,14 @@ public final class Config {
                     .define("placeOnGround", true);
             skySmokeYOffset = builder.comment("Y offset added when not placing on ground (blocks).")
                     .defineInRange("yOffset", 0.1D, -10.0D, 10.0D);
+            skySmokeSpawnXOffset = builder.comment("X offset added to smoke spawn position after coordinate transformation.")
+                    .defineInRange("spawnXOffset", 0.0D, -10.0D, 10.0D);
+            skySmokeSpawnZOffset = builder.comment("Z offset added to smoke spawn position after coordinate transformation.")
+                    .defineInRange("spawnZOffset", 0.0D, 0.0D, 0.0D);
             skySmokeApplyBlindness = builder.comment("If true, Sky Smoke clouds apply blindness effect.")
                     .define("applyBlindness", true);
+            skySmokeBlindnessRadiusOffset = builder.comment("Offset subtracted from smoke radius for blindness application (player must be closer to center).")
+                    .defineInRange("blindnessRadiusOffset", 1.5D, 0.0D, 10.0D);
             skySmokeBlindnessTicks = builder.comment("Duration of blindness effect in ticks (only used if applyBlindness is true).")
                     .defineInRange("blindnessTicks", 255, 255, 20 * 60);
             skySmokeAreasConfigPath = builder.comment("Path to JSON file describing Sky Smoke allowed/blocked zones per dimension.")
@@ -939,6 +988,20 @@ public final class Config {
                     .defineInRange("recordingParticleColor", 0xFFFF00, 0x000000, 0xFFFFFF);
             builder.pop();
 
+            builder.pop();
+
+            // Sky Smoke map UI
+            builder.push("sky_smoke_ui");
+            skySmokeUiShowPlayerMarker = builder.comment("Show a live player marker on the Sky Smoke map.")
+                    .define("showPlayerMarker", true);
+            skySmokeUiFollowPlayer = builder.comment("Center and zoom the map view on the player position.")
+                    .define("followPlayer", true);
+            skySmokeUiFollowZoomFactor = builder.comment("Zoom factor when following player (2.0 = 2x zoom, higher = closer).")
+                    .defineInRange("followZoomFactor", 2.0D, 1.0D, 8.0D);
+            skySmokeUiPlayerMarkerColor = builder.comment("ARGB color for the player marker on the map.")
+                    .defineInRange("playerMarkerColor", 0xFFFF4D00, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            skySmokeUiPlayerMarkerSize = builder.comment("Marker size (pixels) for the player marker on the map.")
+                    .defineInRange("playerMarkerSize", 6, 2, 24);
             builder.pop();
 
             // Molly Launcher

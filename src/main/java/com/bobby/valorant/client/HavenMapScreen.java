@@ -16,6 +16,8 @@ import org.apache.logging.log4j.Logger;
 
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
+import com.bobby.valorant.client.SkySmokeAreaClient;
+
 import java.io.InputStream;
 import java.util.Optional;
 
@@ -29,9 +31,12 @@ public class HavenMapScreen extends Screen {
     // echte PNG-Maße (werden in init() gelesen)
     private int texW = 256;
     private int texH = 256;
+    private boolean hasPngTexture = false; // true if valorant:textures/gui/haven_map.png exists
 
     // Zielrechteck
     private int drawW, drawH, drawX, drawY;
+    // Follow-view window (UV sub-rect)
+    private double viewU0 = 0.0, viewV0 = 0.0, viewUw = 1.0, viewVh = 1.0;
 
     // Sky Smoke marker management
     private final java.util.List<BlockPos> selectedPositions = new java.util.ArrayList<>();
@@ -87,10 +92,12 @@ public class HavenMapScreen extends Screen {
                     this.texW = img.getWidth();
                     this.texH = img.getHeight();
                     LOGGER.info("Bild geladen mit den Dimensionen: " + texW + "x" + texH);
+                    hasPngTexture = true;
                 }
             } else {
                 // Dieser Fall wird jetzt protokolliert!
                 LOGGER.error("FEHLER: Ressource NICHT gefunden unter dem Pfad: " + MAP_TEX);
+                hasPngTexture = false;
             }
     
         } catch (Throwable t) {
@@ -115,14 +122,37 @@ public class HavenMapScreen extends Screen {
         g.fill(drawX - border, drawY - border, drawX + drawW + border, drawY + drawH + border, accent);
         g.fill(drawX, drawY, drawX + drawW, drawY + drawH, inner);
 
-        // --- DER FINALE BLIT-AUFRUF FÜR SKALIERUNG ---
-        // Dieser Aufruf behebt das Kachel-Problem, indem er die richtigen Parameter verwendet.
-        g.blitSprite(
-            RenderPipelines.GUI_TEXTURED,
-            ResourceLocation.parse("valorant:haven_map"),  // no folders, no .png
-            drawX, drawY,
-            drawW, drawH
-        );
+        // Compute follow view window centered on player (if enabled and texture available)
+        boolean follow = com.bobby.valorant.Config.COMMON.skySmokeUiFollowPlayer.get() && hasPngTexture;
+        if (follow) {
+            computeFollowViewWindow();
+        } else {
+            viewU0 = 0.0; viewV0 = 0.0; viewUw = 1.0; viewVh = 1.0;
+        }
+
+        // Draw either sub-rect (PNG) or full sprite fallback
+        int rDrawW = drawW;
+        int rDrawH = drawH;
+        int rDrawX = drawX;
+        int rDrawY = drawY;
+        if (hasPngTexture) {
+            int srcU = (int)Math.floor(viewU0 * texW);
+            int srcV = (int)Math.floor(viewV0 * texH);
+            int srcW = (int)Math.ceil(viewUw * texW);
+            int srcH = (int)Math.ceil(viewVh * texH);
+            // Clamp
+            if (srcU < 0) srcU = 0; if (srcV < 0) srcV = 0;
+            if (srcU + srcW > texW) srcW = texW - srcU;
+            if (srcV + srcH > texH) srcH = texH - srcV;
+            g.blit(MAP_TEX, rDrawX, rDrawY, srcU, srcV, rDrawW, rDrawH, texW, texH);
+        } else {
+            g.blitSprite(
+                RenderPipelines.GUI_TEXTURED,
+                ResourceLocation.parse("valorant:haven_map"),
+                rDrawX, rDrawY,
+                rDrawW, rDrawH
+            );
+        }
     
         // 3. Draw Sky Smoke markers
         drawMarkers(g);
@@ -131,8 +161,18 @@ public class HavenMapScreen extends Screen {
         drawHints(g);
 
         // 2. Titel und super.render (Ihr Code, unverändert)
-        g.drawCenteredString(this.font, this.title, this.width / 2, Math.max(10, drawY - 14), 0xFFFFFFFF);
+        g.drawCenteredString(this.font, this.title, this.width / 2, Math.max(10, rDrawY - 14), 0xFFFFFFFF);
         super.render(g, mouseX, mouseY, partialTick);
+        // Update active draw rect for input mapping
+        this.drawX = rDrawX;
+        this.drawY = rDrawY;
+        this.drawW = rDrawW;
+        this.drawH = rDrawH;
+
+        // Draw player marker if enabled
+        if (com.bobby.valorant.Config.COMMON.skySmokeUiShowPlayerMarker.get()) {
+            drawPlayerMarker(g);
+        }
     }
 
     @Override
@@ -163,6 +203,14 @@ public class HavenMapScreen extends Screen {
             double u = Mth.clamp((mouseX - drawX) / (double) drawW, 0.0, 1.0);
             double v = Mth.clamp((mouseY - drawY) / (double) drawH, 0.0, 1.0);
 
+            // Optional Ctrl snap to pixel centers
+            if (com.bobby.valorant.Config.COMMON.skySmokeCalibrationUiEnableSnap.get() && this.hasControlDown()) {
+                u = (Math.round(u * texW) + 0.5) / Math.max(1, texW);
+                v = (Math.round(v * texH) + 0.5) / Math.max(1, texH);
+                u = Mth.clamp(u, 0.0, 1.0);
+                v = Mth.clamp(v, 0.0, 1.0);
+            }
+
             // Send UV coordinates to server
             var packet = new com.bobby.valorant.network.SubmitCalibrationPointC2SPacket(calibrationStep, u, v);
             net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(packet);
@@ -176,6 +224,11 @@ public class HavenMapScreen extends Screen {
         if (button == 0) { // Left click - add marker
             if (selectedPositions.size() < maxPerCast) {
                 BlockPos worldPos = toWorld((int) mouseX, (int) mouseY);
+                // Check if the point is inside an allowed area
+                if (!SkySmokeAreaClient.isInsideAllowedArea(worldPos.getX(), worldPos.getZ())) {
+                    // Do not add marker if not in allowed area
+                    return true;
+                }
                 selectedPositions.add(worldPos);
                 com.bobby.valorant.Valorant.LOGGER.debug("[SkySmoke] Click at screen({},{}) -> world({},{})",
                     (int) mouseX, (int) mouseY, worldPos.getX(), worldPos.getZ());
@@ -221,12 +274,25 @@ public class HavenMapScreen extends Screen {
             int screenY = screenCoords.getSecond();
 
             // Draw filled marker circle
-            int radius = Math.max(4, drawW / 60); // Scale with map size, slightly larger for circles
+            int radius = Math.max(4, drawW / 45); // Scale with map size, slightly larger for circles
             drawFilledCircle(g, screenX, screenY, radius, MARKER_COLOR);
 
             // Draw center dot (white border)
             g.fill(screenX - 1, screenY - 1, screenX + 1, screenY + 1, 0xFFFFFFFF);
         }
+    }
+
+    private void drawPlayerMarker(GuiGraphics g) {
+        var mc = Minecraft.getInstance();
+        if (mc.player == null) return;
+        int color = com.bobby.valorant.Config.COMMON.skySmokeUiPlayerMarkerColor.get();
+        int size = com.bobby.valorant.Config.COMMON.skySmokeUiPlayerMarkerSize.get();
+        double wx = mc.player.getX();
+        double wz = mc.player.getZ();
+        var screen = worldToScreen((int)Math.round(wx), (int)Math.round(wz));
+        int cx = screen.getFirst();
+        int cy = screen.getSecond();
+        drawFilledCircle(g, cx, cy, Math.max(2, size/2), color);
     }
 
     /**
@@ -288,27 +354,14 @@ public class HavenMapScreen extends Screen {
      * Returns a Pair of (screenX, screenY).
      */
     private com.mojang.datafixers.util.Pair<Integer, Integer> worldToScreen(int worldX, int worldZ) {
-        // Check if we have a calibrated transform - use it if available
+        // Check if we have a calibrated transform - use it if available (homography aware)
         if (SkySmokeCalibrationClient.hasTransform()) {
-            // Apply inverse similarity transform: mapUV = R^(-1)·(world - t)/s
-            double a = SkySmokeCalibrationClient.getTransformA();
-            double b = SkySmokeCalibrationClient.getTransformB();
-            double tx = SkySmokeCalibrationClient.getTransformTx();
-            double tz = SkySmokeCalibrationClient.getTransformTz();
-
-            // Inverse transform: [u, v] = R^(-1) · ([wx, wz] - [tx, tz]) / s
-            double wx = worldX - tx;
-            double wz = worldZ - tz;
-
-            // R^(-1) where R = [a, -b; b, a], so R^(-1) = [a, b; -b, a] / det
-            double det = a * a + b * b; // Scale squared
-            double u = (a * wx + b * wz) / det;
-            double v = (-b * wx + a * wz) / det;
-
-            // Convert to screen coordinates
-            int screenX = drawX + (int) (u * drawW);
-            int screenY = drawY + (int) (v * drawH);
-
+            double[] uv = SkySmokeCalibrationClient.worldToUv(worldX, worldZ);
+            double u = uv[0];
+            double v = uv[1];
+            // Map using current view sub-rect
+            int screenX = drawX + (int) (((u - viewU0) / viewUw) * drawW);
+            int screenY = drawY + (int) (((v - viewV0) / viewVh) * drawH);
             return com.mojang.datafixers.util.Pair.of(screenX, screenY);
         }
 
@@ -341,9 +394,11 @@ public class HavenMapScreen extends Screen {
             v = rotatedV;
         }
 
-        // Convert to screen coordinates
-        int screenX = drawX + (int) ((u + 0.5) * drawW);
-        int screenY = drawY + (int) ((v + 0.5) * drawH);
+        // Convert to screen coordinates with sub-rect view
+        double uu = (u + 0.5);
+        double vv = (v + 0.5);
+        int screenX = drawX + (int) (((uu - viewU0) / viewUw) * drawW);
+        int screenY = drawY + (int) (((vv - viewV0) / viewVh) * drawH);
 
         return com.mojang.datafixers.util.Pair.of(screenX, screenY);
     }
@@ -355,21 +410,16 @@ public class HavenMapScreen extends Screen {
      */
     private BlockPos toWorld(int mouseX, int mouseY) {
         // Convert screen coordinates to normalized UV coordinates (0-1)
-        double u = Mth.clamp((mouseX - drawX) / (double) drawW, 0.0, 1.0);
-        double v = Mth.clamp((mouseY - drawY) / (double) drawH, 0.0, 1.0);
+        double relU = Mth.clamp((mouseX - drawX) / (double) drawW, 0.0, 1.0);
+        double relV = Mth.clamp((mouseY - drawY) / (double) drawH, 0.0, 1.0);
+        // If we are viewing a sub-rect, map back to full UV
+        double u = viewU0 + relU * viewUw;
+        double v = viewV0 + relV * viewVh;
 
-        // Check if we have a calibrated transform - use it if available
+        // Check if we have a calibrated transform - use it if available (homography aware)
         if (SkySmokeCalibrationClient.hasTransform()) {
-            // Apply the similarity transform: world = s·R·uv + t
-            double a = SkySmokeCalibrationClient.getTransformA();
-            double b = SkySmokeCalibrationClient.getTransformB();
-            double tx = SkySmokeCalibrationClient.getTransformTx();
-            double tz = SkySmokeCalibrationClient.getTransformTz();
-
-            double wx = a * u - b * v + tx;
-            double wz = b * u + a * v + tz;
-
-            return BlockPos.containing(wx, 0.0, wz); // y resolved server-side
+            double[] w = SkySmokeCalibrationClient.uvToWorld(u, v);
+            return BlockPos.containing(w[0], 0.0, w[1]); // y resolved server-side
         }
 
         // Fallback to bounds-based method
@@ -386,25 +436,60 @@ public class HavenMapScreen extends Screen {
         double mapCenterZ = minZ + mapHeight / 2.0;
 
         // Convert UV to position relative to map center (-0.5 to 0.5)
-        double relU = u - 0.5;
-        double relV = v - 0.5;
+        double relUC = u - 0.5;
+        double relVC = v - 0.5;
 
         // Apply rotation if needed
-        double rotatedU = relU;
-        double rotatedV = relV;
+        double rotatedU = relUC;
+        double rotatedV = relVC;
         if (rotationDegrees != 0.0) {
             double radians = Math.toRadians(rotationDegrees);
             double cos = Math.cos(radians);
             double sin = Math.sin(radians);
-            rotatedU = relU * cos - relV * sin;
-            rotatedV = relU * sin + relV * cos;
+            rotatedU = relUC * cos - relVC * sin;
+            rotatedV = relUC * sin + relVC * cos;
         }
 
-        // Convert back to world coordinates
-        int x = Mth.floor(mapCenterX + rotatedU * mapWidth);
-        int z = Mth.floor(mapCenterZ + rotatedV * mapHeight);
+        // Convert back to world coordinates (no client-side flooring to preserve precision)
+        double x = mapCenterX + rotatedU * mapWidth;
+        double z = mapCenterZ + rotatedV * mapHeight;
 
-        return BlockPos.containing(x + 0.5, 0.0, z + 0.5); // y resolved server-side
+        return BlockPos.containing(x, 0.0, z); // y resolved server-side
+    }
+
+    private void computeFollowViewWindow() {
+        var mc = Minecraft.getInstance();
+        if (mc.player == null) { viewU0=0; viewV0=0; viewUw=1; viewVh=1; return; }
+        double wx = mc.player.getX();
+        double wz = mc.player.getZ();
+        double u, v;
+        if (SkySmokeCalibrationClient.hasTransform()) {
+            double[] uv = SkySmokeCalibrationClient.worldToUv(wx, wz);
+            u = uv[0]; v = uv[1];
+        } else {
+            // Bounds fallback
+            int minX = SkySmokeCalibrationClient.getMinX();
+            int minZ = SkySmokeCalibrationClient.getMinZ();
+            int maxX = SkySmokeCalibrationClient.getMaxX();
+            int maxZ = SkySmokeCalibrationClient.getMaxZ();
+            double mapWidth = maxX - minX;
+            double mapHeight = maxZ - minZ;
+            double mapCenterX = minX + mapWidth / 2.0;
+            double mapCenterZ = minZ + mapHeight / 2.0;
+            double relX = (wx - mapCenterX) / mapWidth;
+            double relZ = (wz - mapCenterZ) / mapHeight;
+            u = relX + 0.5; v = relZ + 0.5;
+        }
+        double zoom = Math.max(1.0, com.bobby.valorant.Config.COMMON.skySmokeUiFollowZoomFactor.get());
+        double w = 1.0 / zoom;
+        double h = 1.0 / zoom;
+        double u0 = u - w / 2.0;
+        double v0 = v - h / 2.0;
+        // Clamp to [0,1]
+        if (u0 < 0) u0 = 0; if (v0 < 0) v0 = 0;
+        if (u0 + w > 1.0) u0 = 1.0 - w;
+        if (v0 + h > 1.0) v0 = 1.0 - h;
+        viewU0 = u0; viewV0 = v0; viewUw = w; viewVh = h;
     }
 
     private static int argb(int a, int r, int g, int b) {

@@ -23,4 +23,16 @@ public final class SkySmokeAreaClient {
     public static SkySmokeArea.SkySmokeDimensionAreas getAreasForDimension(ResourceLocation dimension) {
         return AREAS.get(dimension);
     }
+
+    public static boolean isInsideAllowedArea(double x, double z) {
+        var mc = net.minecraft.client.Minecraft.getInstance();
+        if (mc.level == null) return false;
+        var dimension = mc.level.dimension().location();
+        var areas = getAreasForDimension(dimension);
+        if (areas == null) return false;
+        for (var area : areas.allowed().values()) {
+            if (area.enabled() && area.isInside(x, z)) return true;
+        }
+        return false;
+    }
 }

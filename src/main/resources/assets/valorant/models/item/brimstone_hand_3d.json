@@ -1,0 +1,29 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"texture_size": [2, 2],
+	"textures": {
+		"0": "valorant:item/brimstone_hand"
+	},
+	"elements": [
+		{
+			"from": [6, 0, 5],
+			"to": [8, 12, 8],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7, 0, 8]},
+			"faces": {
+				"north": {"uv": [11, 4, 14, 16], "texture": "#0"},
+				"east": {"uv": [0, 4, 4, 16], "texture": "#0"},
+				"south": {"uv": [4, 4, 7, 16], "texture": "#0"},
+				"west": {"uv": [7, 4, 11, 16], "texture": "#0"},
+				"up": {"uv": [4, 0, 7, 4], "texture": "#0"},
+				"down": {"uv": [7, 4, 10, 0], "rotation": 180, "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"firstperson_righthand": {
+			"rotation": [86, -180, -59],
+			"translation": [-17, 5.25, 6]
+		}
+	}
+}

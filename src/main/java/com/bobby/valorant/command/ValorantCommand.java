@@ -562,7 +562,8 @@ public final class ValorantCommand {
 
                                     boolean success = com.bobby.valorant.spawn.SkySmokeCalibration.previewCalibration(sp.getServer(), dim, sp.level());
                                     if (!success) {
-                                        ctx.getSource().sendFailure(Component.literal("Calibration not complete or invalid. Need 3 points to preview."));
+                                        int minPts = Math.max(3, com.bobby.valorant.Config.COMMON.skySmokeCalibrationMinPoints.get());
+                                        ctx.getSource().sendFailure(Component.literal("Calibration not complete or invalid. Need at least " + minPts + " points to preview."));
                                         return 0;
                                     }
 
