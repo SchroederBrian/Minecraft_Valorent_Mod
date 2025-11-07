@@ -10,6 +10,7 @@ import com.bobby.valorant.world.item.IWeapon;
 import com.bobby.valorant.world.item.KnifeItem;
 import com.bobby.valorant.world.item.VandalRifleItem;
 import com.bobby.valorant.world.item.SheriffItem;
+import com.bobby.valorant.world.item.FrenzyPistolItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -94,6 +95,8 @@ public final class WeaponSwitchEvents {
             return "vandal";
         } else if (weapon instanceof SheriffItem) {
             return "sheriff";
+        } else if (weapon instanceof FrenzyPistolItem) {
+            return "frenzy";
         }
         return null;
     }

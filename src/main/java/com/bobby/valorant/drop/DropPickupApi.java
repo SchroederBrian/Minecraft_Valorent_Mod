@@ -109,6 +109,8 @@ public final class DropPickupApi {
         if ("valorant:classic".equals(itemId.toString())) {
             return Config.COMMON.classicDropYOffset.get();
         }
+
+        // Ghost starts lower
         if ("valorant:ghost".equals(itemId.toString())) {
             return Config.COMMON.ghostDropYOffset.get();
         }
@@ -126,6 +128,11 @@ public final class DropPickupApi {
         // Sheriff starts higher
         if ("valorant:sheriff".equals(itemId.toString())) {
             return Config.COMMON.sheriffDropYOffset.get();
+        }
+
+        // Frenzy starts highest
+        if ("valorant:frenzy".equals(itemId.toString())) {
+            return Config.COMMON.frenzyDropYOffset.get();
         }
 
         // Default offset for any other items

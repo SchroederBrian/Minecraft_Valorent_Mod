@@ -8,10 +8,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.bobby.valorant.Valorant;
 
-import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -25,14 +26,14 @@ public final class ArmorStandRotator {
     // Track which players are currently in range of each armor stand to avoid spamming blindness
     private static final Map<ArmorStand, Map<Player, Boolean>> playersInRange = new WeakHashMap<>();
 
-    public static void addRotatingArmorStand(ArmorStand armorStand, int durationTicks) {
+    public static void addRotatingArmorStand(ArmorStand armorStand, int durationTicks, BlockPos destination) {
         if (armorStand == null || durationTicks <= 0) return;
-        ROTATION_TASKS.add(new RotationTask(armorStand, durationTicks, 0, 0));
+        ROTATION_TASKS.add(new RotationTask(armorStand, durationTicks, 0, 0, destination));
     }
 
-    public static void addRotatingArmorStandWithBlindness(ArmorStand armorStand, int durationTicks, float radius, int blindnessTicks) {
+    public static void addRotatingArmorStandWithBlindness(ArmorStand armorStand, int durationTicks, float radius, int blindnessTicks, BlockPos destination) {
         if (armorStand == null || durationTicks <= 0) return;
-        ROTATION_TASKS.add(new RotationTask(armorStand, durationTicks, radius, blindnessTicks));
+        ROTATION_TASKS.add(new RotationTask(armorStand, durationTicks, radius, blindnessTicks, destination));
     }
 
     @SubscribeEvent
@@ -42,27 +43,35 @@ public final class ArmorStandRotator {
         List<RotationTask> toRemove = new ArrayList<>();
         for (RotationTask task : ROTATION_TASKS) {
             if (task.armorStand.isAlive()) {
-                // Rotate 3.6 degrees per tick (full rotation every ~100 ticks)
-                float rotation = -(task.ticksElapsed * 3.6f) % 360.0f;
-                task.armorStand.setYRot(rotation);
-                task.armorStand.setYHeadRot(rotation);
+                if (task.isFalling) {
+                    double currentY = task.armorStand.getY();
+                    double destY = task.destination.getY() + 0.1D;
+                    if (currentY > destY) {
+                        double newY = Math.max(currentY - 3.0, destY); // Move 1 block per tick
+                        task.armorStand.teleportTo(task.armorStand.getX(), newY, task.armorStand.getZ());
+                    } else {
+                        task.isFalling = false;
+                        // Teleport to exact final position to ensure alignment
+                        task.armorStand.teleportTo(task.destination.getX() + 0.5D, destY, task.destination.getZ() + 0.5D);
+                    }
+                } else {
+                    // Apply blindness effect to players in range
+                    if (task.blindnessTicks > 0 && task.radius > 0) {
+                        applyBlindnessToNearbyPlayers(task.armorStand, task.radius, task.blindnessTicks);
+                    } else if (task.ticksElapsed == 0) {
+                        Valorant.LOGGER.debug(
+                            "[SkySmoke] Blindness disabled for this task (radius={}, ticks={})",
+                            task.radius, task.blindnessTicks
+                        );
+                    }
 
-                // Apply blindness effect to players in range
-                if (task.blindnessTicks > 0 && task.radius > 0) {
-                    applyBlindnessToNearbyPlayers(task.armorStand, task.radius, task.blindnessTicks);
-                } else if (task.ticksElapsed == 0) {
-                    Valorant.LOGGER.debug(
-                        "[SkySmoke] Blindness disabled for this task (radius={}, ticks={})",
-                        task.radius, task.blindnessTicks
-                    );
-                }
+                    task.ticksElapsed++;
+                    task.remainingTicks--;
 
-                task.ticksElapsed++;
-                task.remainingTicks--;
-
-                if (task.remainingTicks <= 0) {
-                    task.armorStand.discard();
-                    toRemove.add(task);
+                    if (task.remainingTicks <= 0) {
+                        task.armorStand.discard();
+                        toRemove.add(task);
+                    }
                 }
             } else {
                 toRemove.add(task);
@@ -128,13 +137,17 @@ public final class ArmorStandRotator {
         int ticksElapsed;
         final float radius;
         final int blindnessTicks;
+        final BlockPos destination;
+        boolean isFalling;
 
-        RotationTask(ArmorStand armorStand, int durationTicks, float radius, int blindnessTicks) {
+        RotationTask(ArmorStand armorStand, int durationTicks, float radius, int blindnessTicks, BlockPos destination) {
             this.armorStand = armorStand;
             this.remainingTicks = durationTicks;
             this.ticksElapsed = 0;
             this.radius = radius;
             this.blindnessTicks = blindnessTicks;
+            this.destination = destination;
+            this.isFalling = true;
         }
     }
 }

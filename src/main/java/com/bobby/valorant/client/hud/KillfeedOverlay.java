@@ -147,6 +147,7 @@ public final class KillfeedOverlay {
         if ("fireball".equals(path)) return com.bobby.valorant.registry.ModItems.FIREBALL.get().getDefaultInstance();
         if ("curveball".equals(path)) return com.bobby.valorant.registry.ModItems.CURVEBALL.get().getDefaultInstance();
         if ("sheriff".equals(path)) return com.bobby.valorant.registry.ModItems.SHERIFF.get().getDefaultInstance();
+        if ("frenzy".equals(path)) return com.bobby.valorant.registry.ModItems.FRENZY.get().getDefaultInstance();
 
         return ItemStack.EMPTY;
     }

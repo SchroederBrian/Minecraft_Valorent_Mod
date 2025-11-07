@@ -162,7 +162,7 @@ public abstract class GunItem extends Item implements IWeapon {
         } else if (this instanceof FrenzyPistolItem) {
             return "frenzy";
         }
-        return "classic"; // fallback
+        return ""; // fallback
     }
 
     private void spawnTracer(ServerLevel level, Vec3 start, Vec3 end) {

@@ -5,7 +5,7 @@
 	  "cases": [
 		{
 		  "when": ["gui", "ground", "fixed"],
-		  "model": { "type": "minecraft:model", "model": "valorant:item/skysmoke" }
+		  "model": { "type": "minecraft:model", "model": "valorant:item/skysmoke_gui" }
 		},
 		{
 		  "when": "firstperson_righthand",

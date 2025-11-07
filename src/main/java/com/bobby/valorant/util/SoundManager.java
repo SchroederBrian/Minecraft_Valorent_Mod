@@ -104,7 +104,7 @@ public class SoundManager {
             case "valor_rifle", "vandal" -> getSoundLocation("vandal.reload");
             case "sheriff" -> getSoundLocation("sheriff.reload");
             case "frenzy" -> getSoundLocation("frenzy.reload");
-            default -> getSoundLocation("classic.reload"); // fallback
+            default -> getSoundLocation(""); // fallback
         };
         if (!com.bobby.valorant.Config.COMMON.soundEnabled.get()) return;
         float vol = com.bobby.valorant.Config.COMMON.soundReloadVolume.get().floatValue();

@@ -305,6 +305,7 @@ public final class Config {
     public final ModConfigSpec.DoubleValue spikeDropYOffset;
     public final ModConfigSpec.DoubleValue vandalDropYOffset;
     public final ModConfigSpec.DoubleValue sheriffDropYOffset;
+    public final ModConfigSpec.DoubleValue frenzyDropYOffset;
     public final ModConfigSpec.BooleanValue enableDropSfx;
     public final ModConfigSpec.BooleanValue enablePickupSfx;
     public final ModConfigSpec.BooleanValue enableParticles;
@@ -483,6 +484,7 @@ public final class Config {
         wl.add("valorant:spike");
         wl.add("valorant:vandal");
         wl.add("valorant:sheriff");
+        wl.add("valorant:frenzy");
         droppableWhitelist = builder.comment("Whitelist of droppable items by id or tag (#namespace:id)").define("droppableWhitelist", wl);
 
         // Target slot mapping (id/tag -> slot index)
@@ -493,6 +495,7 @@ public final class Config {
         slotMap.set("valorant:ghost", 1); // Pistol
         slotMap.set("valorant:spike", 3); // Spike
         slotMap.set("valorant:sheriff", 1); // Sheriff
+        slotMap.set("valorant:frenzy", 1); // Frenzy
         
         itemTargetSlots = builder.comment("Mapping from item id or tag to target inventory slot index").define("itemTargetSlots", slotMap);
 
@@ -510,6 +513,7 @@ public final class Config {
         spikeDropYOffset = builder.comment("Y offset added when dropping Spike").defineInRange("spikeDropYOffset", 1.50D, 1.50D, 1.50D);
         vandalDropYOffset = builder.comment("Y offset added when dropping Vandal rifle").defineInRange("vandalDropYOffset", 1.50D, 1.50D, 1.50D);
         sheriffDropYOffset = builder.comment("Y offset added when dropping Sheriff").defineInRange("sheriffDropYOffset", 1.50D, 1.50D, 1.50D);
+        frenzyDropYOffset = builder.comment("Y offset added when dropping Frenzy").defineInRange("frenzyDropYOffset", 1.50D, 1.50D, 1.50D);
 
         enableDropSfx = builder.comment("Play sound on drop").define("enableDropSfx", true);
         enablePickupSfx = builder.comment("Play sound on pickup").define("enablePickupSfx", true);

@@ -137,6 +137,11 @@ public final class DropPickupClientEvents {
             return com.bobby.valorant.Config.COMMON.sheriffDropYOffset.get();
         }
 
+        // Frenzy
+        if ("valorant:frenzy".equals(itemId.toString())) {
+            return com.bobby.valorant.Config.COMMON.frenzyDropYOffset.get();
+        }
+
         // Default offset for any other items
         return 0.0D;
     }

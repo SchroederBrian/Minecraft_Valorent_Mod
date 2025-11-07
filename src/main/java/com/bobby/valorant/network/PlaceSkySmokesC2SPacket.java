@@ -163,11 +163,11 @@ public record PlaceSkySmokesC2SPacket(List<BlockPos> positions) implements Custo
             // ArmorStand erstellen
             var stand = new ArmorStand(level,
                 targetPos.getX() + 0.5D,
-                targetPos.getY() + 0.1D,
+                targetPos.getY() + 64.0D, // Spawn 64 blocks higher
                 targetPos.getZ() + 0.5D);
             stand.setInvisible(true);
             stand.setInvulnerable(true);
-            stand.setNoGravity(true);
+            stand.setNoGravity(true); // Let it fall initially
             stand.setSilent(true);
             stand.setShowArms(false);
             stand.setNoBasePlate(true);
@@ -179,10 +179,10 @@ public record PlaceSkySmokesC2SPacket(List<BlockPos> positions) implements Custo
             // Rotator-Task inkl. Blindness
             if (applyBlindness && radius - 1 > 0 && blindTicks > 0) {
                 com.bobby.valorant.util.ArmorStandRotator.addRotatingArmorStandWithBlindness(
-                    stand, duration, (float) radius, blindTicks
+                    stand, duration, (float) radius, blindTicks, targetPos
                 );
             } else {
-                com.bobby.valorant.util.ArmorStandRotator.addRotatingArmorStand(stand, duration);
+                com.bobby.valorant.util.ArmorStandRotator.addRotatingArmorStand(stand, duration, targetPos);
             }
         }
 
