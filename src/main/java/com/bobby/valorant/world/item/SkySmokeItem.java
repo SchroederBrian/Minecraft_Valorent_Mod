@@ -21,9 +21,19 @@ public class SkySmokeItem extends Item {
 	}
 
 	private static void openMapScreen() {
-		var mc = net.minecraft.client.Minecraft.getInstance();
-		if (mc == null) return;
-		mc.setScreen(new com.bobby.valorant.client.SkySmokeScreen());
+		try {
+			// Use reflection to avoid direct client class reference
+			Class<?> minecraftClass = Class.forName("net.minecraft.client.Minecraft");
+			Object mc = minecraftClass.getMethod("getInstance").invoke(null);
+			
+			Class<?> screenClass = Class.forName("com.bobby.valorant.client.SkySmokeScreen");
+			Object screen = screenClass.getConstructor().newInstance();
+			
+			minecraftClass.getMethod("setScreen", Class.forName("net.minecraft.client.gui.screens.Screen")).invoke(mc, screen);
+		} catch (Exception e) {
+			// Handle reflection errors gracefully
+			e.printStackTrace();
+		}
 	}
 }
 

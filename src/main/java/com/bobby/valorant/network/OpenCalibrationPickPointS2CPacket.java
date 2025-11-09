@@ -37,7 +37,15 @@ public record OpenCalibrationPickPointS2CPacket(
     public static void handle(OpenCalibrationPickPointS2CPacket packet, IPayloadContext context) {
         // Client-side: open HavenMapScreen in calibration mode
         context.enqueueWork(() -> {
-            com.bobby.valorant.client.SkySmokeScreen.openCalibrationMode(packet.step(), packet.prompt());
+            try {
+                // Use reflection to avoid direct client class reference
+                Class<?> screenClass = Class.forName("com.bobby.valorant.client.SkySmokeScreen");
+                screenClass.getMethod("openCalibrationMode", int.class, String.class)
+                    .invoke(null, packet.step(), packet.prompt());
+            } catch (Exception e) {
+                // Handle reflection errors gracefully
+                e.printStackTrace();
+            }
         });
     }
 }
